@@ -1,0 +1,59 @@
+stages:
+  - quality
+
+# Image par défaut pour sonar-scanner-cli
+image:
+  name: $VESI_DOCKER_REGISTRY/vesi/sima/devsecops/sonar-scanner-cli:4-SNAPSHOT
+
+variables:
+  GIT_DEPTH: 0
+  GITLAB_URL: https://gitlab1.vinci-energies.net
+  GITLAB_REF_BRANCH: master
+  PROJECT_NAME: vesi-codex-developments-c4hana-veff-zfioac4_valpec
+  SONAR_URL: https://sonarqube.vinci-energies.net
+  SONAR_COMMON_OPTS: >
+    -Dsonar.projectName=$PROJECT_NAME
+    -Dsonar.projectKey=$PROJECT_NAME
+    -Dsonar.host.url=$SONAR_URL
+    -Dsonar.login=25598d57f1e870dcfdf6255b402a28bdca972cc4
+#    -Dsonar.password=$SVC_PASSWORD
+#    -Dsonar.token=
+
+# ################################################### #
+# ###     Déclenchement sur une merge request     ### #
+# ################################################### #
+
+sonar_analyze_on_merge_request:
+  stage: quality
+  script:
+    - |
+        sonar-scanner \
+        $SONAR_COMMON_OPTS \
+        -Dsonar.pullrequest.gitlab.instanceUrl=$GITLAB_URL \
+        -Dsonar.pullrequest.gitlab.projectId=$CI_MERGE_REQUEST_PROJECT_ID \
+        -Dsonar.pullrequest.key=$CI_MERGE_REQUEST_ID \
+        -Dsonar.pullrequest.branch=$CI_COMMIT_REF_NAME \
+        -Dsonar.pullrequest.base=$GITLAB_REF_BRANCH \
+        -Dsonar.qualitygate.wait=true 
+  except:
+    # Inutile de jouer l'analyse sonar par MR sur la branche master et la pose d'un tag
+    - master
+    - tags
+  only:
+    - merge_request
+
+
+# ################################################### #
+# ###         Branche MASTER uniquement           ### #
+# ################################################### #
+
+sonar_analyse_branch:
+  stage: quality
+  script:
+    - |
+      sonar-scanner -X \
+        $MAVEN_CLI_OPTS \
+        $SONAR_COMMON_OPTS \
+        -Dsonar.branch.name=$CI_COMMIT_REF_NAME
+  only:
+    - master

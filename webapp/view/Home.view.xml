@@ -1,4 +1,4 @@
-<mvc:View controllerName="com.vesi.zfioac4_valpec.zfioac4_valpec.controller.Home" xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+<mvc:View controllerName="com.vesi.zfioac4_valpec.controller.Home" xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
 	xmlns="sap.m">
 	<Shell id="shell">
 		<App id="app">

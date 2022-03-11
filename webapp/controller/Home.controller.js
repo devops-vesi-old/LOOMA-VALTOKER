@@ -363,7 +363,7 @@ sap.ui.define([
 			}
 
 			var oTableBinding = this.getView().byId("TableSite").getBinding("rows");
-			oTableBinding.filter(aFilters, "Application");
+			oTableBinding.filter(mainFilter, "Application");
 		}
 	});
 });

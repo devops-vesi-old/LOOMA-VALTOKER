@@ -1,0 +1,81 @@
+<core:FragmentDefinition 
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:ui="sap.ui.table">
+	<ui:Table
+		id="TableSite" 
+		selectionBehavior="RowOnly" 
+		selectionMode="None"
+		rowActionCount="1"
+		visibleRowCountMode="Auto"
+		rows="{/SiteSet}">
+		<ui:rowActionTemplate>
+			<ui:RowAction>
+				<ui:RowActionItem 
+					type="Navigation" 
+					press="onPressNavigateToDetail"/>
+			</ui:RowAction>
+		</ui:rowActionTemplate>
+		<ui:columns>
+			<ui:Column 
+				id="SiteIdCol" width="10%" resizable="false" hAlign="Begin" autoResizable="true">
+				<Text text="{i18n>siteTableColumnHeaderSiteId}"/>
+				<ui:template>
+					<Text text="{SiteId}"/>
+				</ui:template>
+			</ui:Column>
+			<ui:Column 
+				id="SiteNameCol" width="20%" resizable="false" hAlign="Begin" autoResizable="true">
+				<Text text="{i18n>siteTableColumnHeaderSiteName}"/>
+				<ui:template>
+					<Text text="{SiteName}"/>
+				</ui:template>
+			</ui:Column>
+			<ui:Column 
+				id="TypeIdCol" width="15%" resizable="false" hAlign="Begin" autoResizable="true">
+				<Text text="{i18n>siteTableColumnHeaderType}"/>
+				<ui:template>
+					<Text text="{path: 'TypeId', formatter: '.formatter.setTypeDescription'}"/>
+				</ui:template>
+			</ui:Column>	
+			<ui:Column 
+				id="StatusInternalIdCol" width="15%" resizable="false" hAlign="Begin" autoResizable="true">
+				<Text text="{i18n>siteTableColumnHeaderStatus}"/>
+				<ui:template>
+					<Text text="{path: 'StatusInternalId', formatter: '.formatter.setStatusDescription'}"/>
+				</ui:template>
+			</ui:Column>			
+			<ui:Column 
+				id="SensibleCol" width="5%" resizable="false" hAlign="Center" autoResizable="true">
+				<Text text="{i18n>siteTableColumnHeaderSensible}"/>
+				<ui:template>
+					<Text text="{= ${Sensible} ? ${i18n>yes} : ${i18n>no} }"/>
+				</ui:template>
+			</ui:Column>
+			<ui:Column 
+				id="IsInactiveCol" width="5%" resizable="false" hAlign="Center" autoResizable="true">
+				<Text text="{i18n>siteTableColumnHeaderActiveInactive}"/>
+				<ui:template>
+					<core:Icon 
+						src="{= ${IsInactive} ? 'sap-icon://decline' : 'sap-icon://accept' }"
+						color="{= ${IsInactive} ? 'Negative' : 'Positive' }" 
+						tooltip="{= ${IsInactive} ? ${i18n>no} : ${i18n>yes} }"/>
+				</ui:template>
+			</ui:Column>			
+			<ui:Column 
+				id="ContractIdCol" width="8%" resizable="false" hAlign="End" autoResizable="true">
+				<Text text="{i18n>siteTableColumnHeaderContractId}"/>
+				<ui:template>
+					<Text text="{ContractId}" />
+				</ui:template>
+			</ui:Column>					
+			<ui:Column 
+				id="EquipmentsTotalCol" width="5%" resizable="false" hAlign="End" autoResizable="true">
+				<Text text="{i18n>siteTableColumnHeaderEquipmentsTotal}"/>
+				<ui:template>
+					<Text text="{EquipmentsTotal}" />
+				</ui:template>
+			</ui:Column>					
+		</ui:columns>
+	</ui:Table>
+</core:FragmentDefinition >

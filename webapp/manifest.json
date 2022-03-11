@@ -12,10 +12,26 @@
 		"sourceTemplate": {
 			"id": "ui5template.basicSAPUI5ApplicationProject",
 			"version": "1.38.11"
+		},
+		"dataSources": {
+			"ZSRC4_PEC_SRV": {
+				"uri": "/sap/opu/odata/sap/ZSRC4_PEC_SRV/",
+				"type": "OData",
+				"settings": {
+					"localUri": "localService/metadata.xml"
+				}
+			},
+			"ZSRC4_VH_SRV": {
+				"uri": "/sap/opu/odata/sap/ZSRC4_VH_SRV/",
+				"type": "OData",
+				"settings": {
+					"localUri": "localServiceVH/metadata.xml"
+				}
+			}
 		}
 	},
-
 	"sap.ui": {
+		"fullWidth": true,
 		"technology": "UI5",
 		"icons": {
 			"icon": "",
@@ -31,21 +47,22 @@
 			"phone": true
 		}
 	},
-
 	"sap.ui5": {
 		"flexEnabled": false,
 		"rootView": {
-			"viewName": "com.vesi.zfioac4_valpec.view.Home",
+			"viewName": "com.vesi.zfioac4_valpec.view.App",
 			"type": "XML",
 			"async": true,
-			"id": "Home"
+			"id": "app"
 		},
 		"dependencies": {
-			"minUI5Version": "1.65.6",
+			"minUI5Version": "1.84.0",
 			"libs": {
 				"sap.ui.layout": {},
 				"sap.ui.core": {},
-				"sap.m": {}
+				"sap.m": {},
+				"sap.ui.table": {},
+				"com.vesi.zaclib": {}
 			}
 		},
 		"contentDensities": {
@@ -58,6 +75,28 @@
 				"settings": {
 					"bundleName": "com.vesi.zfioac4_valpec.i18n.i18n"
 				}
+			},
+			"": {
+				"type": "sap.ui.model.odata.v2.ODataModel",
+				"settings": {
+					"defaultOperationMode": "Server",
+					"defaultBindingMode": "TwoWay",
+					"defaultCountMode": "Inline",
+					"defaultUpdateMethod": "PUT",
+					"refreshAfterChange": true
+				},
+				"dataSource": "ZSRC4_PEC_SRV"
+			},
+			"VH": {
+				"type": "sap.ui.model.odata.v2.ODataModel",
+				"settings": {
+					"defaultOperationMode": "Server",
+					"defaultBindingMode": "TwoWay",
+					"defaultCountMode": "Inline",
+					"defaultUpdateMethod": "PUT",
+					"refreshAfterChange": true
+				},
+				"dataSource": "ZSRC4_VH_SRV"
 			}
 		},
 		"resources": {
@@ -76,17 +115,24 @@
 				"clearControlAggregation": false
 			},
 			"routes": [{
-				"name": "RouteHome",
-				"pattern": "RouteHome",
-				"target": ["TargetHome"]
+				"name": "Home",
+				"pattern": "",
+				"target": [
+					"Home"
+				]
+			}, {
+				"name": "Detail",
+				"pattern": "detail/{ContractId}",
+				"target": [
+					"Detail"
+				]
 			}],
 			"targets": {
-				"TargetHome": {
-					"viewType": "XML",
-					"transition": "slide",
-					"clearControlAggregation": false,
-					"viewId": "Home",
+				"Home": {
 					"viewName": "Home"
+				},
+				"Detail": {
+					"viewName": "Detail"
 				}
 			}
 		}

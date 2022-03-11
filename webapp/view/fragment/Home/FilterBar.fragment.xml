@@ -1,0 +1,121 @@
+<core:FragmentDefinition 
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:fb="sap.ui.comp.filterbar">
+	<fb:FilterBar 
+		id="homeFilterBar"
+		showClearOnFB="true" 
+		useToolbar="false" 
+		search="onFiltersSearch" 
+		clear="onFiltersClear">
+		<fb:filterGroupItems>
+			<fb:FilterGroupItem
+				groupName="MultiInput"
+				name="ContractId" 
+				label="{i18n>filterGroupItemFilterLabelContract}" 
+				visibleInFilterBar="true">
+				<fb:control>
+					<MultiInput 
+						id="ContractId" 
+						valueHelpRequest=".onValueHelpRequested" 
+						valueHelpOnly="true"
+						tokens="{mTokens>/ContractId}"
+						tokenUpdate="onUpdateToken">
+						<tokens>
+							<Token 
+								key="{mTokens>Id}"
+								text="{mTokens>Text}"/>
+						</tokens>
+					</MultiInput>
+				</fb:control>	
+			</fb:FilterGroupItem>
+			<fb:FilterGroupItem
+				groupName="MultiInput"
+				name="SiteId" 
+				label="{i18n>filterGroupItemFilterLabelSite}" 
+				visibleInFilterBar="true">
+				<fb:control>
+					<MultiInput 
+						id="SiteId" 
+						valueHelpRequest=".onValueHelpRequested" 
+						valueHelpOnly="true"
+						tokens="{mTokens>/SiteId}"
+						tokenUpdate="onUpdateToken">
+						<tokens>
+							<Token 
+								key="{mTokens>Id}"
+								text="{mTokens>Text}"/>
+						</tokens>
+					</MultiInput>
+				</fb:control>	
+			</fb:FilterGroupItem>	
+			<fb:FilterGroupItem
+				groupName="MultiComboBox"
+				name="TypeId" 
+				label="{i18n>filterGroupItemFilterLabelType}" 
+				visibleInFilterBar="true">
+				<fb:control>
+					<MultiComboBox 
+						id="filterTypetId" 
+						showSecondaryValues="true"
+						items="{
+							path: 'VH>/CharacteristicValueListSet',
+    						templateShareable: true, 
+							filters : {
+								path : 'CharactId',
+                				operator : 'EQ',
+                				value1 : 'YLO_SITE_TYPE'
+							}}">
+						<core:ListItem
+							key="{VH>CharactValueChar}" 
+							text="{VH>CharactValueDescription}"
+							additionalText ="{VH>CharactValueChar}"/>
+					</MultiComboBox>
+				</fb:control>	
+			</fb:FilterGroupItem>				
+			<fb:FilterGroupItem 
+				groupName="ComboBoxBoolean"
+				name="IsInactive"
+				label="{i18n>filterGroupItemFilterLabelIsInactive}"
+				visibleInFilterBar="true">
+				<fb:control>
+					<ComboBox
+						id="filterIsInactive" 
+						items="{mFilter>/active/List}"
+						selectedKey="{mFilter>/active/SelectedKey}">
+						<core:ListItem 
+							key="{mFilter>Id}" 
+							text="{mFilter>Text}"/>
+					</ComboBox>
+				</fb:control>
+			</fb:FilterGroupItem>
+			<fb:FilterGroupItem
+				groupName="MultiComboBox"
+				name="StatusInternalId" 
+				label="{i18n>filterGroupItemFilterLabelStatus}" 
+				visibleInFilterBar="true">
+				<fb:control>
+					<MultiComboBox 
+						id="filterStatusInternalId" 
+						showSecondaryValues="true"
+						items="{
+							path: 'VH>/UserStatusSet',
+    						templateShareable: true, 
+							filters : {
+								path : 'Object',
+                				operator : 'EQ',
+                				value1 : 'LoomaLocation'
+							},
+							sorter: { 
+								path: 'StatusDesc' 
+								}}">
+						<core:ListItem 
+							key="{VH>StatusInternalId}" 
+							text="{VH>StatusDesc}"
+							additionalText="{VH>StatusId}"/>
+					</MultiComboBox>
+				</fb:control>	
+			</fb:FilterGroupItem>			
+		</fb:filterGroupItems>
+	</fb:FilterBar>
+</core:FragmentDefinition >

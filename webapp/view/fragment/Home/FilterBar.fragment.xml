@@ -5,6 +5,7 @@
 	<fb:FilterBar 
 		id="homeFilterBar"
 		showClearOnFB="true" 
+		showFilterConfiguration="false"
 		useToolbar="false" 
 		search="onFiltersSearch" 
 		clear="onFiltersClear">

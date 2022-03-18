@@ -1,0 +1,99 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core" 
+	xmlns:fb="sap.ui.comp.filterbar"
+	xmlns:t="sap.ui.table">
+	<t:TreeTable 
+		id="treeTable" 
+		selectionMode="None" 
+		enableSelectAll="false" 
+		ariaLabelledBy="title" 
+		visibleRowCountMode="Auto"
+		rows="{ path:'mLocationHierarchy>/nodeRoot', 
+				parameters: { arrayNames:['children'], 
+				numberOfExpandedLevels : 1 } }">
+		<t:columns>
+			<t:Column 
+				hAlign="Center" 
+				width="25%" 
+				filterProperty="LocationName" 
+				autoResizable="true">
+				<Label text="{i18n>LocationHierarchyTblColHdrLocationName}"/>
+				<t:template>
+					<Link 
+						text="{mLocationHierarchy>LocationName}"
+						wrapping="true" 
+						press="onGetEquiForFuncLocPress"/>
+					<!--enabled="{= parseInt(${mLocationHierarchy>NbEquipment}) > 0 ? true : false}"/>-->
+				</t:template>
+			</t:Column>
+			<t:Column 
+				hAlign="Center" 
+				width="10%" 
+				filterProperty="LoomaTypeId" 
+				autoResizable="true">
+				<Label text="{i18n>LocationHierarchyTblColHdrType}"/>
+				<t:template>
+					<HBox>
+						<core:Icon src="sap-icon://functional-location" visible="{= ${mLocationHierarchy>LoomaTypeId} === 'SITE'}" class="sapUiTinyMarginEnd"/>
+						<core:Icon src="sap-icon://building" visible="{= ${mLocationHierarchy>LoomaTypeId} === 'BUILDING'}" class="sapUiTinyMarginEnd"/>
+						<core:Icon src="sap-icon://heatmap-chart" visible="{= ${mLocationHierarchy>LoomaTypeId} === 'FLOOR'}" class="sapUiTinyMarginEnd"/>
+						<core:Icon src="sap-icon://machine" visible="{= ${mLocationHierarchy>LoomaTypeId} === 'ROOM'}" class="sapUiTinyMarginEnd"/>
+						<Text text="{mLocationHierarchy>LoomaTypeDesc}"/>
+					</HBox>
+				</t:template>
+			</t:Column>
+			<t:Column 
+				width="10%" 
+				autoResizable="true" 
+				hAlign="Center">
+				<Label text="{i18n>LocationHierarchyTblColHdrStatus}"/>
+				<t:template>
+					<Text text="{mLocationHierarchy>UserStatusDesc}"/>
+				</t:template>
+			</t:Column>			
+			<t:Column 
+				width="10%" 
+				autoResizable="true" 
+				hAlign="Center">
+				<Label text="{i18n>LocationHierarchyTblColHdrActif}"/>
+				<t:template>
+					<core:Icon 
+						src="{= ${mLocationHierarchy>IsActive} ? 'sap-icon://accept' : 'sap-icon://decline'}" 
+						color="{= ${mLocationHierarchy>IsActive} ? 'Positive' : 'Negative'}"
+						tooltip="{= ${mLocationHierarchy>IsActive} ? ${i18n>yes} : ${i18n>no}}"/>
+				</t:template>
+			</t:Column>
+			<t:Column 
+				width="10%" 
+				autoResizable="true" 
+				hAlign="Center">
+				<Label text="{i18n>LocationHierarchyTblColHdrEquipmentVal}"/>
+				<t:template>
+					<Text text="{mLocationHierarchy>UserStatusDesc}"/>
+				</t:template>
+			</t:Column>
+			<t:Column 
+				width="10%" 
+				autoResizable="true" 
+				hAlign="Center">
+				<Label text="{i18n>LocationHierarchyTblColHdrEquipmentTot}"/>
+				<t:template>
+					<Text text="{mLocationHierarchy>UserStatusDesc}"/>
+				</t:template>
+			</t:Column>			
+			<t:Column 
+				width="10%" 
+				filterProperty="Sensitive" 
+				autoResizable="true" 
+				hAlign="Center">
+				<Label text="{i18n>LocationHierarchyTblColHdrSensible}"/>
+				<t:template>
+					<core:Icon 
+						src="{= ${mLocationHierarchy>Sensitive} ? 'sap-icon://warning' : null }" 
+						color="Negative"/>
+				</t:template>
+			</t:Column>
+		</t:columns>
+	</t:TreeTable>
+</core:FragmentDefinition>

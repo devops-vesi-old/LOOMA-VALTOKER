@@ -68,7 +68,14 @@
 				<ui:template>
 					<Text text="{ContractId}" />
 				</ui:template>
-			</ui:Column>					
+			</ui:Column>		
+			<ui:Column 
+				id="EquipmentsTovalidateCol" width="5%" resizable="false" hAlign="End" autoResizable="true">
+				<Text text="{i18n>siteTableColumnHeaderEquipmentstoValidate}"/>
+				<ui:template>
+					<Text text="{EquipmentsToValidate}" />
+				</ui:template>
+			</ui:Column>
 			<ui:Column 
 				id="EquipmentsTotalCol" width="5%" resizable="false" hAlign="End" autoResizable="true">
 				<Text text="{i18n>siteTableColumnHeaderEquipmentsTotal}"/>

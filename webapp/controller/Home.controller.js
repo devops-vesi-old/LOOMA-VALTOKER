@@ -364,6 +364,22 @@ sap.ui.define([
 
 			var oTableBinding = this.getView().byId("TableSite").getBinding("rows");
 			oTableBinding.filter(mainFilter, "Application");
-		}
+		},
+		
+		/*
+		 * Event on press button naviguate to detail
+		 */
+		onPressNavigateToDetail: function (oEvent) {
+			var oContext = oEvent.getSource().getBindingContext();
+			var oViewModel = this.getView().getModel("viewModel");
+			if (oContext) {
+				// oViewModel.setProperty("/delay", 0);
+				// oViewModel.setProperty("/busy", true);
+				var oRouter = this.fnGetRouter();
+				oRouter.navTo("Detail", {
+					SiteId: oContext ? encodeURIComponent(oContext.getProperty("SiteId")) : ""
+				});
+			}
+		},
 	});
 });

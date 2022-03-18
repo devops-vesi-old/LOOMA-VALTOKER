@@ -122,7 +122,7 @@
 				]
 			}, {
 				"name": "Detail",
-				"pattern": "detail/{ContractId}",
+				"pattern": "Detail/{SiteId}",
 				"target": [
 					"Detail"
 				]

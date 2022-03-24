@@ -123,7 +123,7 @@ sap.ui.define([
 		 */
 		_oDataError: function (oError) {
 			// var oViewModel = this.fnGetModel("viewModel");
-			var iOriginalDelay = this.getView().getBusyIndicatorDelay();
+			// var iOriginalDelay = this.getView().getBusyIndicatorDelay();
 			var sMsg;
 			// oViewModel.setProperty("/delay", iOriginalDelay);
 			// oViewModel.setProperty("/busy", false);

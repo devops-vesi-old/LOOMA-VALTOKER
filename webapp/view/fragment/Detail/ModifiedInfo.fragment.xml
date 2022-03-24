@@ -8,9 +8,6 @@
 		horizontalScrolling="false"
 		showHeader="false"
 		placement="Left" >
-		<!--<endButton>-->
-		<!--	<Button text="{i18n>ModifiedInfoPopoverBtnClose}" press="onClosePopoverPress" />-->
-		<!--</endButton>-->
 		<content>
 			<Table 
 				id="ModifiedInfoTable" 

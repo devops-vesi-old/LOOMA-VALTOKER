@@ -376,7 +376,7 @@ sap.ui.define([
 		 */
 		onPressNavigateToDetail: function (oEvent) {
 			var oContext = oEvent.getSource().getBindingContext();
-			var oViewModel = this.getView().getModel("viewModel");
+			// var oViewModel = this.getView().getModel("viewModel");
 			if (oContext) {
 				// oViewModel.setProperty("/delay", 0);
 				// oViewModel.setProperty("/busy", true);

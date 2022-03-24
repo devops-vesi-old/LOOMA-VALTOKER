@@ -9,13 +9,6 @@
 		selectionMode="MultiToggle" 
 		threshold="10"
 		visibleRowCountMode="Auto">
-		<!--<t:extension>-->
-		<!--	<OverflowToolbar style="Clear">-->
-		<!--		<Title id="sIdTitre" text="{i18n>EquipmentTblTitle}"/>-->
-		<!--		<Button tooltip="{i18n>btnTooltipToolbarDownloadEquipments}" icon="sap-icon://excel-attachment" press="onEquipmentsDownloadToExcelPress"-->
-		<!--			type="Transparent"/>-->
-		<!--	</OverflowToolbar>-->
-		<!--</t:extension>-->
 		<t:columns>
 			<t:Column 
 				hAlign="Center" 

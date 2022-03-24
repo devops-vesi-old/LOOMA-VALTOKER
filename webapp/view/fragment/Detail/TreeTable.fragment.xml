@@ -5,7 +5,7 @@
 	xmlns:t="sap.ui.table">
 	<t:TreeTable 
 		id="treeTable" 
-		selectionMode="None" 
+		selectionMode="MultiToggle" 
 		enableSelectAll="false" 
 		ariaLabelledBy="title" 
 		visibleRowCountMode="Auto"
@@ -23,7 +23,7 @@
 					<Link 
 						text="{mLocationHierarchy>LocationName}"
 						wrapping="true" 
-						press="onGetEquiForFuncLocPress"/>
+						press="onGetEquiForLocationPress"/>
 					<!--enabled="{= parseInt(${mLocationHierarchy>NbEquipment}) > 0 ? true : false}"/>-->
 				</t:template>
 			</t:Column>
@@ -68,9 +68,18 @@
 				width="10%" 
 				autoResizable="true" 
 				hAlign="Center">
+				<Label text="{i18n>LocationHierarchyTblColHdrEquipmentRem}"/>
+				<t:template>
+					<Text text="{= ${mDetailPage>/bSwitchDirect} ? ${mLocationHierarchy>EqRemainingDirect} : ${mLocationHierarchy>EqRemaining}}"/>
+				</t:template>
+			</t:Column>			
+			<t:Column 
+				width="10%" 
+				autoResizable="true" 
+				hAlign="Center">
 				<Label text="{i18n>LocationHierarchyTblColHdrEquipmentVal}"/>
 				<t:template>
-					<Text text="{mLocationHierarchy>UserStatusDesc}"/>
+					<Text text="{= ${mDetailPage>/bSwitchDirect} ? ${mLocationHierarchy>EqToValidateDirect} : ${mLocationHierarchy>EqToValidate}}"/>
 				</t:template>
 			</t:Column>
 			<t:Column 
@@ -79,7 +88,7 @@
 				hAlign="Center">
 				<Label text="{i18n>LocationHierarchyTblColHdrEquipmentTot}"/>
 				<t:template>
-					<Text text="{mLocationHierarchy>UserStatusDesc}"/>
+					<Text text="{= ${mDetailPage>/bSwitchDirect} ? ${mLocationHierarchy>EqTotalDirect} : ${mLocationHierarchy>EqTotal}}"/>
 				</t:template>
 			</t:Column>			
 			<t:Column 

@@ -1,0 +1,108 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core" 
+	xmlns:t="sap.ui.table"
+	xmlns:u="sap.ui.unified">
+	<t:Table 
+		id="EquipmentTable" 
+		rows="{mEquipment>/}"
+		selectionMode="MultiToggle" 
+		threshold="10"
+		visibleRowCountMode="Auto">
+		<!--<t:extension>-->
+		<!--	<OverflowToolbar style="Clear">-->
+		<!--		<Title id="sIdTitre" text="{i18n>EquipmentTblTitle}"/>-->
+		<!--		<Button tooltip="{i18n>btnTooltipToolbarDownloadEquipments}" icon="sap-icon://excel-attachment" press="onEquipmentsDownloadToExcelPress"-->
+		<!--			type="Transparent"/>-->
+		<!--	</OverflowToolbar>-->
+		<!--</t:extension>-->
+		<t:columns>
+			<t:Column 
+				hAlign="Center" 
+				width="10%" 
+				filterProperty="EquipmentId" 
+				sortProperty="EquipmentId">
+				<Label text="{i18n>EquipmentTblColHdrEquipmentName}"/>
+				<t:template>
+					<Text text="{mEquipment>EquipmentId}"/>
+				</t:template>
+			</t:Column>			
+			<t:Column 
+				hAlign="Left" 
+				width="10%" 
+				filterProperty="EquipmentName" 
+				sortProperty="EquipmentName">
+				<Label text="{i18n>EquipmentTblColHdrEquipmentName}"/>
+				<t:template>
+					<Text text="{mEquipment>EquipmentName}"/>
+				</t:template>
+			</t:Column>
+			<t:Column 
+				hAlign="Left" 
+				width="15%" 
+				filterProperty="LocationName" 
+				sortProperty="LocationName">
+				<Label text="{i18n>equiHierTblColHdrLocationName}"/>
+				<t:template>
+					<Text text="{mEquipment>LocationName}"/>
+				</t:template>
+			</t:Column>
+			<t:Column 
+				hAlign="Center" 
+				width="5%" 
+				filterProperty="Quantity" 
+				sortProperty="Quantity">
+				<Label text="{i18n>equiHierTblColHdrQuantity}"/>
+				<t:template>
+					<Text text="{mEquipment>Quantity}"/>
+				</t:template>
+			</t:Column>			
+			<t:Column 
+				hAlign="Left"
+				width="7%" 
+				filterProperty="UserStatusDesc" 
+				sortProperty="UserStatusDesc">
+				<Label text="{i18n>EquipmentTblColHdrUserStatus}"/>
+				<t:template>
+					<Text text="{mEquipment>UserStatusDesc}"/>
+				</t:template>
+			</t:Column>
+			<t:Column 
+				hAlign="Center"
+				width="7%">
+				<Label text="{i18n>EquipmentTblColHdrModification}"/>
+				<t:template>
+					<core:Icon 
+						src="sap-icon://activity-items"
+						tooltip="{i18n>EquipmentTableIconTooltipModification}"
+						color="Default"
+						press="onDisplayModifiedInfoPopoverPress"
+						visible="{path: 'mEquipment>ModifiedInfo', formatter: '.formatter.setVisibleModifiedInfoIcon'}"/>
+				</t:template>
+			</t:Column>
+			<t:Column 
+				hAlign="Center" 
+				width="5%">
+				<Label text="{i18n>EquipmentTblColHdrAction}"/>
+				<t:template>
+					<HBox width="100%" justifyContent="Center">
+						<HBox width="7rem" justifyContent="SpaceBetween">
+							<Button 
+								icon="sap-icon://accept"
+								tooltip="{i18n>EquipmentTableIconTooltipValidate}"
+								type="Accept"/>
+							<Button 
+								icon="sap-icon://decline"
+								tooltip="{i18n>EquipmentTableIconTooltipValidate}"
+								type="Reject"/>
+							<Button 
+								icon="sap-icon://cause"
+								tooltip="{i18n>EquipmentTableIconTooltipReturnTakeover}"
+								type="Emphasized"/>
+						</HBox>
+					</HBox>
+				</t:template>
+			</t:Column>
+		</t:columns>
+	</t:Table>
+</core:FragmentDefinition>

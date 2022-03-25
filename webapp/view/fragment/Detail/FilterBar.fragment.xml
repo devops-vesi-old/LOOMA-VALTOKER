@@ -9,7 +9,7 @@
 		useToolbar="false" 
 		search="onFiltersSearch" 
 		clear="onFiltersClear">
-		<fb:filterGroupItems>>
+		<fb:filterGroupItems>
 			<fb:FilterGroupItem 
 				groupName="Switch" 
 				name="Direct" 

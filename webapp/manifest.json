@@ -100,9 +100,11 @@
 			}
 		},
 		"resources": {
-			"css": [{
-				"uri": "css/style.css"
-			}]
+			"css": [
+				{
+					"uri": "css/style.css"
+				}
+			]
 		},
 		"routing": {
 			"config": {
@@ -114,19 +116,22 @@
 				"controlId": "app",
 				"clearControlAggregation": false
 			},
-			"routes": [{
-				"name": "Home",
-				"pattern": "",
-				"target": [
-					"Home"
-				]
-			}, {
-				"name": "Detail",
-				"pattern": "Detail/{SiteId}",
-				"target": [
-					"Detail"
-				]
-			}],
+			"routes": [
+				{
+					"name": "Home",
+					"pattern": "",
+					"target": [
+						"Home"
+					]
+				},
+				{
+					"name": "Detail",
+					"pattern": "Detail/{SiteId}",
+					"target": [
+						"Detail"
+					]
+				}
+			],
 			"targets": {
 				"Home": {
 					"viewName": "Home"
@@ -136,5 +141,9 @@
 				}
 			}
 		}
+	},
+	"sap.platform.abap": {
+		"uri": "/sap/bc/ui5_ui5/sap/zfioac4_valpec/webapp",
+		"_version": "1.1.0"
 	}
 }

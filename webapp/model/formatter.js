@@ -13,7 +13,10 @@ sap.ui.define([],
 		 */
 		setTypeDescription: function (typeId) {
 			var oTypeDesc = this.fnGetModel("mTypeDesc");
-			var sDescription = oTypeDesc?.getData()[typeId];
+			if (!oTypeDesc || !oTypeDesc.getData) {
+				return "";
+			}
+			var sDescription = oTypeDesc.getData()[typeId];
 			if (sDescription && sDescription !== "") {
 				return sDescription;
 			}
@@ -28,7 +31,10 @@ sap.ui.define([],
 		 */
 		setStatusDescription: function (statusInternalId) {
 			var oStatusDesc = this.fnGetModel("mStatusDesc");
-			var sDescription = oStatusDesc?.getData()[statusInternalId];
+			if (!oStatusDesc || !oStatusDesc.getData) {
+				return "";
+			}
+			var sDescription = oStatusDesc.getData()[statusInternalId];
 			if (sDescription && sDescription !== "") {
 				return sDescription;
 			}
@@ -146,7 +152,7 @@ sap.ui.define([],
 		 * Set visibility of the modified info icon 
 		 */
 		setVisibleModifiedInfoIcon:function (aModifiedInfo) {
-			if (aModifiedInfo?.length > 0) {
+			if (aModifiedInfo && aModifiedInfo.length > 0) {
 				return true;
 			}	
 			return false;

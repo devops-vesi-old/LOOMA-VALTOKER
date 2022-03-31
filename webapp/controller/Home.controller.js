@@ -91,7 +91,7 @@ sap.ui.define([
 		},
 
 		/*
-		 * Called from method "_initFilter" to initialize Type Description model
+		 * Called from method "_initFilter" to initialize Location User Status Description model
 		 */
 		_initLocationStatusDesc: function () {
 			var mParams = {

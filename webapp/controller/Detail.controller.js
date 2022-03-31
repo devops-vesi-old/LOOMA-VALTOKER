@@ -23,6 +23,8 @@ sap.ui.define([
 		 */
 		onInit: function () {
 			this.fnGetRouter().getRoute("Detail").attachPatternMatched(this._onPatternMatched, this);
+			//Set model for formatter Status description
+			this._initEquipementStatusDesc();
 			this._initDetailPageModel();
 		},
 
@@ -34,6 +36,28 @@ sap.ui.define([
 			this._SiteId = decodeURIComponent(sObjectId);
 			this._bindTreeTable();
 
+		},
+
+		/*
+		 * Called from method "_initFilter" to initialize Equipement User Status Description model
+		 */
+		_initEquipementStatusDesc: function () {
+			var mParams = {
+				filters: [new Filter({
+					path: "Object",
+					operator: "EQ",
+					value1: "LoomaEquipment"
+				})],
+				success: function (oData) {
+					var oStatusDesc = {};
+					for (var idx in oData.results) {
+						var oLine = oData.results[idx];
+						oStatusDesc[oLine.StatusInternalId] = oLine.StatusDesc;
+					}
+					this.fnSetJSONModel(oStatusDesc, "mStatusDesc");
+				}.bind(this)
+			};
+			this.fnGetODataModel("VH").read("/UserStatusSet", mParams);
 		},
 		/*
 		 * Called from method "onInit" to initialize model mDetailPage 
@@ -122,11 +146,7 @@ sap.ui.define([
 		 * Common method called in all OData calls to parse backend errors and display on Message Dialog
 		 */
 		_oDataError: function (oError) {
-			// var oViewModel = this.fnGetModel("viewModel");
-			// var iOriginalDelay = this.getView().getBusyIndicatorDelay();
 			var sMsg;
-			// oViewModel.setProperty("/delay", iOriginalDelay);
-			// oViewModel.setProperty("/busy", false);
 			if (oError.responseText) {
 				var oInnerError = JSON.parse(oError.responseText).error.innererror;
 				if (oInnerError && oInnerError.errordetails && oInnerError.errordetails.length > 0) {
@@ -164,12 +184,6 @@ sap.ui.define([
 		_bindEquipmentTable: function (sLocationId, sLocationType) {
 			var aFilters = [],
 				sLocationFilter = "LocationId";
-			// oViewModel = this.fnGetModel("viewModel"),
-			// sDomainId = oViewModel.getProperty("/DomainId"),
-			// sFunctionId = oViewModel.getProperty("/FunctionId"),
-			// sFamilyId = oViewModel.getProperty("/FamilyId");
-			// oViewModel.setProperty("/bEquiListTableVisible", true);
-			// this.fnCallBusyIndicatorForEquiTable();
 			if (!this.fnGetModel("mDetailPage").getData().bSwitchDirect) {
 				switch (sLocationType) {
 				case "SITE":
@@ -187,22 +201,6 @@ sap.ui.define([
 				}
 			}
 			aFilters.push(new Filter(sLocationFilter, FilterOperator.EQ, sLocationId));
-			// if (sDomainId) {
-			// 	aFilters.push(new Filter("DomainId", FilterOperator.EQ, sDomainId));
-			// }
-			// if (sFunctionId) {
-			// 	aFilters.push(new Filter("FunctionId", FilterOperator.EQ, sFunctionId));
-			// }
-			// if (sFamilyId) {
-			// 	aFilters.push(new Filter("FamilyId", FilterOperator.EQ, sFamilyId));
-			// }
-			// this.byId("EquipmentTable").bindAggregation("rows", {
-			// 	path: "/EquipmentSet",
-			// 	filters: aFilters,
-			// 	parameters: {
-			// 		expand: "ModifiedInfo"
-			// 	}
-			// });
 
 			this.getOwnerComponent().getModel().read("/EquipmentSet", {
 				filters: aFilters,
@@ -222,6 +220,26 @@ sap.ui.define([
 			});
 		},
 
+		_ApplyEquipmentStatus: function (oEvent, sNewStatus) {
+			var oParameters = {
+				async: false,
+				success: function (oData, resp) {
+					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
+				}.bind(this),
+				error: function (oData, resp) {
+					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
+				}.bind(this)
+			};
+
+			var payload = {
+				Scope: "PEC",
+				EquipmentId: oEvent.getSource().getParent().getParent().getParent().getRowBindingContext().getObject().EquipmentId,
+				UserStatusId: sNewStatus
+			};
+
+			this.getOwnerComponent().getModel().create("/UserStatusSet", payload, oParameters);
+		},
+
 		//--------------------------------------------
 		// Event functions
 		//--------------------------------------------
@@ -231,11 +249,12 @@ sap.ui.define([
 		 */
 		onGetEquiForLocationPress: function (oEvent) {
 			// this.byId("filterBar").setFilterBarExpanded(false);
-			var oContext = oEvent.getSource().getBindingContext("mLocationHierarchy"),
-				sLocationId = oContext.getProperty("LocationId"),
-				sLocationType = oContext.getProperty("LoomaTypeId");
+			var oContext = oEvent.getSource().getBindingContext("mLocationHierarchy");
 
-			this._bindEquipmentTable(sLocationId, sLocationType);
+			this._sSelectedLocationId = oContext.getProperty("LocationId");
+			this._sSelectedLocationType = oContext.getProperty("LoomaTypeId");
+
+			this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
 		},
 
 		/*
@@ -270,6 +289,28 @@ sap.ui.define([
 
 			this.byId("ModifiedInfo").close();
 
+		},
+
+		/*
+		 * Method is called when press on equipment single button
+		 */
+		onApplyEquipmentStatus: function (oEvent) {
+
+			switch (oEvent.getSource().getType()) {
+			case "Accept": // Validated Status to apply
+				var sUserStatusId = "E0005";
+				break;
+
+			case "Emphasized": // Return to take over to apply
+				sUserStatusId = "E0008";
+				break;
+
+			case "Reject": // Deleted Status to apply
+				sUserStatusId = "E0006";
+				break;
+			}
+
+			this._ApplyEquipmentStatus(oEvent, sUserStatusId);
 		}
 	});
 

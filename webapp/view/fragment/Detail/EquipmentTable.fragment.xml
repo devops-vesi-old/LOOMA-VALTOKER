@@ -57,7 +57,7 @@
 				sortProperty="UserStatusDesc">
 				<Label text="{i18n>EquipmentTblColHdrUserStatus}"/>
 				<t:template>
-					<Text text="{mEquipment>UserStatusDesc}"/>
+					<Text text="{path: 'mEquipment>UserStatusId', formatter: '.formatter.setStatusDescription'}"/>
 				</t:template>
 			</t:Column>
 			<t:Column 
@@ -82,14 +82,17 @@
 						<HBox width="7rem" justifyContent="SpaceBetween">
 							<Button 
 								icon="sap-icon://accept"
+								press="onApplyEquipmentStatus"
 								tooltip="{i18n>EquipmentTableIconTooltipValidate}"
 								type="Accept"/>
 							<Button 
 								icon="sap-icon://decline"
+								press="onApplyEquipmentStatus"
 								tooltip="{i18n>EquipmentTableIconTooltipValidate}"
 								type="Reject"/>
 							<Button 
 								icon="sap-icon://cause"
+								press="onApplyEquipmentStatus"
 								tooltip="{i18n>EquipmentTableIconTooltipReturnTakeover}"
 								type="Emphasized"/>
 						</HBox>

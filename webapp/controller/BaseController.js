@@ -31,6 +31,28 @@ sap.ui.define([
 				return this.getOwnerComponent().getModel();
 			}
 			return this.getOwnerComponent().getModel(sName);
-		}
+		},
+		
+		/*
+		 * Called from method "_initFilter" to initialize User Status Description model
+		 */
+		_initStatusDesc: function (sObjectFilter) {
+			var mParams = {
+				filters: [new Filter({
+					path: "Object",
+					operator: "EQ",
+					value1: sObjectFilter
+				})],
+				success: function (oData) {
+					var oStatusDesc = {};
+					for (var idx in oData.results) {
+						var oLine = oData.results[idx];
+						oStatusDesc[oLine.StatusInternalId] = oLine.StatusDesc;
+					}
+					this.fnSetJSONModel(oStatusDesc, "mStatusDesc");
+				}.bind(this)
+			};
+			this.fnGetODataModel("VH").read("/UserStatusSet", mParams);
+		},
 	});
 });

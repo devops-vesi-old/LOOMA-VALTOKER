@@ -42,22 +42,7 @@ sap.ui.define([
 		 * Called from method "_initFilter" to initialize Equipement User Status Description model
 		 */
 		_initEquipementStatusDesc: function () {
-			var mParams = {
-				filters: [new Filter({
-					path: "Object",
-					operator: "EQ",
-					value1: "LoomaEquipment"
-				})],
-				success: function (oData) {
-					var oStatusDesc = {};
-					for (var idx in oData.results) {
-						var oLine = oData.results[idx];
-						oStatusDesc[oLine.StatusInternalId] = oLine.StatusDesc;
-					}
-					this.fnSetJSONModel(oStatusDesc, "mStatusDesc");
-				}.bind(this)
-			};
-			this.fnGetODataModel("VH").read("/UserStatusSet", mParams);
+			this._initStatusDesc("LoomaEquipment");
 		},
 		/*
 		 * Called from method "onInit" to initialize model mDetailPage 

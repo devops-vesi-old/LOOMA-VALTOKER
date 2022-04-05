@@ -53,6 +53,6 @@ sap.ui.define([
 				}.bind(this)
 			};
 			this.fnGetODataModel("VH").read("/UserStatusSet", mParams);
-		},
+		}
 	});
 });

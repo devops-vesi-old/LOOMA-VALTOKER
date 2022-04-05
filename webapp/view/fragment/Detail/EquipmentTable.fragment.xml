@@ -15,7 +15,7 @@
 				width="10%" 
 				filterProperty="EquipmentId" 
 				sortProperty="EquipmentId">
-				<Label text="{i18n>EquipmentTblColHdrEquipmentName}"/>
+				<Label text="{i18n>EquipmentTblColHdrEquipmentId}"/>
 				<t:template>
 					<Text text="{mEquipment>EquipmentId}"/>
 				</t:template>
@@ -35,7 +35,7 @@
 				width="15%" 
 				filterProperty="LocationName" 
 				sortProperty="LocationName">
-				<Label text="{i18n>equiHierTblColHdrLocationName}"/>
+				<Label text="{i18n>EquipmentTblColHdrLocationName}"/>
 				<t:template>
 					<Text text="{mEquipment>LocationName}"/>
 				</t:template>
@@ -45,7 +45,7 @@
 				width="5%" 
 				filterProperty="Quantity" 
 				sortProperty="Quantity">
-				<Label text="{i18n>equiHierTblColHdrQuantity}"/>
+				<Label text="{i18n>EquipmentTblColHdrQuantity}"/>
 				<t:template>
 					<Text text="{mEquipment>Quantity}"/>
 				</t:template>
@@ -83,17 +83,17 @@
 							<Button 
 								icon="sap-icon://accept"
 								press="onApplyEquipmentStatus"
-								tooltip="{i18n>EquipmentTableIconTooltipValidate}"
+								tooltip="{i18n>EquipmentTableButtonTooltipValidate}"
 								type="Accept"/>
 							<Button 
 								icon="sap-icon://decline"
 								press="onApplyEquipmentStatus"
-								tooltip="{i18n>EquipmentTableIconTooltipValidate}"
+								tooltip="{i18n>EquipmentTableButtonTooltipReject}"
 								type="Reject"/>
 							<Button 
 								icon="sap-icon://cause"
 								press="onApplyEquipmentStatus"
-								tooltip="{i18n>EquipmentTableIconTooltipReturnTakeover}"
+								tooltip="{i18n>EquipmentTableButtonTooltipReturnTakeover}"
 								type="Emphasized"/>
 						</HBox>
 					</HBox>

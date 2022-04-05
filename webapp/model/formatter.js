@@ -156,6 +156,17 @@ sap.ui.define([],
 				return true;
 			}	
 			return false;
+		},
+		
+		/*
+		 * Set property description depending id from backend
+		 */
+		setPropertyDescription:function(sIdProperty) {
+			if(!sIdProperty) {
+				return "";
+			}
+			return this.fnGetResourceBundle().getText("ModifiedInfoLbl" + sIdProperty);
+			
 		}
 	};
 

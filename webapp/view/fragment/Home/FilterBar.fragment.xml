@@ -103,9 +103,16 @@
 							path: 'VH>/UserStatusSet',
     						templateShareable: true, 
 							filters : {
-								path : 'Object',
-                				operator : 'EQ',
-                				value1 : 'LoomaLocation'
+								filters : [{
+									path : 'Object',
+	                				operator : 'EQ',
+	                				value1 : 'LoomaLocation'
+								},{
+									path : 'IsValPecFilterable',
+	                				operator : 'EQ',
+	                				value1 : true
+								}],
+								and: true
 							},
 							sorter: { 
 								path: 'StatusDesc' 

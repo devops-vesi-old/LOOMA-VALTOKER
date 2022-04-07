@@ -366,7 +366,7 @@ sap.ui.define([
 					this.fnSetJSONModel(oSite, "mSite");
 				}.bind(this),
 				error: function (oData) {
-					oSite = {
+					var oSite = {
 						count: 0,
 						list: []
 					};

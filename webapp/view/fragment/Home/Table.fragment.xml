@@ -8,79 +8,154 @@
 		selectionMode="None"
 		rowActionCount="1"
 		visibleRowCountMode="Auto"
-		rows="{/SiteSet}">
+		rows="{mSite>/list}">
+		<!--rows="{/SiteSet}">-->
+		<ui:extension>
+			<Toolbar class="sapMTBHeader-CTX">
+				<Title 
+					text="{i18n>SiteTableTitle} ({mSite>/count})" 
+					level="H2"
+					class="sapUiSmallMarginEnd"/>
+				<Button 
+					icon="sap-icon://action-settings"
+					press="onSitesTablePersonalizationPress"
+					tooltip="{i18n>siteTableBtnTooltipToolbarPersonalise}"
+					type="Transparent"/>
+				<ToolbarSpacer/>
+			</Toolbar>
+		</ui:extension>		
 		<ui:rowActionTemplate>
 			<ui:RowAction>
 				<ui:RowActionItem 
 					type="Navigation" 
-					press="onPressNavigateToDetail"/>
+					press="onPressNavigateToDetail">
+					<ui:customData>
+						<core:CustomData key="{mSite>SiteId}"/>
+					</ui:customData>
+				</ui:RowActionItem>
 			</ui:RowAction>
 		</ui:rowActionTemplate>
 		<ui:columns>
 			<ui:Column 
-				id="SiteIdCol" width="10%" resizable="false" hAlign="Begin" autoResizable="true">
+				id="SiteIdCol"
+				autoResizable="true"
+				hAlign="Begin"
+				resizable="false"
+				width="10%">
 				<Text text="{i18n>siteTableColumnHeaderSiteId}"/>
 				<ui:template>
-					<Text text="{SiteId}"/>
+					<Text text="{mSite>SiteId}"/>
 				</ui:template>
 			</ui:Column>
 			<ui:Column 
-				id="SiteNameCol" width="20%" resizable="false" hAlign="Begin" autoResizable="true">
+				id="SiteNameCol"
+				autoResizable="true"
+				hAlign="Begin"
+				resizable="false"
+				sortProperty="SiteName"
+				width="20%">
 				<Text text="{i18n>siteTableColumnHeaderSiteName}"/>
 				<ui:template>
-					<Text text="{SiteName}"/>
+					<Text text="{mSite>SiteName}"/>
 				</ui:template>
 			</ui:Column>
 			<ui:Column 
-				id="TypeIdCol" width="15%" resizable="false" hAlign="Begin" autoResizable="true">
+				id="TypeDescCol"
+				autoResizable="true"
+				hAlign="Begin"
+				resizable="false"
+				sortProperty="TypeDesc"
+				width="15%">
 				<Text text="{i18n>siteTableColumnHeaderType}"/>
 				<ui:template>
-					<Text text="{path: 'TypeId', formatter: '.formatter.setTypeDescription'}"/>
+					<Text text="{mSite>TypeDesc}"/>
 				</ui:template>
 			</ui:Column>	
 			<ui:Column 
-				id="StatusInternalIdCol" width="15%" resizable="false" hAlign="Begin" autoResizable="true">
+				id="StatusDescCol"
+				autoResizable="true"
+				hAlign="Begin"
+				resizable="false"
+				sortProperty="StatusDesc"
+				width="15%">
 				<Text text="{i18n>siteTableColumnHeaderStatus}"/>
 				<ui:template>
-					<Text text="{path: 'StatusInternalId', formatter: '.formatter.setStatusDescription'}"/>
+					<Text text="{mSite>StatusDesc}"/>
 				</ui:template>
 			</ui:Column>			
 			<ui:Column 
-				id="SensibleCol" width="5%" resizable="false" hAlign="Center" autoResizable="true">
+				id="SensibleCol"
+				autoResizable="true"
+				hAlign="Begin"
+				resizable="false"
+				sortProperty="Sensible"
+				width="5%">
 				<Text text="{i18n>siteTableColumnHeaderSensible}"/>
 				<ui:template>
-					<Text text="{= ${Sensible} ? ${i18n>yes} : ${i18n>no} }"/>
+					<Text text="{= ${mSite>Sensible} ? ${i18n>yes} : ${i18n>no} }"/>
 				</ui:template>
 			</ui:Column>
 			<ui:Column 
-				id="IsInactiveCol" width="5%" resizable="false" hAlign="Center" autoResizable="true">
+				id="IsInactiveCol"
+				autoResizable="true"
+				hAlign="Begin"
+				resizable="false"
+				width="5%">
 				<Text text="{i18n>siteTableColumnHeaderActiveInactive}"/>
 				<ui:template>
 					<core:Icon 
-						src="{= ${IsInactive} ? 'sap-icon://decline' : 'sap-icon://accept' }"
-						color="{= ${IsInactive} ? 'Negative' : 'Positive' }" 
-						tooltip="{= ${IsInactive} ? ${i18n>no} : ${i18n>yes} }"/>
+						src="{= ${mSite>IsInactive} ? 'sap-icon://decline' : 'sap-icon://accept' }"
+						color="{= ${mSite>IsInactive} ? 'Negative' : 'Positive' }" 
+						tooltip="{= ${mSite>IsInactive} ? ${i18n>no} : ${i18n>yes} }"/>
 				</ui:template>
 			</ui:Column>			
 			<ui:Column 
-				id="ContractIdCol" width="8%" resizable="false" hAlign="End" autoResizable="true">
+				id="ContractIdCol"
+				autoResizable="true"
+				hAlign="Begin"
+				resizable="false"
+				sortProperty="ContractId"
+				width="8%"
+				visible="false">
 				<Text text="{i18n>siteTableColumnHeaderContractId}"/>
 				<ui:template>
-					<Text text="{ContractId}" />
-				</ui:template>
-			</ui:Column>		
-			<ui:Column 
-				id="EquipmentsTovalidateCol" width="5%" resizable="false" hAlign="End" autoResizable="true">
-				<Text text="{i18n>siteTableColumnHeaderEquipmentsToValidate}"/>
-				<ui:template>
-					<Text text="{EquipmentsToValidate}" />
+					<Text text="{mSite>ContractId}" />
 				</ui:template>
 			</ui:Column>
 			<ui:Column 
-				id="EquipmentsTotalCol" width="5%" resizable="false" hAlign="End" autoResizable="true">
+				id="ContractNameCol"
+				autoResizable="true"
+				hAlign="Begin"
+				resizable="false"
+				sortProperty="ContractName"
+				width="15%">
+				<Text text="{i18n>siteTableColumnHeaderContractName}"/>
+				<ui:template>
+					<Text text="{mSite>ContractName}" />
+				</ui:template>
+			</ui:Column>			
+			<ui:Column 
+				id="EquipmentsToValidateCol"
+				autoResizable="true"
+				hAlign="Begin"
+				resizable="false"
+				sortProperty="EquipmentsToValidate"
+				width="5%">
+				<Text text="{i18n>siteTableColumnHeaderEquipmentsToValidate}"/>
+				<ui:template>
+					<Text text="{mSite>EquipmentsToValidate}" />
+				</ui:template>
+			</ui:Column>
+			<ui:Column 
+				id="EquipmentsTotalCol"
+				autoResizable="true"
+				hAlign="Begin"
+				resizable="false"
+				sortProperty="EquipmentsTotal"
+				width="5%">
 				<Text text="{i18n>siteTableColumnHeaderEquipmentsTotal}"/>
 				<ui:template>
-					<Text text="{EquipmentsTotal}" />
+					<Text text="{mSite>EquipmentsTotal}" />
 				</ui:template>
 			</ui:Column>					
 		</ui:columns>

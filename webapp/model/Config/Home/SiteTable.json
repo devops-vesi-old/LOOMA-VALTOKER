@@ -1,0 +1,50 @@
+[{
+	"columnKey": "SiteIdCol",
+	"text": "siteTableColumnHeaderSiteId",
+	"visible": true,
+	"index": 0
+}, {
+	"columnKey": "SiteNameCol",
+	"text": "siteTableColumnHeaderSiteName",
+	"visible": true,
+	"index": 1
+}, {
+	"columnKey": "TypeDescCol",
+	"text": "siteTableColumnHeaderType",
+	"visible": true,
+	"index": 2
+}, {
+	"columnKey": "StatusDescCol",
+	"text": "siteTableColumnHeaderStatus",
+	"visible": true,
+	"index": 3
+}, {
+	"columnKey": "SensibleCol",
+	"text": "siteTableColumnHeaderSensible",
+	"visible": true,
+	"index": 4
+}, {
+	"columnKey": "IsInactiveCol",
+	"text": "siteTableColumnHeaderActiveInactive",
+	"visible": true,
+	"index": 5
+}, {
+	"columnKey": "ContractNameCol",
+	"text": "siteTableColumnHeaderContractName",
+	"visible": true,
+	"index": 6
+}, {
+	"columnKey": "EquipmentsToValidateCol",
+	"text": "siteTableColumnHeaderEquipmentsToValidate",
+	"visible": true,
+	"index": 7
+}, {
+	"columnKey": "EquipmentsTotalCol",
+	"text": "siteTableColumnHeaderEquipmentsTotal",
+	"visible": true,
+	"index": 8
+}, {
+	"columnKey": "ContractIdCol",
+	"text": "siteTableColumnHeaderContractId",
+	"visible": false
+}]

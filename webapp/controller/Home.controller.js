@@ -18,6 +18,10 @@ sap.ui.define([
 		 * @memberOf com.vesi.zfioac4_valpec.view.Home
 		 */
 		onInit: function () {
+			//Set model for formatter Type description
+			this._initTypeDesc();
+			//Set model for formatter Status description
+			this._initLocationStatusDesc();
 			//Init local model for filters
 			this._initFilter();
 		},
@@ -39,12 +43,6 @@ sap.ui.define([
 			this._initFilterActive(oFilter);
 			//Set JSON model
 			this.fnSetJSONModel(oFilter, "mFilter");
-
-			//Set model for formatter Type description
-			this._initTypeDesc();
-			//Set model for formatter Status description
-			this._initLocationStatusDesc();
-
 			//Set Tokens model
 			this._initTokensModel();
 		},
@@ -134,11 +132,11 @@ sap.ui.define([
 			}
 			var aFilters = [];
 			var aFilterBarFilters = this.byId("homeFilterBar").getAllFilterItems();
-			for (var oLine of aFilterBarFilters) {
-				if (oLine.getGroupName() === "MultiInput") {
-					if (oFiltersToGet[id].indexOf(oLine.getName()) !== -1) {
-						for (var oToken of oLine.getControl().getTokens()) {
-							aFilters.push(new Filter(oLine.getName(), FilterOperator.EQ, oToken.getKey()));
+			for (var oFilter of aFilterBarFilters) {
+				if (oFilter.getGroupName() === "MultiInput") {
+					if (oFiltersToGet[id].indexOf(oFilter.getName()) !== -1) {
+						for (var oToken of oFilter.getControl().getTokens()) {
+							aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oToken.getKey()));
 						}
 					}
 				}
@@ -182,23 +180,23 @@ sap.ui.define([
 		_getFilters: function () {
 			var aFiltersAll = [];
 			var aFilterBarFilters = this.byId("homeFilterBar").getAllFilterItems();
-			for (var oLine of aFilterBarFilters) {
+			for (var oFilter of aFilterBarFilters) {
 				var aFilters = [];
-				switch (oLine.getGroupName()) {
+				switch (oFilter.getGroupName()) {
 				case ("MultiInput"):
-					for (var oToken of oLine.getControl().getTokens()) {
-						aFilters.push(new Filter(oLine.getName(), FilterOperator.EQ, oToken.getKey()));
+					for (var oToken of oFilter.getControl().getTokens()) {
+						aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oToken.getKey()));
 					}
 					break;
 
 				case ("ComboBoxBoolean"):
-					if (oLine.getControl().getSelectedKey() && oLine.getControl().getSelectedKey() !== "0") {
-						aFilters.push(new Filter(oLine.getName(), FilterOperator.EQ, oLine.getControl().getSelectedKey() === "true"));
+					if (oFilter.getControl().getSelectedKey() && oFilter.getControl().getSelectedKey() !== "0") {
+						aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oFilter.getControl().getSelectedKey() === "true"));
 					}
 					break;
 				case ("MultiComboBox"):
-					for (var oSelectedKey of oLine.getControl().getSelectedKeys()) {
-						aFilters.push(new Filter(oLine.getName(), FilterOperator.EQ, oSelectedKey));
+					for (var oSelectedKey of oFilter.getControl().getSelectedKeys()) {
+						aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oSelectedKey));
 					}
 					break;
 				}
@@ -352,22 +350,64 @@ sap.ui.define([
 				});
 			}
 
-			var oTableBinding = this.getView().byId("TableSite").getBinding("rows");
-			oTableBinding.filter(mainFilter, "Application");
+			// var oTableBinding = this.getView().byId("TableSite").getBinding("rows");
+			// oTableBinding.filter(mainFilter, "Application");
+
+			var mParams = {
+				urlParameters: {
+					$inlinecount: "allpages"
+				},
+				filters: [mainFilter],
+				success: function (oData) {
+					var oSite = {
+						count: oData.__count,
+						list: oData.results
+					};
+					this.fnSetJSONModel(oSite, "mSite");
+				}.bind(this),
+				error: function (oData) {
+					oSite = {
+						count: 0,
+						list: []
+					};
+					this.fnSetJSONModel(oSite, "mSite");
+				}
+			};
+			this.fnGetODataModel().read("/SiteSet", mParams);
+		},
+
+		/*
+		 * Event on Clear in filter bar
+		 */
+		onFiltersClear: function (oEvent) {
+			// Reset model for filters
+			this._initFilter();
+
+			// Reset MultiCombox
+			var aFilterBarFilters = this.byId("homeFilterBar").getAllFilterItems();
+			for (var oFilter of aFilterBarFilters) {
+				if (oFilter.getGroupName() === "MultiComboBox") {
+					oFilter.getControl().removeAllSelectedItems();
+				}
+			}
+		},
+
+		/*
+		 * Event on Personalization for Site Table
+		 */
+		onSitesTablePersonalizationPress: function () {
+			this._onTablePersonalizePress("/model/Config/Home/SiteTable.json", "TableSite");
 		},
 
 		/*
 		 * Event on press button naviguate to detail
 		 */
 		onPressNavigateToDetail: function (oEvent) {
-			var oContext = oEvent.getSource().getBindingContext();
-			// var oViewModel = this.getView().getModel("viewModel");
-			if (oContext) {
-				// oViewModel.setProperty("/delay", 0);
-				// oViewModel.setProperty("/busy", true);
+			var oCustomData = oEvent.getSource().getCustomData();
+			if (oCustomData) {
 				var oRouter = this.fnGetRouter();
 				oRouter.navTo("Detail", {
-					SiteId: oContext ? encodeURIComponent(oContext.getProperty("SiteId")) : ""
+					SiteId: oCustomData ? encodeURIComponent(oCustomData[0].getKey()) : ""
 				});
 			}
 		},

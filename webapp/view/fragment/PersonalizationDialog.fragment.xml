@@ -1,0 +1,25 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+    <P13nDialog 
+    	showReset="true" 
+    	showResetEnabled="{path: '/ShowResetEnabled'}" 
+    	ok="onPersonalizeOkPress" 
+    	cancel="onPersonalizeCancelPress"
+        reset="onPersonalizeResetPress">
+        <panels>
+            <P13nColumnsPanel 
+            	changeColumnsItems="onPersonalizeChangeColumnsItems"
+                items="{path: '/Items'}"
+                columnsItems="{path: '/ColumnsItems'}">
+                <items>
+                    <P13nItem columnKey="{columnKey}" text="{text}"/>
+                </items>
+                <columnsItems>
+                    <P13nColumnsItem 
+                    	columnKey="{columnKey}" 
+                    	index="{index}" 
+                    	visible="{visible}"/>
+                </columnsItems>
+            </P13nColumnsPanel>
+        </panels>
+    </P13nDialog>
+</core:FragmentDefinition>

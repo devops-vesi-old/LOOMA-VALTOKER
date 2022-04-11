@@ -132,11 +132,13 @@ sap.ui.define([
 			}
 			var aFilters = [];
 			var aFilterBarFilters = this.byId("homeFilterBar").getAllFilterItems();
-			for (var oFilter of aFilterBarFilters) {
-				if (oFilter.getGroupName() === "MultiInput") {
-					if (oFiltersToGet[id].indexOf(oFilter.getName()) !== -1) {
-						for (var oToken of oFilter.getControl().getTokens()) {
-							aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oToken.getKey()));
+			for (var idx in aFilterBarFilters) {
+				var oToken = aFilterBarFilters[idx];
+				if (oToken.getGroupName() === "MultiInput") {
+					if (oToken[id].indexOf(oToken.getName()) !== -1) {
+						var aTokens = oToken.getControl().getTokens();
+						for (var iTok in aTokens) {
+							aFilters.push(new Filter(aTokens[iTok].getName(), FilterOperator.EQ, oToken.getKey()));
 						}
 					}
 				}
@@ -153,7 +155,7 @@ sap.ui.define([
 		 * Method to get filters for VH from others VH
 		 */
 		_searchData: function (oSearchConfig) {
-			let oBinding = oSearchConfig.oSrc.getBinding("items");
+			var oBinding = oSearchConfig.oSrc.getBinding("items");
 			// Additionnal "search" parameter for odata request
 			this._setBindingCustomParams(oBinding, oSearchConfig.oEvent.getParameter("value"), oSearchConfig.oSrc.getModel());
 			oBinding.filter(oSearchConfig.aFilters, "Application");
@@ -172,44 +174,6 @@ sap.ui.define([
 					}
 				});
 			}
-		},
-
-		/*
-		 * Get filters from home filter bar
-		 */
-		_getFilters: function () {
-			var aFiltersAll = [];
-			var aFilterBarFilters = this.byId("homeFilterBar").getAllFilterItems();
-			for (var oFilter of aFilterBarFilters) {
-				var aFilters = [];
-				switch (oFilter.getGroupName()) {
-				case ("MultiInput"):
-					for (var oToken of oFilter.getControl().getTokens()) {
-						aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oToken.getKey()));
-					}
-					break;
-
-				case ("ComboBoxBoolean"):
-					if (oFilter.getControl().getSelectedKey() && oFilter.getControl().getSelectedKey() !== "0") {
-						aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oFilter.getControl().getSelectedKey() === "true"));
-					}
-					break;
-				case ("MultiComboBox"):
-					for (var oSelectedKey of oFilter.getControl().getSelectedKeys()) {
-						aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oSelectedKey));
-					}
-					break;
-				}
-				if (aFilters.length > 0) {
-					aFiltersAll.push(new Filter(aFilters, false));
-				}
-			}
-
-			if (aFiltersAll.length > 0) {
-				return aFiltersAll;
-			}
-			return false;
-
 		},
 
 		//--------------------------------------------
@@ -261,7 +225,8 @@ sap.ui.define([
 			}
 
 			var aTokens = oEvent.getParameter(sProperty);
-			for (var oToken of aTokens) {
+			for (var iTok in aTokens) {
+				var oToken = aTokens[iTok];
 				var iIndexLine = aModelTokensData.map(function (a) {
 					return a.Id;
 				}).indexOf(oToken.getKey());
@@ -342,16 +307,13 @@ sap.ui.define([
 		 * Event on Search in filter bar
 		 */
 		onFiltersSearch: function (oEvent) {
-			var aFilters = this._getFilters();
+			var aFilters = this._fnGetFilters("homeFilterBar");
 			if (aFilters.length > 0) {
 				var mainFilter = new Filter({
 					filters: aFilters,
 					and: true
 				});
 			}
-
-			// var oTableBinding = this.getView().byId("TableSite").getBinding("rows");
-			// oTableBinding.filter(mainFilter, "Application");
 
 			var mParams = {
 				urlParameters: {
@@ -385,7 +347,8 @@ sap.ui.define([
 
 			// Reset MultiCombox
 			var aFilterBarFilters = this.byId("homeFilterBar").getAllFilterItems();
-			for (var oFilter of aFilterBarFilters) {
+			for (var iTok in aFilterBarFilters) {
+				var oFilter = aFilterBarFilters[iTok];
 				if (oFilter.getGroupName() === "MultiComboBox") {
 					oFilter.getControl().removeAllSelectedItems();
 				}
@@ -410,6 +373,6 @@ sap.ui.define([
 					SiteId: oCustomData ? encodeURIComponent(oCustomData[0].getKey()) : ""
 				});
 			}
-		},
+		}
 	});
 });

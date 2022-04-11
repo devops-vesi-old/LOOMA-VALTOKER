@@ -9,7 +9,6 @@
 		rowActionCount="1"
 		visibleRowCountMode="Auto"
 		rows="{mSite>/list}">
-		<!--rows="{/SiteSet}">-->
 		<ui:extension>
 			<Toolbar class="sapMTBHeader-CTX">
 				<Title 

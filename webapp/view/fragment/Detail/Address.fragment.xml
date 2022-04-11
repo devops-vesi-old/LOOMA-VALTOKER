@@ -1,0 +1,28 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core"
+	xmlns:f="sap.f">
+	<ScrollContainer
+		class="sapUiNoContentPadding">
+		<f:GridContainer 
+			class="sapUiSmallMargin"
+			snapToRow="true">
+			<f:layout>
+				<f:GridContainerSettings rowSize="2rem" columnSize="2rem" gap="8px"/>
+			</f:layout>
+			<f:layoutXS>
+				<f:GridContainerSettings rowSize="1.5rem" columnSize="1.5rem" gap="8px"/>
+			</f:layoutXS>
+			<QuickViewCard>
+				<layoutData>
+					<f:GridContainerItemLayoutData rows="3" columns="6" />
+				</layoutData>			
+				<QuickViewPage>
+					<QuickViewGroup>
+						<QuickViewGroupElement value="{mSite>/SiteAddress}"/>
+					</QuickViewGroup>
+				</QuickViewPage>
+			</QuickViewCard>
+		</f:GridContainer>
+	</ScrollContainer>
+</core:FragmentDefinition>				

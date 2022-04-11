@@ -9,8 +9,26 @@
 	<semantic:SemanticPage>
 		<!-- Title Heading-->
 		<semantic:titleHeading>
-			<Title text="{i18n>title}"/>
+			<HBox>
+				<Title 
+					class="sapUiSmallMarginEnd"
+					text="{mSite>/SiteName}"/>
+				<Text 
+					class="sapUiSmallMarginEnd"
+					text="{mSite>/TypeDesc}"/>
+				<Text 
+					class="sapUiSmallMarginEnd"
+					text="({mSite>/SiteId})"/>
+				<!--<core:Icon-->
+			</HBox>
+
 		</semantic:titleHeading>
+		<!-- Header Expanded -->
+		<semantic:titleExpandedContent>
+			<core:Fragment 
+				fragmentName="com.vesi.zfioac4_valpec.view.fragment.Detail.TitleExpandedContent" 
+				type="XML"/>
+		</semantic:titleExpandedContent>
 		<!-- Header Content -->
 		<semantic:headerContent>
 			<core:Fragment 

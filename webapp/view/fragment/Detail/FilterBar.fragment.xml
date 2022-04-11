@@ -9,7 +9,98 @@
 		useToolbar="false" 
 		search="onFiltersSearch" 
 		clear="onFiltersClear">
-		<fb:filterGroupItems>
+		<fb:filterGroupItems>		
+			<fb:FilterGroupItem
+				groupName="MultiComboBox"
+				name="DomainId" 
+				label="{i18n>filterGroupItemFilterLabelDomain}" 
+				visibleInFilterBar="true">
+				<fb:control>
+					<MultiComboBox 
+						id="filterDomainId" 
+						showSecondaryValues="true"
+						items="{
+							path:'mVH>/Domain',
+							sorter: {path: 'Desc'}}">
+						<core:ListItem
+							key="{mVH>Id}" 
+							text="{mVH>Desc}"
+							additionalText ="{mVH>Id}"/>
+					</MultiComboBox>
+				</fb:control>	
+			</fb:FilterGroupItem>
+			<fb:FilterGroupItem
+				groupName="MultiComboBox"
+				name="FunctionId" 
+				label="{i18n>filterGroupItemFilterLabelFunction}" 
+				visibleInFilterBar="true">
+				<fb:control>
+					<MultiComboBox 
+						id="filterFunctionId" 
+						showSecondaryValues="true"
+						items="{
+							path:'mVH>/Function',
+							sorter: {path: 'Desc'}}">
+						<core:ListItem
+							key="{mVH>Id}" 
+							text="{mVH>Desc}"
+							additionalText ="{mVH>Id}"/>
+					</MultiComboBox>
+				</fb:control>	
+			</fb:FilterGroupItem>	
+			<fb:FilterGroupItem
+				groupName="MultiComboBox"
+				name="FamilyId" 
+				label="{i18n>filterGroupItemFilterLabelFamily}" 
+				visibleInFilterBar="true">
+				<fb:control>
+					<MultiComboBox 
+						id="filterFamilyId" 
+						showSecondaryValues="true"
+						items="{
+							path:'mVH>/Family',
+							sorter: {path: 'Desc'}}">
+						<core:ListItem
+							key="{mVH>Id}" 
+							text="{mVH>Desc}"
+							additionalText ="{mVH>Id}"/>
+					</MultiComboBox>
+				</fb:control>	
+			</fb:FilterGroupItem>
+			<fb:FilterGroupItem
+				groupName="MultiComboBox"
+				name="UserStatusId"
+				label="{i18n>filterGroupItemFilterLabelStatus}" 
+				visibleInFilterBar="true">
+				<fb:control>
+					<MultiComboBox 
+						id="filterStatusInternalId" 
+						showSecondaryValues="true"
+						items="{
+							path: 'VH>/UserStatusSet',
+    						templateShareable: true, 
+							filters : {
+								filters : [{
+									path : 'Object',
+	                				operator : 'EQ',
+	                				value1 : 'LoomaEquipment'
+								},{
+									path : 'IsValPecFilterable',
+	                				operator : 'EQ',
+	                				value1 : true
+								}],
+								and: true
+							},
+							sorter: { 
+								path: 'StatusDesc' 
+								}}">
+						<core:ListItem 
+							key="{VH>StatusInternalId}" 
+							text="{VH>StatusDesc}"
+							additionalText="{VH>StatusId}"/>
+					</MultiComboBox>
+				</fb:control>	
+			</fb:FilterGroupItem>			
 			<fb:FilterGroupItem 
 				groupName="Switch" 
 				name="Direct" 
@@ -22,6 +113,6 @@
 							customTextOff="{i18n>no}"/>
 					</fb:control>
 			</fb:FilterGroupItem>
-		</fb:filterGroupItems>
+		</fb:filterGroupItems>		
 	</fb:FilterBar>
 </core:FragmentDefinition >

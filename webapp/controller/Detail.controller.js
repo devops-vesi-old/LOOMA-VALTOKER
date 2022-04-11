@@ -26,6 +26,10 @@ sap.ui.define([
 			//Set model for formatter Status description
 			this._initEquipementStatusDesc();
 			this._initDetailPageModel();
+			//Set models for VHs
+			this._initVHModels();
+			//Set icon tab bar density
+			this.byId("SiteIconTabBar").setHeaderMode("Inline");
 		},
 
 		//--------------------------------------------
@@ -33,17 +37,62 @@ sap.ui.define([
 		//--------------------------------------------
 		_onPatternMatched: function (oEvent) {
 			var sObjectId = oEvent.getParameter("arguments").SiteId;
+			this.fnSetJSONModel({}, "mSite");
+			this.fnSetJSONModel({}, "mLocationHierarchy");
+			this.fnSetJSONModel({}, "mEquipment");
 			this._SiteId = decodeURIComponent(sObjectId);
+			this._bindSiteData();
 			this._bindTreeTable();
-
 		},
 
 		/*
-		 * Called from method "_initFilter" to initialize Equipement User Status Description model
+		 * Called from method "onInit" to initialize Equipement User Status Description model
 		 */
 		_initEquipementStatusDesc: function () {
 			this._initStatusDesc("LoomaEquipment");
 		},
+
+		/*
+		 * Called from method "onInit" to initialize VHs model
+		 */
+		_initVHModels: function () {
+			var mParams = {
+				success: function (oData) {
+					var oVH = {
+						Domain: {},
+						Function: {},
+						Family: {}
+					};
+					var aData = oData.results;
+					for (var idx in aData) {
+						//Manage Domain
+						if (!oVH.Domain[aData[idx].DomainId]) {
+							oVH.Domain[aData[idx].DomainId] = {
+								Id: aData[idx].DomainId,
+								Desc: aData[idx].DomainDesc
+							};
+						}
+						//Manage Function
+						if (!oVH.Function[aData[idx].FunctionId]) {
+							oVH.Function[aData[idx].FunctionId] = {
+								Id: aData[idx].FunctionId,
+								Desc: aData[idx].FunctionDesc
+							};
+						}
+						//Manage Family
+						oVH.Family[aData[idx].FamilyId] = {
+							Id: aData[idx].FamilyId,
+							Desc: aData[idx].FamilyDesc
+						};
+					}
+					var oVHJsonModel = new JSONModel(oVH);
+					oVHJsonModel.setSizeLimit(aData.length ? aData.length : oVHJsonModel.iSizeLimit);
+					this.fnSetModel(oVHJsonModel, "mVH");
+				}.bind(this)
+			};
+			this.fnGetODataModel("VH").read("/FamilySet", mParams);
+		},
+
 		/*
 		 * Called from method "onInit" to initialize model mDetailPage 
 		 */
@@ -75,6 +124,8 @@ sap.ui.define([
 						LocationName: oNodeIn.LocationName,
 						DrillState: oNodeIn.DrillState,
 						Sensitive: oNodeIn.Sensitive,
+						IsActive : oNodeIn.IsActive,
+						IsCreatedDuringPec : oNodeIn.IsCreatedDuringPec,
 						UserStatusDesc: oNodeIn.UserStatusDesc,
 						EqTotal: oNodeIn.EquipmentNumber.Total,
 						EqTotalDirect: oNodeIn.EquipmentNumber.TotalDirect,
@@ -103,7 +154,61 @@ sap.ui.define([
 		},
 
 		/*
-		 * Method is used to fetch Equipment hierarchy for a functional location
+		 * Method is used to fetch site Information
+		 */
+		_bindSiteData: function () {
+			var sRequest = this.getOwnerComponent().getModel().createKey("/SiteSet", {
+				SiteId: this._SiteId
+			});
+
+			this.getOwnerComponent().getModel().read(sRequest, {
+				urlParameters: {
+					"$expand": "SiteContact"
+				},
+				success: function (oData, response) {
+					oData.SiteContact = oData.SiteContact.results;
+					oData.SiteContactCount = oData.SiteContact.length;
+					oData.SiteAddress = this._fnSetSiteAddress(oData);
+					this.fnSetJSONModel(oData, "mSite");
+				}.bind(this),
+				error: function (oError) {
+					this.fnSetJSONModel({}, "mSite");
+					this._oDataError(oError);
+				}.bind(this)
+			});
+		},
+
+		/*
+		 * Method is used to generate site address to display from site Information
+		 */
+		_fnSetSiteAddress: function (oData) {
+			var sAddress = "";
+			if (oData.AddressStreetNo !== "") {
+				sAddress = oData.AddressStreetNo + " ";
+			}
+			if (oData.AddressStreet !== "") {
+				sAddress = sAddress + oData.AddressStreet + "\r\n";
+			}
+			if (oData.AddressStreet2 !== "") {
+				sAddress = sAddress + oData.AddressStreet2 + "\r\n";
+			}
+			if (oData.AddressPostalCode !== "") {
+				sAddress = sAddress + oData.AddressPostalCode + " ";
+				if (oData.AddressCity === "") {
+					sAddress = sAddress + "\r\n";
+				}
+			}
+			if (oData.AddressCity !== "") {
+				sAddress = sAddress + oData.AddressCity + "\r\n";
+			}
+			if (oData.AddressCountryId !== "") {
+				sAddress = sAddress + oData.AddressCountryId;
+			}
+			return sAddress;
+		},
+
+		/*
+		 * Method is used to fetch Location hierarchy for a Site
 		 * Once data is fetched,_transformTreeData is called to tranform data to tree and bound to tree table
 		 */
 		_bindTreeTable: function (aTableFilters) {
@@ -120,6 +225,7 @@ sap.ui.define([
 				success: function (oData, response) {
 					var aNodes = this._transformTreeData(oData.results);
 					this._setTreeModelData(aNodes);
+					this._setLocationDescription(oData.results);
 				}.bind(this),
 				error: function (oError) {
 					this._oDataError(oError);
@@ -163,6 +269,32 @@ sap.ui.define([
 		},
 
 		/*
+		 * Called from method "_bindTreeTable" to set location description for equipment
+		 */
+		_setLocationDescription: function (aLocation) {
+			var oModel = {};
+
+			for (var iLoc in aLocation) {
+				var oLocation = aLocation[iLoc];
+				if (!oModel[oLocation.LocationId]) {
+					oModel[oLocation.LocationId] = {
+						LocationId: oLocation.LocationId,
+						LocationName: oLocation.LocationName,
+						SuperiorLocationId: oLocation.SuperiorLocationId
+					};
+				}
+
+				//Concatenate Superior Location Names with current Location Name
+				if (oLocation.SuperiorLocationId !== "") {
+						var oSuperiorLocation = oModel[oLocation.SuperiorLocationId];
+					oModel[oLocation.LocationId].LocationName = oSuperiorLocation.LocationName + "/" + oModel[oLocation.LocationId].LocationName;
+				}
+			}
+
+			this.fnSetJSONModel(oModel, "mLocationDescription");
+		},
+
+		/*
 		 * Method is called from method "onGetEquiForFuncLocPress".
 		 * It fetched equipments for selected functional location and bind it to Equipment table
 		 */
@@ -186,21 +318,34 @@ sap.ui.define([
 				}
 			}
 			aFilters.push(new Filter(sLocationFilter, FilterOperator.EQ, sLocationId));
-
+			var aFilterBarFilters = this._fnGetFilters("detailFilterBar");
+			if (aFilterBarFilters && aFilterBarFilters.length > 0) {
+				aFilters = aFilters.concat(aFilterBarFilters);
+			}
 			this.getOwnerComponent().getModel().read("/EquipmentSet", {
 				filters: aFilters,
 				urlParameters: {
-					"$expand": "ModifiedInfo"
+					$expand: "ModifiedInfo",
+					$inlinecount: "allpages"
 				},
 				success: function (oData, response) {
-					var aModel = oData.results;
-					for (var i in aModel) {
-						aModel[i].ModifiedInfo = aModel[i].ModifiedInfo.results;
+					var oEquipment = {
+						count: oData.__count,
+						list: oData.results
+					};
+					for (var i in oEquipment.list) {
+						var oLine = oEquipment.list[i];
+						oLine.CompleteLocationName = this.fnGetModel("mLocationDescription").getData()[oLine.LocationId].LocationName;
+						oLine.ModifiedInfo = oLine.ModifiedInfo.results;
 					}
-					this.fnSetJSONModel(aModel, "mEquipment");
+					this.fnSetJSONModel(oEquipment, "mEquipment");
 				}.bind(this),
 				error: function (oError) {
-					this._oDataError(oError);
+					var oEquipment = {
+						count: 0,
+						list: []
+					};
+					this.fnSetJSONModel(oEquipment, "mEquipment");
 				}.bind(this)
 			});
 		},
@@ -296,6 +441,31 @@ sap.ui.define([
 			}
 
 			this._ApplyEquipmentStatus(oEvent, sUserStatusId);
+		},
+
+		/*
+		 * Event on Search in filter bar
+		 */
+		onFiltersSearch: function (oEvent) {
+			var aFilters = this._fnGetFilters("detailFilterBar");
+			this._bindTreeTable(aFilters);
+		},
+
+		/*
+		 * Event on Clear in filter bar
+		 */
+		onFiltersClear: function (oEvent) {
+			// Reset model for filters
+			this._initDetailPageModel();
+
+			// Reset MultiCombox
+			var aFilterBarFilters = this.byId("detailFilterBar").getAllFilterItems();
+			for (var iFil in aFilterBarFilters) {
+				var oFilter = aFilterBarFilters[iFil];
+				if (oFilter.getGroupName() === "MultiComboBox") {
+					oFilter.getControl().removeAllSelectedItems();
+				}
+			}
 		}
 	});
 

@@ -1,1 +1,4 @@
 /* Enter your custom styles here */
+.customIconTabBar>.sapMITBContainerContent>.sapMITBContent {
+    padding: 0 !important;
+}

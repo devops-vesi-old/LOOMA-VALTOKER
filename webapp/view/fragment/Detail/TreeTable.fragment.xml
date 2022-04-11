@@ -20,11 +20,25 @@
 				autoResizable="true">
 				<Label text="{i18n>LocationHierarchyTblColHdrLocationName}"/>
 				<t:template>
-					<Link 
-						text="{mLocationHierarchy>LocationName}"
-						wrapping="true" 
-						press="onGetEquiForLocationPress"/>
-					<!--enabled="{= parseInt(${mLocationHierarchy>NbEquipment}) > 0 ? true : false}"/>-->
+					<HBox>
+						<Link
+							class="sapUiSmallMarginEnd"
+							text="{mLocationHierarchy>LocationName}"
+							wrapping="true" 
+							press="onGetEquiForLocationPress"
+							enabled="{
+								parts:[
+									'mDetailPage>/bSwitchDirect',
+									'mLocationHierarchy>EqTotalDirect',
+									'mLocationHierarchy>EqTotal'
+									],
+								formatter :'.formatter.fnSetLinkEnabled'}"/>
+						<core:Icon 
+							src="sap-icon://add-equipment"
+							tooltip="{i18n>LocationHierarchyTableIconTooltipCreatedDuringPEC}"
+							color="Positive"
+							visible="{mLocationHierarchy>IsCreatedDuringPec}"/>	
+						</HBox>
 				</t:template>
 			</t:Column>
 			<t:Column 

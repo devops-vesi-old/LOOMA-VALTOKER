@@ -5,10 +5,24 @@
 	xmlns:u="sap.ui.unified">
 	<t:Table 
 		id="EquipmentTable" 
-		rows="{mEquipment>/}"
+		rows="{mEquipment>/list}"
 		selectionMode="MultiToggle" 
 		threshold="10"
 		visibleRowCountMode="Auto">
+		<t:extension>
+			<Toolbar class="sapMTBHeader-CTX">
+				<Title 
+					text="{i18n>EquipmentTableTitle} ({mEquipment>/count})" 
+					level="H2"
+					class="sapUiSmallMarginEnd"/>
+				<Button 
+					icon="sap-icon://action-settings"
+					press="onSitesTablePersonalizationPress"
+					tooltip="{i18n>siteTableBtnTooltipToolbarPersonalise}"
+					type="Transparent"/>
+				<ToolbarSpacer/>
+			</Toolbar>
+		</t:extension>			
 		<t:columns>
 			<t:Column 
 				hAlign="Center" 
@@ -33,11 +47,10 @@
 			<t:Column 
 				hAlign="Left" 
 				width="15%" 
-				filterProperty="LocationName" 
-				sortProperty="LocationName">
+				sortProperty="CompleteLocationName">
 				<Label text="{i18n>EquipmentTblColHdrLocationName}"/>
 				<t:template>
-					<Text text="{mEquipment>LocationName}"/>
+					<Text text="{mEquipment>CompleteLocationName}"/>
 				</t:template>
 			</t:Column>
 			<t:Column 
@@ -65,12 +78,20 @@
 				width="7%">
 				<Label text="{i18n>EquipmentTblColHdrModification}"/>
 				<t:template>
-					<core:Icon 
-						src="sap-icon://activity-items"
-						tooltip="{i18n>EquipmentTableIconTooltipModification}"
-						color="Default"
-						press="onDisplayModifiedInfoPopoverPress"
-						visible="{path: 'mEquipment>ModifiedInfo', formatter: '.formatter.setVisibleModifiedInfoIcon'}"/>
+					<HBox width="100%" justifyContent="Center">
+						<HBox width="4rem" justifyContent="SpaceBetween">
+							<core:Icon 
+								src="{= ${mEquipment>IsCreatedDuringPec} ? 'sap-icon://add-equipment' : none}"
+								tooltip="{i18n>EquipmentTableIconTooltipCreatedDuringPEC}"
+								color="Positive"/>							
+							<core:Icon 
+								src="sap-icon://activity-items"
+								tooltip="{i18n>EquipmentTableIconTooltipModification}"
+								color="Default"
+								press="onDisplayModifiedInfoPopoverPress"
+								visible="{path: 'mEquipment>ModifiedInfo', formatter: '.formatter.setVisibleModifiedInfoIcon'}"/>
+						</HBox>
+					</HBox>
 				</t:template>
 			</t:Column>
 			<t:Column 

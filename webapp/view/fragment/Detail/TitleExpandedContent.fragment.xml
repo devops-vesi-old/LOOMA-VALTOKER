@@ -1,0 +1,27 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core">
+	<IconTabBar
+		class="customIconTabBar"
+		expanded="false"
+		id="SiteIconTabBar"
+		tabDensityMode="Compact">
+		<items>
+			<IconTabFilter 
+				icon="sap-icon://map"
+				text="{i18n>IconTabFilterAddress}">
+				<core:Fragment 
+					fragmentName="com.vesi.zfioac4_valpec.view.fragment.Detail.Address" 
+					type="XML"/>
+			</IconTabFilter>	
+			<IconTabFilter 
+				count="{mSite>/SiteContactCount}"
+				icon="sap-icon://contacts"
+				text="{i18n>IconTabFilterContact}">
+				<core:Fragment 
+					fragmentName="com.vesi.zfioac4_valpec.view.fragment.Detail.Contact" 
+					type="XML"/>
+			</IconTabFilter>
+		</items>
+	</IconTabBar>
+</core:FragmentDefinition>

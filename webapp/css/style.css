@@ -2,3 +2,7 @@
 .customIconTabBar>.sapMITBContainerContent>.sapMITBContent {
     padding: 0 !important;
 }
+
+.customNoBoxShadow.sapMBar {
+    box-shadow: none !important;
+}

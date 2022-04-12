@@ -124,8 +124,9 @@ sap.ui.define([
 						LocationName: oNodeIn.LocationName,
 						DrillState: oNodeIn.DrillState,
 						Sensitive: oNodeIn.Sensitive,
-						IsActive : oNodeIn.IsActive,
-						IsCreatedDuringPec : oNodeIn.IsCreatedDuringPec,
+						IsActive: oNodeIn.IsActive,
+						IsCreatedDuringPec: oNodeIn.IsCreatedDuringPec,
+						UserStatusId: oNodeIn.UserStatusId,
 						UserStatusDesc: oNodeIn.UserStatusDesc,
 						EqTotal: oNodeIn.EquipmentNumber.Total,
 						EqTotalDirect: oNodeIn.EquipmentNumber.TotalDirect,
@@ -211,7 +212,8 @@ sap.ui.define([
 		 * Method is used to fetch Location hierarchy for a Site
 		 * Once data is fetched,_transformTreeData is called to tranform data to tree and bound to tree table
 		 */
-		_bindTreeTable: function (aTableFilters) {
+		_bindTreeTable: function () {
+			var aTableFilters = this._fnGetFilters("detailFilterBar");
 			var aFilters = [];
 			aFilters.push(new Filter("SiteId", FilterOperator.EQ, this._SiteId));
 			if (aTableFilters && aTableFilters.length > 0) {
@@ -224,13 +226,51 @@ sap.ui.define([
 				},
 				success: function (oData, response) {
 					var aNodes = this._transformTreeData(oData.results);
-					this._setTreeModelData(aNodes);
-					this._setLocationDescription(oData.results);
+					if (this._bRefreshHierarchy) {
+						//Only refresh hierarchy (status and equipment's number)
+						this._updateHierarchy(oData, aNodes);
+					} else {
+						//Set hierarchy from scratch
+						this._setTreeModelData(aNodes);
+						this._setLocationDescription(oData.results);
+					}
 				}.bind(this),
 				error: function (oError) {
 					this._oDataError(oError);
 				}.bind(this)
 			});
+		},
+
+		/*
+		 * Method to update values in already existing hierarchy
+		 */
+		_updateHierarchy: function (oData, oNewHierarchy) {
+			var oLocationHierarchyModel = this.fnGetModel("mLocationHierarchy");
+			var oLocationHierarchyData = oLocationHierarchyModel.getData();
+			for (var idx in oLocationHierarchyData.nodeRoot.children) {
+				oLocationHierarchyData.nodeRoot.children[idx] = this._setUpdateFields(oLocationHierarchyData.nodeRoot.children[idx],
+					oNewHierarchy[idx]);
+			}
+
+			oLocationHierarchyModel.refresh(true);
+		},
+
+		/*
+		 * Method call from _updateHierarchy to update values in already existing hierarchy recursively
+		 */
+		_setUpdateFields: function (oBase, oNewHierarchy) {
+			oBase.EqRemaining = oNewHierarchy.EqRemaining;
+			oBase.EqRemainingDirect = oNewHierarchy.EqRemainingDirect;
+			oBase.EqToValidate = oNewHierarchy.EqToValidate;
+			oBase.EqToValidateDirect = oNewHierarchy.EqToValidateDirect;
+			oBase.EqTotal = oNewHierarchy.EqTotal;
+			oBase.EqTotalDirect = oNewHierarchy.EqTotalDirect;
+			oBase.UserStatusId = oNewHierarchy.UserStatusId;
+			oBase.UserStatusDesc = oNewHierarchy.UserStatusDesc;
+			for (var idx in oBase.children) {
+				oBase.children[idx] = this._setUpdateFields(oBase.children[idx], oNewHierarchy.children[idx]);
+			}
+			return oBase;
 		},
 
 		/*
@@ -286,7 +326,7 @@ sap.ui.define([
 
 				//Concatenate Superior Location Names with current Location Name
 				if (oLocation.SuperiorLocationId !== "") {
-						var oSuperiorLocation = oModel[oLocation.SuperiorLocationId];
+					var oSuperiorLocation = oModel[oLocation.SuperiorLocationId];
 					oModel[oLocation.LocationId].LocationName = oSuperiorLocation.LocationName + "/" + oModel[oLocation.LocationId].LocationName;
 				}
 			}
@@ -350,10 +390,33 @@ sap.ui.define([
 			});
 		},
 
+		_ApplyLocationStatus: function (oEvent, sNewStatus) {
+			var oParameters = {
+				async: false,
+				success: function (oData, resp) {
+					this._bRefreshHierarchy = true;
+					this._bindTreeTable();
+				}.bind(this),
+				error: function (oData, resp) {
+
+				}.bind(this)
+			};
+
+			var payload = {
+				Scope: "PEC",
+				LocationId: oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().LocationId,
+				UserStatusId: sNewStatus
+			};
+
+			this.getOwnerComponent().getModel().create("/UserStatusSet", payload, oParameters);
+		},
+
 		_ApplyEquipmentStatus: function (oEvent, sNewStatus) {
 			var oParameters = {
 				async: false,
 				success: function (oData, resp) {
+					this._bRefreshHierarchy = true;
+					this._bindTreeTable();
 					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
 				}.bind(this),
 				error: function (oData, resp) {
@@ -363,7 +426,7 @@ sap.ui.define([
 
 			var payload = {
 				Scope: "PEC",
-				EquipmentId: oEvent.getSource().getParent().getParent().getParent().getRowBindingContext().getObject().EquipmentId,
+				EquipmentId: oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().EquipmentId,
 				UserStatusId: sNewStatus
 			};
 
@@ -422,6 +485,24 @@ sap.ui.define([
 		},
 
 		/*
+		 * Method is called when press on location single button
+		 */
+		onApplyLocationStatus: function (oEvent) {
+
+			switch (oEvent.getSource().getType()) {
+			case "Accept": // Validated Status to apply
+				var sUserStatusId = "E0003";
+				break;
+
+			case "Reject": // Deleted Status to apply
+				sUserStatusId = "E0004";
+				break;
+			}
+
+			this._ApplyLocationStatus(oEvent, sUserStatusId);
+		},
+
+		/*
 		 * Method is called when press on equipment single button
 		 */
 		onApplyEquipmentStatus: function (oEvent) {
@@ -447,8 +528,8 @@ sap.ui.define([
 		 * Event on Search in filter bar
 		 */
 		onFiltersSearch: function (oEvent) {
-			var aFilters = this._fnGetFilters("detailFilterBar");
-			this._bindTreeTable(aFilters);
+			this._bRefreshHierarchy = false;
+			this._bindTreeTable();
 		},
 
 		/*

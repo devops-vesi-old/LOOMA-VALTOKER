@@ -5,7 +5,7 @@
 	xmlns:t="sap.ui.table">
 	<t:TreeTable 
 		id="treeTable" 
-		selectionMode="MultiToggle" 
+		selectionMode="None" 
 		enableSelectAll="false" 
 		ariaLabelledBy="title" 
 		visibleRowCountMode="Auto"
@@ -35,7 +35,7 @@
 								formatter :'.formatter.fnSetLinkEnabled'}"/>
 						<core:Icon 
 							src="sap-icon://add-equipment"
-							tooltip="{i18n>LocationHierarchyTableIconTooltipCreatedDuringPEC}"
+							tooltip="{i18n>LocationHierarchyTblIconTooltipCreatedDuringPEC}"
 							color="Positive"
 							visible="{mLocationHierarchy>IsCreatedDuringPec}"/>	
 						</HBox>
@@ -115,6 +115,31 @@
 					<core:Icon 
 						src="{= ${mLocationHierarchy>Sensitive} ? 'sap-icon://warning' : null }" 
 						color="Negative"/>
+				</t:template>
+			</t:Column>
+			<t:Column 
+				hAlign="Center" 
+				width="6.5rem">
+				<Label text="{i18n>LocationHierarchyTblColHdrAction}"/>
+				<t:template>
+					<Bar class="customNoBoxShadow">
+						<contentLeft>
+							<Button 
+								icon="sap-icon://accept"
+								press="onApplyLocationStatus"
+								tooltip="{i18n>LocationHierarchyTblButtonTooltipValidate}"
+								type="Accept"
+								visible="{= ${mLocationHierarchy>UserStatusId} !== 'E0003'}"/>
+						</contentLeft>
+						<contentRight>
+							<Button 
+								icon="sap-icon://decline"
+								press="onApplyLocationStatus"
+								tooltip="{i18n>LocationHierarchyTblButtonTooltipReject}"
+								type="Reject"
+								visible="{= ${mLocationHierarchy>UserStatusId} !== 'E0004'}"/>
+						</contentRight>
+					</Bar>
 				</t:template>
 			</t:Column>
 		</t:columns>

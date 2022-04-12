@@ -1,0 +1,36 @@
+[{
+	"columnKey": "EquipmentIdCol",
+	"text": "EquipmentTblColHdrEquipmentId",
+	"visible": true,
+	"index": 0
+}, {
+	"columnKey": "EquipmentNameCol",
+	"text": "EquipmentTblColHdrEquipmentName",
+	"visible": true,
+	"index": 1
+}, {
+	"columnKey": "CompleteLocationNameCol",
+	"text": "EquipmentTblColHdrLocationName",
+	"visible": true,
+	"index": 2
+}, {
+	"columnKey": "QuantityCol",
+	"text": "EquipmentTblColHdrQuantity",
+	"visible": true,
+	"index": 3
+}, {
+	"columnKey": "UserStatusDescCol",
+	"text": "EquipmentTblColHdrUserStatus",
+	"visible": true,
+	"index": 4
+}, {
+	"columnKey": "ModificationCol",
+	"text": "EquipmentTblColHdrModification",
+	"visible": true,
+	"index": 5
+}, {
+	"columnKey": "ActionCol",
+	"text": "EquipmentTblColHdrAction",
+	"visible": true,
+	"index": 6
+}]

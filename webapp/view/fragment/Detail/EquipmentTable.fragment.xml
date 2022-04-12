@@ -6,6 +6,7 @@
 	<t:Table 
 		id="EquipmentTable" 
 		rows="{mEquipment>/list}"
+		rowSelectionChange="onSelectionChangeEquipmentTable"
 		selectionMode="MultiToggle" 
 		threshold="10"
 		visibleRowCountMode="Auto">
@@ -17,32 +18,36 @@
 					class="sapUiSmallMarginEnd"/>
 				<Button 
 					icon="sap-icon://action-settings"
-					press="onSitesTablePersonalizationPress"
-					tooltip="{i18n>siteTableBtnTooltipToolbarPersonalise}"
+					press="onEquipmentTablePersonalizationPress"
+					tooltip="{i18n>equipmentTableBtnTooltipToolbarPersonalise}"
 					type="Transparent"/>
 				<ToolbarSpacer/>
-							<Button 
-								enabled="{= ${mDetailPage>bEquipmentSelectedForValidation}}"
-								icon="sap-icon://accept"
-								press="onApplyEquipmentStatus"
-								tooltip="{i18n>EquipmentMassButtonTooltipValidate}"
-								type="Accept"/>
-							<Button 
-								enabled="{= ${mDetailPage>bEquipmentSelectedForValidation}}"
-								icon="sap-icon://decline"
-								press="onApplyEquipmentStatus"
-								tooltip="{i18n>EquipmentMassButtonTooltipReject}"
-								type="Reject"/>
-							<Button 
-								enabled="{= ${mDetailPage>bEquipmentSelectedForValidation}}"
-								icon="sap-icon://cause"
-								press="onApplyEquipmentStatus"
-								tooltip="{i18n>EquipmentMassButtonTooltipReturnTakeover}"
-								type="Emphasized"/>
+				<Button 
+					enabled="{= ${mDetailPage>/bEquipmentSelected}}"
+					icon="sap-icon://accept"
+					press="onApplyEquipmentMassStatus"
+					text="{i18n>EquipmentMassButtonTooltipValidate}"
+					tooltip="{i18n>EquipmentMassButtonTooltipValidate}"
+					type="Accept"/>
+				<Button 
+					enabled="{= ${mDetailPage>/bEquipmentSelected}}"
+					icon="sap-icon://decline"
+					press="onApplyEquipmentMassStatus"
+					text="{i18n>EquipmentMassButtonTooltipReject}"
+					tooltip="{i18n>EquipmentMassButtonTooltipReject}"
+					type="Reject"/>
+				<Button 
+					enabled="{= ${mDetailPage>/bEquipmentSelected}}"
+					icon="sap-icon://cause"
+					press="onApplyEquipmentMassStatus"
+					text="{i18n>EquipmentMassButtonTooltipReturnTakeover}"
+					tooltip="{i18n>EquipmentMassButtonTooltipReturnTakeover}"
+					type="Emphasized"/>
 			</Toolbar>
 		</t:extension>			
 		<t:columns>
 			<t:Column 
+				id="EquipmentIdCol"
 				hAlign="Center" 
 				width="10%" 
 				filterProperty="EquipmentId" 
@@ -53,6 +58,7 @@
 				</t:template>
 			</t:Column>			
 			<t:Column 
+				id="EquipmentNameCol"
 				hAlign="Left" 
 				width="25%" 
 				filterProperty="EquipmentName" 
@@ -63,6 +69,7 @@
 				</t:template>
 			</t:Column>
 			<t:Column 
+				id="CompleteLocationNameCol"
 				hAlign="Left" 
 				width="35%" 
 				sortProperty="CompleteLocationName">
@@ -72,6 +79,7 @@
 				</t:template>
 			</t:Column>
 			<t:Column 
+				id="QuantityCol"
 				hAlign="Center" 
 				width="5%" 
 				filterProperty="Quantity" 
@@ -82,6 +90,7 @@
 				</t:template>
 			</t:Column>			
 			<t:Column 
+				id="UserStatusDescCol"
 				hAlign="Left"
 				width="10%" 
 				filterProperty="UserStatusDesc" 
@@ -92,6 +101,7 @@
 				</t:template>
 			</t:Column>
 			<t:Column 
+				id="ModificationCol"
 				hAlign="Center"
 				width="6rem">
 				<Label text="{i18n>EquipmentTblColHdrModification}"/>
@@ -115,6 +125,7 @@
 				</t:template>
 			</t:Column>
 			<t:Column 
+				id="ActionCol"
 				hAlign="Center" 
 				width="9rem">
 				<Label text="{i18n>EquipmentTblColHdrAction}"/>

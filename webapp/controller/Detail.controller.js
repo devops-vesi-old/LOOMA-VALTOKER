@@ -97,12 +97,9 @@ sap.ui.define([
 		 * Called from method "onInit" to initialize model mDetailPage 
 		 */
 		_initDetailPageModel: function () {
-			var oDetailPage = {};
 			var oDetailPage = {
 				"bSwitchDirect": true,
-				"bEquipmentSelectedForValidation": false,
-				"bEquipmentSelectedForDeletion": false,
-				"bEquipmentSelectedForReturnToTakeover": false
+				"bEquipmentSelected": false
 			};
 			this.fnSetJSONModel(oDetailPage, "mDetailPage");
 			this._mDetailPage = this.fnGetModel("mDetailPage");
@@ -373,6 +370,8 @@ sap.ui.define([
 					$inlinecount: "allpages"
 				},
 				success: function (oData, response) {
+					//Reset Selection
+					this.byId("EquipmentTable").setSelectedIndex(-1);
 					var oEquipment = {
 						count: oData.__count,
 						list: oData.results
@@ -415,6 +414,9 @@ sap.ui.define([
 			this.getOwnerComponent().getModel().create("/UserStatusSet", payload, oParameters);
 		},
 
+		/*
+		 * Method is called to update status for 1 equipment
+		 */
 		_ApplyEquipmentStatus: function (oEvent, sNewStatus) {
 			var oParameters = {
 				async: false,
@@ -435,6 +437,86 @@ sap.ui.define([
 			};
 
 			this.getOwnerComponent().getModel().create("/UserStatusSet", payload, oParameters);
+		},
+
+		/*
+		 * Method is called to update status for a list of equipment
+		 */
+		_ApplyEquipmentMassStatus: function (oEvent, sNewStatus) {
+			// Initialize Id for mass call
+			var sId = oEvent.getSource().getId().split("-").pop();
+			
+			// Set parameters for singles calls
+			var oSingleParameters = {
+				async: false,
+				groupId: sId,
+				success: function (oData, resp) {
+					var i = 1;
+				}.bind(this),
+				error: function (oData, resp) {
+					var i = 1;
+				}.bind(this)
+			};
+
+			//Set parameters for mass cal
+			var oMassParameters = {
+				async: false,
+				groupId: sId,
+				success: function (oData, resp) {
+					this._bRefreshHierarchy = true;
+					this._bindTreeTable();
+					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
+				}.bind(this),
+				error: function (oData, resp) {
+					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
+				}.bind(this)
+			};
+
+			// Set deferred group for mass call
+			var oModel = this.getOwnerComponent().getModel();
+			oModel.setDeferredGroups([sId]);
+			// Get indices selected
+			var aIndexSelected = this.byId("EquipmentTable").getSelectedIndices();
+			// Get rows
+			var oEquipmentTable = this.byId("EquipmentTable");
+
+			// this.byId("EquipmentTable").getContextByIndex(1).getObject();
+
+			//Initialize the call by Indicies selected
+			for (var iInd in aIndexSelected) {
+				var oEquipmentSelected = oEquipmentTable.getContextByIndex(aIndexSelected[iInd]).getObject();
+
+				var payload = {
+					Scope: "PEC",
+					EquipmentId: oEquipmentSelected.EquipmentId,
+					UserStatusId: sNewStatus
+				};
+
+				oModel.create("/UserStatusSet", payload, oSingleParameters);
+			}
+
+			if (aIndexSelected.length > 0) {
+				oModel.submitChanges(oMassParameters);
+			}
+		},
+
+		/*
+		 * Method is called to return the right user status id for equipment
+		 */
+		_fnSetEquipmentUserStatusId: function (oEvent) {
+
+			switch (oEvent.getSource().getType()) {
+			case "Accept": // Validated Status to apply
+				return "E0005";
+
+			case "Emphasized": // Return to take over to apply
+				return "E0008";
+
+			case "Reject": // Deleted Status to apply
+				return "E0006";
+			}
+
+			return "";
 		},
 
 		//--------------------------------------------
@@ -460,7 +542,7 @@ sap.ui.define([
 		onDisplayModifiedInfoPopoverPress: function (oEvent) {
 			var oButton = oEvent.getSource(),
 				oView = this.getView(),
-				sModifiedInfo = oEvent.getSource().getParent().getRowBindingContext().getObject();
+				sModifiedInfo = oEvent.getSource().getRowBindingContext().getObject();
 
 			this.fnSetJSONModel(sModifiedInfo.ModifiedInfo, "mModifiedInfo");
 
@@ -510,22 +592,18 @@ sap.ui.define([
 		 * Method is called when press on equipment single button
 		 */
 		onApplyEquipmentStatus: function (oEvent) {
-
-			switch (oEvent.getSource().getType()) {
-			case "Accept": // Validated Status to apply
-				var sUserStatusId = "E0005";
-				break;
-
-			case "Emphasized": // Return to take over to apply
-				sUserStatusId = "E0008";
-				break;
-
-			case "Reject": // Deleted Status to apply
-				sUserStatusId = "E0006";
-				break;
-			}
-
+			var sUserStatusId = this._fnSetEquipmentUserStatusId(oEvent);
 			this._ApplyEquipmentStatus(oEvent, sUserStatusId);
+		},
+
+		/*
+		 * Method is called when press on equipment mass button
+		 */
+		onApplyEquipmentMassStatus: function (oEvent) {
+			if (this.byId("EquipmentTable").getSelectedIndices().length > 0) {
+				var sUserStatusId = this._fnSetEquipmentUserStatusId(oEvent);
+				this._ApplyEquipmentMassStatus(oEvent, sUserStatusId);
+			}
 		},
 
 		/*
@@ -551,6 +629,27 @@ sap.ui.define([
 					oFilter.getControl().removeAllSelectedItems();
 				}
 			}
+		},
+
+		/*
+		 * Event on Personalization for Equipment Table
+		 */
+		onEquipmentTablePersonalizationPress: function () {
+			this._onTablePersonalizePress("/model/Config/Detail/EquipmentTable.json", "EquipmentTable");
+		},
+
+		/*
+		 * Event fire on Selection change on Equipment Table
+		 */
+		onSelectionChangeEquipmentTable: function (oEvent) {
+			var oDetailPageModel = this.fnGetModel("mDetailPage");
+			if (oEvent.getSource().getSelectedIndices().length > 0) {
+				oDetailPageModel.getData().bEquipmentSelected = true;
+			} else {
+				oDetailPageModel.getData().bEquipmentSelected = false;
+			}
+
+			oDetailPageModel.refresh(true);
 		}
 	});
 

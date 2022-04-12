@@ -21,6 +21,24 @@
 					tooltip="{i18n>siteTableBtnTooltipToolbarPersonalise}"
 					type="Transparent"/>
 				<ToolbarSpacer/>
+							<Button 
+								enabled="{= ${mDetailPage>bEquipmentSelectedForValidation}}"
+								icon="sap-icon://accept"
+								press="onApplyEquipmentStatus"
+								tooltip="{i18n>EquipmentMassButtonTooltipValidate}"
+								type="Accept"/>
+							<Button 
+								enabled="{= ${mDetailPage>bEquipmentSelectedForValidation}}"
+								icon="sap-icon://decline"
+								press="onApplyEquipmentStatus"
+								tooltip="{i18n>EquipmentMassButtonTooltipReject}"
+								type="Reject"/>
+							<Button 
+								enabled="{= ${mDetailPage>bEquipmentSelectedForValidation}}"
+								icon="sap-icon://cause"
+								press="onApplyEquipmentStatus"
+								tooltip="{i18n>EquipmentMassButtonTooltipReturnTakeover}"
+								type="Emphasized"/>
 			</Toolbar>
 		</t:extension>			
 		<t:columns>

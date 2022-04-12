@@ -97,8 +97,12 @@ sap.ui.define([
 		 * Called from method "onInit" to initialize model mDetailPage 
 		 */
 		_initDetailPageModel: function () {
+			var oDetailPage = {};
 			var oDetailPage = {
-				"bSwitchDirect": true
+				"bSwitchDirect": true,
+				"bEquipmentSelectedForValidation": false,
+				"bEquipmentSelectedForDeletion": false,
+				"bEquipmentSelectedForReturnToTakeover": false
 			};
 			this.fnSetJSONModel(oDetailPage, "mDetailPage");
 			this._mDetailPage = this.fnGetModel("mDetailPage");

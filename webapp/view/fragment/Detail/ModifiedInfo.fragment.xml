@@ -15,17 +15,17 @@
 				<columns>
 					<Column 
 						hAlign="Begin" 
-						width="40%">
+						width="30%">
 						<Label text="{i18n>ModifiedInfoTblColHdrDescription}"/>
 					</Column>
 					<Column 
 						hAlign="Begin" 
-						width="30%">
+						width="35%">
 						<Label text="{i18n>ModifiedInfoTblColHdrValueOld}"/>
 					</Column>
 					<Column 
 						hAlign="Begin" 
-						width="30%">
+						width="35%">
 						<Label text="{i18n>ModifiedInfoTblColHdrValueNew}"/>
 					</Column>					
 				</columns>
@@ -35,12 +35,12 @@
 						<Text text="{= ${mModifiedInfo>IsProperty} ? ${path:'mModifiedInfo>FieldI18n', formatter:'.formatter.setPropertyDescription'} : ${mModifiedInfo>FieldDesc}}"/>
 						<ObjectStatus 
 							class="sapUiSmallMarginBottom"
-							text="{mModifiedInfo>ValueOld}"
+							text="{mModifiedInfo>ValueOldDesc}"
 							icon="sap-icon://decline"
 							state="Error"/>	
 						<ObjectStatus 
 							class="sapUiSmallMarginBottom"
-							text="{mModifiedInfo>ValueNew}"
+							text="{mModifiedInfo>ValueNewDesc}"
 							icon="sap-icon://accept"
 							state="Success"/>							
 					</cells>

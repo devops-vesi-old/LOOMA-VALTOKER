@@ -19,9 +19,7 @@
 				<Text 
 					class="sapUiSmallMarginEnd"
 					text="({mSite>/SiteId})"/>
-				<!--<core:Icon-->
 			</HBox>
-
 		</semantic:titleHeading>
 		<!-- Header Expanded -->
 		<semantic:titleExpandedContent>

@@ -13,6 +13,9 @@ sap.ui.define([
 
 	return Controller.extend("com.vesi.zfioac4_valpec.controller.Detail", {
 		formatter: formatter,
+		_oFormatDate: sap.ui.core.format.DateFormat.getDateInstance({
+			pattern: "dd/MM/yyyy"
+		}),
 		//--------------------------------------------
 		// Standard method
 		//--------------------------------------------		
@@ -28,6 +31,8 @@ sap.ui.define([
 			this._initDetailPageModel();
 			//Set models for VHs
 			this._initVHModels();
+			//set models for Property and characteristics modified
+			this._initGlobalModels();
 			//Set icon tab bar density
 			this.byId("SiteIconTabBar").setHeaderMode("Inline");
 		},
@@ -50,6 +55,98 @@ sap.ui.define([
 		 */
 		_initEquipementStatusDesc: function () {
 			this._initStatusDesc("LoomaEquipment");
+		},
+
+		/*
+		 * Called from method "onInit" to initialize models for global data
+		 */
+		_initGlobalModels: function () {
+			// Get value property depending DDIC
+			this._getDDICDomainValue();
+			// Get value characteristic
+			this._getFamilyCharacteristic();
+		},
+
+		/*
+		 * Called from method "onInit" to initialize DDIC properties model
+		 */
+		_getDDICDomainValue: function () {
+			var aFilters = [];
+			aFilters.push(new Filter("Scope", FilterOperator.EQ, "LOOMA"));
+			var mParams = {
+				filters: aFilters,
+				success: function (oData) {
+					var oDDICValue = {};
+					var aData = oData.results;
+					for (var idx in aData) {
+						var oLine = aData[idx];
+						if (!oDDICValue[oLine.Object + "Id"]) {
+							oDDICValue[oLine.Object + "Id"] = {};
+						}
+
+						oDDICValue[oLine.Object + "Id"][oLine.ValueId] = oLine;
+					}
+					var oVHJsonModel = new JSONModel(oDDICValue);
+					this.fnSetModel(oVHJsonModel, "mDDICValue");
+				}.bind(this)
+			};
+			this.fnGetODataModel("VH").read("/DDICDomainValueListSet", mParams);
+		},
+
+		/*
+		 * Called from method "onInit" to initialize Characteristic information model
+		 */
+		_getFamilyCharacteristic: function () {
+			var mParams = {
+				urlParameters: {
+					"$expand": "CharacteristicValueList"
+				},
+				success: function (oData) {
+					var oCharacteristic = {
+						Class: {},
+						Characteristic: {},
+						ValueList: {}
+					};
+					var aData = oData.results;
+					for (var idx in aData) {
+						//Fill Class information
+						var oLine = aData[idx];
+						if (!oCharacteristic.Class[oLine.ClassId]) {
+							oCharacteristic.Class[oLine.ClassId] = {};
+						}
+
+						oCharacteristic.Class[oLine.ClassId][oLine.CharactId] = {
+							CharactImportant: oLine.CharactImportant
+						};
+
+						// Fill Characteristic information
+						if (!oCharacteristic.Characteristic[oLine.CharactId]) {
+							oCharacteristic.Characteristic[oLine.CharactId] = {
+								CharactName: oLine.CharactName,
+								CharactDataType: oLine.CharactDataType,
+								CharactLength: oLine.CharactLength,
+								CharactDecimal: oLine.CharactDecimal,
+								CharactUnit: oLine.CharactUnit,
+								CharactListOfValue: oLine.CharactListOfValue
+							};
+						}
+
+						//Fill ValueList is needed
+						if (oLine.CharactListOfValue && !oCharacteristic.ValueList[oLine.CharactId]) {
+							if (!oCharacteristic.ValueList[oLine.CharactId]) {
+								oCharacteristic.ValueList[oLine.CharactId] = {};
+							}
+							for (var iVal in oLine.CharacteristicValueList.results) {
+								var oVal = oLine.CharacteristicValueList.results[iVal];
+								oCharacteristic.ValueList[oLine.CharactId][oVal.CharactValueChar] = oVal;
+							}
+						}
+					}
+					var oVHJsonModel = new JSONModel(oCharacteristic);
+					this.fnSetModel(oVHJsonModel, "mFamilyCharacteristic");
+				}.bind(this)
+			};
+			this.fnGetODataModel("VH").read("/FamilyCharacteristicSet", mParams);
 		},
 
 		/*
@@ -371,15 +468,100 @@ sap.ui.define([
 				},
 				success: function (oData, response) {
 					//Reset Selection
+					var aBooleanField = [
+							"PecDeepAnalysisNeeded",
+							"PecQuote",
+							"PecTrainingReq",
+							"Critical"
+						],
+						aDateField = [
+							"WarrantyEndDate"
+						],
+						oFamilyCharacteristic = this.fnGetModel("mFamilyCharacteristic").getData(),
+						oLocationDescription = this.fnGetModel("mLocationDescription").getData(),
+						oDDICValue = this.fnGetModel("mDDICValue").getData(),
+						oVH = this.fnGetModel("mVH").getData(),
+						oEquipment = {
+							count: oData.__count,
+							list: oData.results
+						},
+						sYes = this.fnGetResourceBundle().getText("yes"),
+						sNo = this.fnGetResourceBundle().getText("no");
 					this.byId("EquipmentTable").setSelectedIndex(-1);
-					var oEquipment = {
-						count: oData.__count,
-						list: oData.results
-					};
 					for (var i in oEquipment.list) {
 						var oLine = oEquipment.list[i];
-						oLine.CompleteLocationName = this.fnGetModel("mLocationDescription").getData()[oLine.LocationId].LocationName;
+						oLine.CompleteLocationName = oLocationDescription[oLine.LocationId].LocationName;
 						oLine.ModifiedInfo = oLine.ModifiedInfo.results;
+
+						for (var iLine in oLine.ModifiedInfo) {
+							var oLineMod = oLine.ModifiedInfo[iLine];
+
+							if (oLineMod.IsProperty) { //Line is a property
+								if (oDDICValue[oLineMod.FieldI18n]) { //Manage only properties with value list (from DDIC)
+									oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oDDICValue[oLineMod.FieldI18n][oLineMod.ValueOld].ValueDesc;
+									oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oDDICValue[oLineMod.FieldI18n][oLineMod.ValueNew].ValueDesc;
+
+								} else if (oLineMod.FieldI18n === "DomainId" ||
+									oLineMod.FieldI18n === "FunctionId" ||
+									oLineMod.FieldI18n === "FamilyId") { // Manage description from VH (Family Function, Domain)
+
+									var sLink = oLineMod.FieldI18n.split("Id").shift();
+									oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oVH[sLink][oLineMod.ValueOld].Desc;
+									oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oVH[sLink][oLineMod.ValueNew].Desc;
+
+								} else if (aBooleanField.indexOf(oLineMod.FieldI18n) !== -1) { // Manage boolean field
+									oLineMod.ValueOldDesc = oLineMod.ValueOld === "X" ? sYes : sNo;
+									oLineMod.ValueNewDesc = oLineMod.ValueNew === "X" ? sYes : sNo;
+
+								} else if (oLineMod.FieldI18n === "LocationId") { // Manage Location Description
+									oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oLocationDescription[oLineMod.ValueOld].LocationName;
+									oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oLocationDescription[oLineMod.ValueNew].LocationName;
+
+								} else if (aDateField.indexOf(oLineMod.FieldI18n) !== -1) { //Manage date field
+									oLineMod.ValueOldDesc = oLineMod.ValueOld === "00000000" ? "" : this._oFormatDate.format(
+										new Date(oLineMod.ValueOld.slice(0, 4),
+											oLineMod.ValueOld.slice(4, 6) - 1,
+											oLineMod.ValueOld.slice(6, 8)));
+									oLineMod.ValueNewDesc = oLineMod.ValueNew === "00000000" ? "" : this._oFormatDate.format(
+										new Date(oLineMod.ValueNew.slice(0, 4),
+											oLineMod.ValueNew.slice(4, 6) - 1,
+											oLineMod.ValueNew.slice(6, 8)));
+
+								} else { // Free field
+									oLineMod.ValueOldDesc = oLineMod.ValueOld;
+									oLineMod.ValueNewDesc = oLineMod.ValueNew;
+								}
+							} else { //Line is a characteristic
+								if (oFamilyCharacteristic.ValueList[oLineMod.FieldId]) { //Manage Chararacteristic with value list
+									var oValueList = oFamilyCharacteristic.ValueList[oLineMod.FieldId];
+									oLineMod.ValueOldDesc = oValueList[oLineMod.ValueOld] ? oValueList[oLineMod.ValueOld].CharactValueDescription : oLineMod.ValueOld;
+									oLineMod.ValueNewDesc = oValueList[oLineMod.ValueNew] ? oValueList[oLineMod.ValueNew].CharactValueDescription : oLineMod.ValueNew;
+
+								} else if (oFamilyCharacteristic.Characteristic[oLineMod.FieldId] &&
+									oFamilyCharacteristic.Characteristic[oLineMod.FieldId].CharactDataType === "DATE") { //Manage date characteristic
+
+									oLineMod.ValueOldDesc = oLineMod.ValueOld === "00000000" ? "" : this._oFormatDate.format(
+										new Date(oLineMod.ValueOld.slice(0, 4),
+											oLineMod.ValueOld.slice(4, 6) - 1,
+											oLineMod.ValueOld.slice(6, 8)));
+									oLineMod.ValueNewDesc = oLineMod.ValueNew === "00000000" ? "" : this._oFormatDate.format(
+										new Date(oLineMod.ValueNew.slice(0, 4),
+											oLineMod.ValueNew.slice(4, 6) - 1,
+											oLineMod.ValueNew.slice(6, 8)));
+
+								} else if (oFamilyCharacteristic.Characteristic[oLineMod.FieldId] &&
+									oFamilyCharacteristic.Characteristic[oLineMod.FieldId].CharactDataType === "NUM") { //Manage date characteristic
+									oLineMod.ValueOldDesc = oLineMod.ValueOld;
+									oLineMod.ValueNewDesc = oLineMod.ValueNew;
+									oLineMod.CharactUnit = oFamilyCharacteristic.Characteristic[oLineMod.FieldId].CharactUnit;
+
+								} else { // Free field characteristic
+									oLineMod.ValueOldDesc = oLineMod.ValueOld;
+									oLineMod.ValueNewDesc = oLineMod.ValueNew;
+								}
+							}
+						}
+
 					}
 					this.fnSetJSONModel(oEquipment, "mEquipment");
 				}.bind(this),
@@ -445,7 +627,7 @@ sap.ui.define([
 		_ApplyEquipmentMassStatus: function (oEvent, sNewStatus) {
 			// Initialize Id for mass call
 			var sId = oEvent.getSource().getId().split("-").pop();
-			
+
 			// Set parameters for singles calls
 			var oSingleParameters = {
 				async: false,
@@ -542,7 +724,7 @@ sap.ui.define([
 		onDisplayModifiedInfoPopoverPress: function (oEvent) {
 			var oButton = oEvent.getSource(),
 				oView = this.getView(),
-				sModifiedInfo = oEvent.getSource().getRowBindingContext().getObject();
+				sModifiedInfo = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject();
 
 			this.fnSetJSONModel(sModifiedInfo.ModifiedInfo, "mModifiedInfo");
 

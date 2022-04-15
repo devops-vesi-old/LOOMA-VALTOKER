@@ -578,6 +578,7 @@ sap.ui.define([
 				oLine.FunctionDesc = oLine.FunctionId === "" ? "" : oVH["Function"][oLine.FunctionId].Desc;
 				oLine.FamilyDesc = oLine.FamilyId === "" ? "" : oVH["Family"][oLine.FamilyId].Desc;
 				oLine.WarrantyEndDateText = oLine.WarrantyEndDate === null ? "" : this._oFormatDate.format(oLine.WarrantyEndDate);
+				oLine.UserStatusDesc = this.formatter.setStatusDescription.call(this, oLine.UserStatusId);
 				for (var sPorperty in oLine) {
 					if (oDDICValue[sPorperty]) { //Manage only properties with value list (from DDIC)
 						var sLink = sPorperty.split("Id").shift();

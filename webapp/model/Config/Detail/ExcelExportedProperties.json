@@ -19,7 +19,7 @@
 		"i18n": "UserStatusDesc",
 		"colIndex": 3
 	},
-	"LocationIDesc": {
+	"CompleteLocationName": {
 		"propertyId" : "LocationId",
 		"i18n": "LocationId",
 		"colIndex": 4

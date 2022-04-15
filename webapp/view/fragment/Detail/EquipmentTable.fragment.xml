@@ -115,7 +115,7 @@
 				sortProperty="UserStatusDesc">
 				<Label text="{i18n>EquipmentTblColHdrUserStatus}"/>
 				<t:template>
-					<Text text="{path: 'mEquipment>UserStatusId', formatter: '.formatter.setStatusDescription'}"/>
+					<Text text="{mEquipment>UserStatusDesc}"/>
 				</t:template>
 			</t:Column>
 			<t:Column 

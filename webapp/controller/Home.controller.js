@@ -325,6 +325,7 @@ sap.ui.define([
 						count: oData.__count,
 						list: oData.results
 					};
+					this.fnHideBusyIndicator();
 					this.fnSetJSONModel(oSite, "mSite");
 				}.bind(this),
 				error: function (oData) {
@@ -332,9 +333,11 @@ sap.ui.define([
 						count: 0,
 						list: []
 					};
+					this.fnHideBusyIndicator();
 					this.fnSetJSONModel(oSite, "mSite");
 				}
 			};
+			this.fnShowBusyIndicator(null, 0);
 			this.fnGetODataModel().read("/SiteSet", mParams);
 		},
 

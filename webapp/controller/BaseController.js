@@ -34,6 +34,29 @@ sap.ui.define([
 		},
 
 		/*
+		 * Called to show busy Indicator
+		 */
+		fnShowBusyIndicator: function (iDuration, iDelay) {
+			sap.ui.core.BusyIndicator.show(iDelay);
+			if (iDuration && iDuration > 0) {
+				if (this._sTimeoutId) {
+					jQuery.sap.clearDelayedCall(this._sTimeoutId);
+					this._sTimeoutId = null;
+				}
+				this._sTimeoutId = jQuery.sap.delayedCall(iDuration, this, function () {
+					this.fnHideBusyIndicator();
+				});
+			}
+		},
+		
+		/*
+		 * Called to hide busy Indicator
+		 */		
+		fnHideBusyIndicator: function () {
+			sap.ui.core.BusyIndicator.hide();
+		},
+
+		/*
 		 * Called from method "_initFilter" to initialize User Status Description model
 		 */
 		_initStatusDesc: function (sObjectFilter) {
@@ -281,26 +304,26 @@ sap.ui.define([
 				var oFilter = aFilterBarFilters[idx];
 				var aFilters = [];
 				switch (oFilter.getGroupName()) {
-					case ("MultiInput"):
-						var aTokens = oFilter.getControl().getTokens();
-						for (var iTok in aTokens) {
-							var oToken = aTokens[iTok];
-							aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oToken.getKey()));
-						}
-						break;
-	
-					case ("ComboBoxBoolean"):
-						if (oFilter.getControl().getSelectedKey() && oFilter.getControl().getSelectedKey() !== "0") {
-							aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oFilter.getControl().getSelectedKey() === "true"));
-						}
-						break;
-					case ("MultiComboBox"):
-						var aSelectedKeys = oFilter.getControl().getSelectedKeys();
-						for (var iSel in aSelectedKeys) {
-							var oSelectedKey = aSelectedKeys[iSel];
-							aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oSelectedKey));
-						}
-						break;
+				case ("MultiInput"):
+					var aTokens = oFilter.getControl().getTokens();
+					for (var iTok in aTokens) {
+						var oToken = aTokens[iTok];
+						aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oToken.getKey()));
+					}
+					break;
+
+				case ("ComboBoxBoolean"):
+					if (oFilter.getControl().getSelectedKey() && oFilter.getControl().getSelectedKey() !== "0") {
+						aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oFilter.getControl().getSelectedKey() === "true"));
+					}
+					break;
+				case ("MultiComboBox"):
+					var aSelectedKeys = oFilter.getControl().getSelectedKeys();
+					for (var iSel in aSelectedKeys) {
+						var oSelectedKey = aSelectedKeys[iSel];
+						aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oSelectedKey));
+					}
+					break;
 				}
 				if (aFilters.length > 0) {
 					aFiltersAll.push(new Filter(aFilters, false));

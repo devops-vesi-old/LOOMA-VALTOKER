@@ -370,6 +370,7 @@ sap.ui.define([
 			if (aTableFilters && aTableFilters.length > 0) {
 				aFilters = aFilters.concat(aTableFilters);
 			}
+			this.fnShowBusyIndicator(null, 0);
 			this.getOwnerComponent().getModel().read("/LocationHierarchySet", {
 				filters: aFilters,
 				urlParameters: {
@@ -377,6 +378,7 @@ sap.ui.define([
 				},
 				success: function (oData, response) {
 					var aNodes = this._transformTreeData(oData.results);
+					this.fnHideBusyIndicator();
 					if (this._bRefreshHierarchy) {
 						//Only refresh hierarchy (status and equipment's number)
 						this._updateHierarchy(oData, aNodes);
@@ -385,8 +387,10 @@ sap.ui.define([
 						this._setTreeModelData(aNodes);
 						this._setLocationDescription(oData.results);
 					}
+
 				}.bind(this),
 				error: function (oError) {
+					this.fnHideBusyIndicator();
 					this._oDataError(oError);
 				}.bind(this)
 			});
@@ -513,6 +517,7 @@ sap.ui.define([
 			if (aFilterBarFilters && aFilterBarFilters.length > 0) {
 				aFilters = aFilters.concat(aFilterBarFilters);
 			}
+			this.fnShowBusyIndicator(null, 0);
 			this.getOwnerComponent().getModel().read("/EquipmentSet", {
 				filters: aFilters,
 				urlParameters: {
@@ -520,120 +525,8 @@ sap.ui.define([
 					$inlinecount: "allpages"
 				},
 				success: function (oData, response) {
-					//Reset Selection
-					var aBooleanField = [
-							"PecDeepAnalysisNeeded",
-							"PecQuote",
-							"PecTrainingReq",
-							"Critical"
-						],
-						aDateField = [
-							"WarrantyEndDate"
-						],
-						oFamilyCharacteristic = this.fnGetModel("mFamilyCharacteristic").getData(),
-						oLocationDescription = this.fnGetModel("mLocationDescription").getData(),
-						oDDICValue = this.fnGetModel("mDDICValue").getData(),
-						oVH = this.fnGetModel("mVH").getData(),
-						oEquipment = {
-							count: oData.__count,
-							list: oData.results
-						},
-						sYes = this.fnGetResourceBundle().getText("yes"),
-						sNo = this.fnGetResourceBundle().getText("no");
-					this.byId("EquipmentTable").setSelectedIndex(-1);
-					for (var i in oEquipment.list) {
-						var oLine = oEquipment.list[i];
-						//Manage descriptions (needed for extract excel)
-						oLine.CompleteLocationName = oLocationDescription[oLine.LocationId].LocationName;
-						oLine.IsCreatedDuringPecDesc = oLine.IsCreatedDuringPec ? sYes : sNo;
-						oLine.PecDeepAnalysisNeededDesc = oLine.PecDeepAnalysisNeededId ? sYes : sNo;
-						oLine.PecQuoteDesc = oLine.PecQuoteId ? sYes : sNo;
-						oLine.PecTrainingReqDesc = oLine.PecTrainingReqId ? sYes : sNo;
-						oLine.Critical = oLine.CriticalId ? sYes : sNo;
-						oLine.DomainDesc = oLine.DomainId === "" ? "" : oVH["Domain"][oLine.DomainId].Desc;
-						oLine.FunctionDesc = oLine.FunctionId === "" ? "" : oVH["Function"][oLine.FunctionId].Desc;
-						oLine.FamilyDesc = oLine.FamilyId === "" ? "" : oVH["Family"][oLine.FamilyId].Desc;
-						oLine.WarrantyEndDateText = oLine.WarrantyEndDate === null ? "" : this._oFormatDate.format(oLine.WarrantyEndDate);
-						for (var sPorperty in oLine) {
-							if (oDDICValue[sPorperty]) { //Manage only properties with value list (from DDIC)
-								var sLink = sPorperty.split("Id").shift();
-								oLine[sLink + "Desc"] = oLine[sPorperty] === "" ? "" : oDDICValue[sPorperty][oLine[sPorperty]].ValueDesc;
-							}
-						}
-
-						//Manage Modified info
-						oLine.ModifiedInfo = oLine.ModifiedInfo.results;
-						oLine.ModifiedProperty = [];
-						for (var iLine in oLine.ModifiedInfo) {
-							var oLineMod = oLine.ModifiedInfo[iLine];
-							if(oLineMod.IsProperty) { //Line is a property
-								oLine.ModifiedProperty.push(oLineMod.FieldI18n); //Save was property was changed
-								if (oDDICValue[oLineMod.FieldI18n]) { //Manage only properties with value list (from DDIC)
-									oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oDDICValue[oLineMod.FieldI18n][oLineMod.ValueOld].ValueDesc;
-									oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oDDICValue[oLineMod.FieldI18n][oLineMod.ValueNew].ValueDesc;
-
-								} else if (oLineMod.FieldI18n === "DomainId" ||
-									oLineMod.FieldI18n === "FunctionId" ||
-									oLineMod.FieldI18n === "FamilyId") { // Manage description from VH (Family Function, Domain)
-
-									sLink = oLineMod.FieldI18n.split("Id").shift();
-									oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oVH[sLink][oLineMod.ValueOld].Desc;
-									oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oVH[sLink][oLineMod.ValueNew].Desc;
-
-								} else if (aBooleanField.indexOf(oLineMod.FieldI18n) !== -1) { // Manage boolean field
-									oLineMod.ValueOldDesc = oLineMod.ValueOld === "X" ? sYes : sNo;
-									oLineMod.ValueNewDesc = oLineMod.ValueNew === "X" ? sYes : sNo;
-
-								} else if (oLineMod.FieldI18n === "LocationId") { // Manage Location Description
-									oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oLocationDescription[oLineMod.ValueOld].LocationName;
-									oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oLocationDescription[oLineMod.ValueNew].LocationName;
-
-								} else if (aDateField.indexOf(oLineMod.FieldI18n) !== -1) { //Manage date field
-									oLineMod.ValueOldDesc = oLineMod.ValueOld === "00000000" ? "" : this._oFormatDate.format(
-										new Date(oLineMod.ValueOld.slice(0, 4),
-											oLineMod.ValueOld.slice(4, 6) - 1,
-											oLineMod.ValueOld.slice(6, 8)));
-									oLineMod.ValueNewDesc = oLineMod.ValueNew === "00000000" ? "" : this._oFormatDate.format(
-										new Date(oLineMod.ValueNew.slice(0, 4),
-											oLineMod.ValueNew.slice(4, 6) - 1,
-											oLineMod.ValueNew.slice(6, 8)));
-
-								} else { // Free field
-									oLineMod.ValueOldDesc = oLineMod.ValueOld;
-									oLineMod.ValueNewDesc = oLineMod.ValueNew;
-								}
-							} else { //Line is a characteristic
-								if (oFamilyCharacteristic.ValueList[oLineMod.FieldId]) { //Manage Chararacteristic with value list
-									var oValueList = oFamilyCharacteristic.ValueList[oLineMod.FieldId];
-									oLineMod.ValueOldDesc = oValueList[oLineMod.ValueOld] ? oValueList[oLineMod.ValueOld].CharactValueDescription : oLineMod.ValueOld;
-									oLineMod.ValueNewDesc = oValueList[oLineMod.ValueNew] ? oValueList[oLineMod.ValueNew].CharactValueDescription : oLineMod.ValueNew;
-
-								} else if (oFamilyCharacteristic.Characteristic[oLineMod.FieldId] &&
-									oFamilyCharacteristic.Characteristic[oLineMod.FieldId].CharactDataType === "DATE") { //Manage date characteristic
-
-									oLineMod.ValueOldDesc = oLineMod.ValueOld === "00000000" ? "" : this._oFormatDate.format(
-										new Date(oLineMod.ValueOld.slice(0, 4),
-											oLineMod.ValueOld.slice(4, 6) - 1,
-											oLineMod.ValueOld.slice(6, 8)));
-									oLineMod.ValueNewDesc = oLineMod.ValueNew === "00000000" ? "" : this._oFormatDate.format(
-										new Date(oLineMod.ValueNew.slice(0, 4),
-											oLineMod.ValueNew.slice(4, 6) - 1,
-											oLineMod.ValueNew.slice(6, 8)));
-
-								} else if (oFamilyCharacteristic.Characteristic[oLineMod.FieldId] &&
-									oFamilyCharacteristic.Characteristic[oLineMod.FieldId].CharactDataType === "NUM") { //Manage date characteristic
-									oLineMod.ValueOldDesc = oLineMod.ValueOld;
-									oLineMod.ValueNewDesc = oLineMod.ValueNew;
-									oLineMod.CharactUnit = oFamilyCharacteristic.Characteristic[oLineMod.FieldId].CharactUnit;
-
-								} else { // Free field characteristic
-									oLineMod.ValueOldDesc = oLineMod.ValueOld;
-									oLineMod.ValueNewDesc = oLineMod.ValueNew;
-								}
-							}
-						}
-
-					}
+					var oEquipment = this._buildEquipementModel(oData);
+					this.fnHideBusyIndicator();
 					this.fnSetJSONModel(oEquipment, "mEquipment");
 				}.bind(this),
 				error: function (oError) {
@@ -641,9 +534,131 @@ sap.ui.define([
 						count: 0,
 						list: []
 					};
+					this.fnHideBusyIndicator();
 					this.fnSetJSONModel(oEquipment, "mEquipment");
 				}.bind(this)
 			});
+		},
+
+		/*
+		 * Called from _bindEquipmentTable to build equipement model
+		 */
+		_buildEquipementModel: function (oData) {
+			//Reset Selection
+			var aBooleanField = [
+					"PecDeepAnalysisNeeded",
+					"PecQuote",
+					"PecTrainingReq",
+					"Critical"
+				],
+				aDateField = [
+					"WarrantyEndDate"
+				],
+				oFamilyCharacteristic = this.fnGetModel("mFamilyCharacteristic").getData(),
+				oLocationDescription = this.fnGetModel("mLocationDescription").getData(),
+				oDDICValue = this.fnGetModel("mDDICValue").getData(),
+				oVH = this.fnGetModel("mVH").getData(),
+				oEquipment = {
+					count: oData.__count,
+					list: oData.results
+				},
+				sYes = this.fnGetResourceBundle().getText("yes"),
+				sNo = this.fnGetResourceBundle().getText("no");
+			this.byId("EquipmentTable").setSelectedIndex(-1);
+			for (var i in oEquipment.list) {
+				var oLine = oEquipment.list[i];
+				//Manage descriptions (needed for extract excel)
+				oLine.CompleteLocationName = oLocationDescription[oLine.LocationId].LocationName;
+				oLine.IsCreatedDuringPecDesc = oLine.IsCreatedDuringPec ? sYes : sNo;
+				oLine.PecDeepAnalysisNeededDesc = oLine.PecDeepAnalysisNeededId ? sYes : sNo;
+				oLine.PecQuoteDesc = oLine.PecQuoteId ? sYes : sNo;
+				oLine.PecTrainingReqDesc = oLine.PecTrainingReqId ? sYes : sNo;
+				oLine.Critical = oLine.CriticalId ? sYes : sNo;
+				oLine.DomainDesc = oLine.DomainId === "" ? "" : oVH["Domain"][oLine.DomainId].Desc;
+				oLine.FunctionDesc = oLine.FunctionId === "" ? "" : oVH["Function"][oLine.FunctionId].Desc;
+				oLine.FamilyDesc = oLine.FamilyId === "" ? "" : oVH["Family"][oLine.FamilyId].Desc;
+				oLine.WarrantyEndDateText = oLine.WarrantyEndDate === null ? "" : this._oFormatDate.format(oLine.WarrantyEndDate);
+				for (var sPorperty in oLine) {
+					if (oDDICValue[sPorperty]) { //Manage only properties with value list (from DDIC)
+						var sLink = sPorperty.split("Id").shift();
+						oLine[sLink + "Desc"] = oLine[sPorperty] === "" ? "" : oDDICValue[sPorperty][oLine[sPorperty]].ValueDesc;
+					}
+				}
+
+				//Manage Modified info
+				oLine.ModifiedInfo = oLine.ModifiedInfo.results;
+				oLine.ModifiedProperty = [];
+				for (var iLine in oLine.ModifiedInfo) {
+					var oLineMod = oLine.ModifiedInfo[iLine];
+					if (oLineMod.IsProperty) { //Line is a property
+						oLine.ModifiedProperty.push(oLineMod.FieldI18n); //Save was property was changed
+						if (oDDICValue[oLineMod.FieldI18n]) { //Manage only properties with value list (from DDIC)
+							oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oDDICValue[oLineMod.FieldI18n][oLineMod.ValueOld].ValueDesc;
+							oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oDDICValue[oLineMod.FieldI18n][oLineMod.ValueNew].ValueDesc;
+
+						} else if (oLineMod.FieldI18n === "DomainId" ||
+							oLineMod.FieldI18n === "FunctionId" ||
+							oLineMod.FieldI18n === "FamilyId") { // Manage description from VH (Family Function, Domain)
+
+							sLink = oLineMod.FieldI18n.split("Id").shift();
+							oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oVH[sLink][oLineMod.ValueOld].Desc;
+							oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oVH[sLink][oLineMod.ValueNew].Desc;
+
+						} else if (aBooleanField.indexOf(oLineMod.FieldI18n) !== -1) { // Manage boolean field
+							oLineMod.ValueOldDesc = oLineMod.ValueOld === "X" ? sYes : sNo;
+							oLineMod.ValueNewDesc = oLineMod.ValueNew === "X" ? sYes : sNo;
+
+						} else if (oLineMod.FieldI18n === "LocationId") { // Manage Location Description
+							oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oLocationDescription[oLineMod.ValueOld].LocationName;
+							oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oLocationDescription[oLineMod.ValueNew].LocationName;
+
+						} else if (aDateField.indexOf(oLineMod.FieldI18n) !== -1) { //Manage date field
+							oLineMod.ValueOldDesc = oLineMod.ValueOld === "00000000" ? "" : this._oFormatDate.format(
+								new Date(oLineMod.ValueOld.slice(0, 4),
+									oLineMod.ValueOld.slice(4, 6) - 1,
+									oLineMod.ValueOld.slice(6, 8)));
+							oLineMod.ValueNewDesc = oLineMod.ValueNew === "00000000" ? "" : this._oFormatDate.format(
+								new Date(oLineMod.ValueNew.slice(0, 4),
+									oLineMod.ValueNew.slice(4, 6) - 1,
+									oLineMod.ValueNew.slice(6, 8)));
+
+						} else { // Free field
+							oLineMod.ValueOldDesc = oLineMod.ValueOld;
+							oLineMod.ValueNewDesc = oLineMod.ValueNew;
+						}
+					} else { //Line is a characteristic
+						if (oFamilyCharacteristic.ValueList[oLineMod.FieldId]) { //Manage Chararacteristic with value list
+							var oValueList = oFamilyCharacteristic.ValueList[oLineMod.FieldId];
+							oLineMod.ValueOldDesc = oValueList[oLineMod.ValueOld] ? oValueList[oLineMod.ValueOld].CharactValueDescription : oLineMod.ValueOld;
+							oLineMod.ValueNewDesc = oValueList[oLineMod.ValueNew] ? oValueList[oLineMod.ValueNew].CharactValueDescription : oLineMod.ValueNew;
+
+						} else if (oFamilyCharacteristic.Characteristic[oLineMod.FieldId] &&
+							oFamilyCharacteristic.Characteristic[oLineMod.FieldId].CharactDataType === "DATE") { //Manage date characteristic
+
+							oLineMod.ValueOldDesc = oLineMod.ValueOld === "00000000" ? "" : this._oFormatDate.format(
+								new Date(oLineMod.ValueOld.slice(0, 4),
+									oLineMod.ValueOld.slice(4, 6) - 1,
+									oLineMod.ValueOld.slice(6, 8)));
+							oLineMod.ValueNewDesc = oLineMod.ValueNew === "00000000" ? "" : this._oFormatDate.format(
+								new Date(oLineMod.ValueNew.slice(0, 4),
+									oLineMod.ValueNew.slice(4, 6) - 1,
+									oLineMod.ValueNew.slice(6, 8)));
+
+						} else if (oFamilyCharacteristic.Characteristic[oLineMod.FieldId] &&
+							oFamilyCharacteristic.Characteristic[oLineMod.FieldId].CharactDataType === "NUM") { //Manage date characteristic
+							oLineMod.ValueOldDesc = oLineMod.ValueOld;
+							oLineMod.ValueNewDesc = oLineMod.ValueNew;
+							oLineMod.CharactUnit = oFamilyCharacteristic.Characteristic[oLineMod.FieldId].CharactUnit;
+
+						} else { // Free field characteristic
+							oLineMod.ValueOldDesc = oLineMod.ValueOld;
+							oLineMod.ValueNewDesc = oLineMod.ValueNew;
+						}
+					}
+				}
+
+			}
+			return oEquipment;
 		},
 
 		_ApplyLocationStatus: function (oEvent, sNewStatus) {
@@ -651,10 +666,11 @@ sap.ui.define([
 				async: false,
 				success: function (oData, resp) {
 					this._bRefreshHierarchy = true;
+					this.fnHideBusyIndicator();
 					this._bindTreeTable();
 				}.bind(this),
 				error: function (oData, resp) {
-
+					this.fnHideBusyIndicator();
 				}.bind(this)
 			};
 
@@ -664,6 +680,7 @@ sap.ui.define([
 				UserStatusId: sNewStatus
 			};
 
+			this.fnShowBusyIndicator(null, 0);
 			this.getOwnerComponent().getModel().create("/UserStatusSet", payload, oParameters);
 		},
 
@@ -675,10 +692,12 @@ sap.ui.define([
 				async: false,
 				success: function (oData, resp) {
 					this._bRefreshHierarchy = true;
+					this.fnHideBusyIndicator();
 					this._bindTreeTable();
 					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
 				}.bind(this),
 				error: function (oData, resp) {
+					this.fnHideBusyIndicator();
 					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
 				}.bind(this)
 			};
@@ -689,6 +708,7 @@ sap.ui.define([
 				UserStatusId: sNewStatus
 			};
 
+			this.fnShowBusyIndicator(null, 0);
 			this.getOwnerComponent().getModel().create("/UserStatusSet", payload, oParameters);
 		},
 
@@ -714,10 +734,12 @@ sap.ui.define([
 				groupId: sId,
 				success: function (oData, resp) {
 					this._bRefreshHierarchy = true;
+					this.fnHideBusyIndicator();
 					this._bindTreeTable();
 					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
 				}.bind(this),
 				error: function (oData, resp) {
+					this.fnHideBusyIndicator();
 					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
 				}.bind(this)
 			};
@@ -742,6 +764,7 @@ sap.ui.define([
 					UserStatusId: sNewStatus
 				};
 
+				this.fnShowBusyIndicator(null, 0);
 				oModel.create("/UserStatusSet", payload, oSingleParameters);
 			}
 

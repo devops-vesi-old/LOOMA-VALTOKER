@@ -22,8 +22,8 @@
 					tooltip="{i18n>EquipmentTableButtonTooltipToolbarPersonalise}"
 					type="Transparent"/>
 				<ToolbarSpacer/>
-				<m:Button
-					press="onOpenExportXLS" 
+				<Button
+					press="onExportXLS" 
 					icon="sap-icon://excel-attachment" 
 					tooltip="{i18n>EquipmentTableButtonTooltipExportExcel}"
 					type="Transparent"/>

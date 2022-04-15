@@ -7,8 +7,9 @@ sap.ui.define([
 	"sap/ui/core/Fragment",
 	"com/vesi/zfioac4_valpec/model/formatter",
 	"sap/m/MessageBox",
-	"sap/m/MessageToast"
-], function (Controller, Filter, FilterOperator, JSONModel, UriParameters, Fragment, formatter, MessageBox, MessageToast) {
+	"sap/m/MessageToast",
+	"com/vesi/zaclib/controls/Excel"
+], function (Controller, Filter, FilterOperator, JSONModel, UriParameters, Fragment, formatter, MessageBox, MessageToast, Excel) {
 	"use strict";
 
 	return Controller.extend("com.vesi.zfioac4_valpec.controller.Detail", {
@@ -65,6 +66,9 @@ sap.ui.define([
 			this._getDDICDomainValue();
 			// Get value characteristic
 			this._getFamilyCharacteristic();
+			// Get Type Location description
+			this._getLocationTypeDescription();
+
 		},
 
 		/*
@@ -150,6 +154,49 @@ sap.ui.define([
 		},
 
 		/*
+		 *
+		 */
+		_getLocationTypeDescription: function () {
+			var aFilters = [];
+			aFilters.push(new Filter("CharactId", FilterOperator.EQ, "YLO_SITE_TYPE"));
+			aFilters.push(new Filter("CharactId", FilterOperator.EQ, "YLO_TYPE_BATIMENT"));
+			aFilters.push(new Filter("CharactId", FilterOperator.EQ, "YLO_TYPE_ETAGE"));
+			aFilters.push(new Filter("CharactId", FilterOperator.EQ, "YLO_TYPE_LOCAL"));
+			var mParams = {
+				filters: aFilters,
+				success: function (oData) {
+					var oLocationType = {};
+					var aData = oData.results;
+					for (var idx in aData) {
+						var oLine = aData[idx];
+						switch (oLine.CharactId) {
+						case "YLO_SITE_TYPE":
+							var sType = "SITE";
+							break;
+						case "YLO_TYPE_BATIMENT":
+							sType = "BUILDING";
+							break;
+						case "YLO_TYPE_ETAGE":
+							sType = "FLOOR";
+							break;
+						case "YLO_TYPE_LOCAL":
+							sType = "ROOM";
+							break;
+						}
+						if (!oLocationType[sType]) {
+							oLocationType[sType] = {};
+						}
+
+						oLocationType[sType][oLine.CharactValueChar] = oLine;
+					}
+					var oVHJsonModel = new JSONModel(oLocationType);
+					this.fnSetModel(oVHJsonModel, "mLocationType");
+				}.bind(this)
+			};
+			this.fnGetODataModel("VH").read("/CharacteristicValueListSet", mParams);
+		},
+
+		/*
 		 * Called from method "onInit" to initialize VHs model
 		 */
 		_initVHModels: function () {
@@ -206,20 +253,25 @@ sap.ui.define([
 		 * Called from method "_bindTreeTable" to transform equipment hierarchy to tree structure 
 		 */
 		_transformTreeData: function (aNodesIn) {
-			var aNodes = []; //'deep' object structure
-			var mNodeMap = {}; //'map', each node is an attribute
+			var aNodes = [], //'deep' object structure
+				mNodeMap = {}, //'map', each node is an attribute
+				oLocationType = this.fnGetModel("mLocationType").getData();
 			if (aNodesIn) {
 				var oNodeOut;
 				var sSuperiorLocationId;
 				for (var i in aNodesIn) {
-					var oNodeIn = aNodesIn[i];
+					var oNodeIn = aNodesIn[i],
+						sTypeDesc = oLocationType[oNodeIn.LoomaTypeId][oNodeIn.TypeId].CharactValueDescription;
+					if (!sTypeDesc) {
+						sTypeDesc = "";
+					}
 					oNodeOut = {
 						LocationId: oNodeIn.LocationId,
 						SuperiorLocationId: oNodeIn.SuperiorLocationId,
 						SiteId: oNodeIn.SiteId,
 						LoomaTypeId: oNodeIn.LoomaTypeId,
 						LoomaTypeDesc: oNodeIn.LoomaTypeDesc,
-						TypeDesc: oNodeIn.TypeDesc === "" ? oNodeIn.TypeId : oNodeIn.TypeDesc,
+						TypeDesc: sTypeDesc === "" ? oNodeIn.TypeId : sTypeDesc,
 						LocationName: oNodeIn.LocationName,
 						DrillState: oNodeIn.DrillState,
 						Sensitive: oNodeIn.Sensitive,
@@ -491,13 +543,31 @@ sap.ui.define([
 					this.byId("EquipmentTable").setSelectedIndex(-1);
 					for (var i in oEquipment.list) {
 						var oLine = oEquipment.list[i];
+						//Manage descriptions (needed for extract excel)
 						oLine.CompleteLocationName = oLocationDescription[oLine.LocationId].LocationName;
-						oLine.ModifiedInfo = oLine.ModifiedInfo.results;
+						oLine.IsCreatedDuringPecDesc = oLine.IsCreatedDuringPec ? sYes : sNo;
+						oLine.PecDeepAnalysisNeededDesc = oLine.PecDeepAnalysisNeededId ? sYes : sNo;
+						oLine.PecQuoteDesc = oLine.PecQuoteId ? sYes : sNo;
+						oLine.PecTrainingReqDesc = oLine.PecTrainingReqId ? sYes : sNo;
+						oLine.Critical = oLine.CriticalId ? sYes : sNo;
+						oLine.DomainDesc = oLine.DomainId === "" ? "" : oVH["Domain"][oLine.DomainId].Desc;
+						oLine.FunctionDesc = oLine.FunctionId === "" ? "" : oVH["Function"][oLine.FunctionId].Desc;
+						oLine.FamilyDesc = oLine.FamilyId === "" ? "" : oVH["Family"][oLine.FamilyId].Desc;
+						oLine.WarrantyEndDateText = oLine.WarrantyEndDate === null ? "" : this._oFormatDate.format(oLine.WarrantyEndDate);
+						for (var sPorperty in oLine) {
+							if (oDDICValue[sPorperty]) { //Manage only properties with value list (from DDIC)
+								var sLink = sPorperty.split("Id").shift();
+								oLine[sLink + "Desc"] = oLine[sPorperty] === "" ? "" : oDDICValue[sPorperty][oLine[sPorperty]].ValueDesc;
+							}
+						}
 
+						//Manage Modified info
+						oLine.ModifiedInfo = oLine.ModifiedInfo.results;
+						oLine.ModifiedProperty = [];
 						for (var iLine in oLine.ModifiedInfo) {
 							var oLineMod = oLine.ModifiedInfo[iLine];
-
-							if (oLineMod.IsProperty) { //Line is a property
+							if(oLineMod.IsProperty) { //Line is a property
+								oLine.ModifiedProperty.push(oLineMod.FieldI18n); //Save was property was changed
 								if (oDDICValue[oLineMod.FieldI18n]) { //Manage only properties with value list (from DDIC)
 									oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oDDICValue[oLineMod.FieldI18n][oLineMod.ValueOld].ValueDesc;
 									oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oDDICValue[oLineMod.FieldI18n][oLineMod.ValueNew].ValueDesc;
@@ -506,7 +576,7 @@ sap.ui.define([
 									oLineMod.FieldI18n === "FunctionId" ||
 									oLineMod.FieldI18n === "FamilyId") { // Manage description from VH (Family Function, Domain)
 
-									var sLink = oLineMod.FieldI18n.split("Id").shift();
+									sLink = oLineMod.FieldI18n.split("Id").shift();
 									oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oVH[sLink][oLineMod.ValueOld].Desc;
 									oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oVH[sLink][oLineMod.ValueNew].Desc;
 
@@ -633,9 +703,6 @@ sap.ui.define([
 			var oSingleParameters = {
 				async: false,
 				groupId: sId,
-				success: function (oData, resp) {
-					var i = 1;
-				}.bind(this),
 				error: function (oData, resp) {
 					var i = 1;
 				}.bind(this)
@@ -700,6 +767,77 @@ sap.ui.define([
 			}
 
 			return "";
+		},
+
+		/*
+		 * Set Columns to Excel File
+		 */
+		_setExcelColumns: function (oExcel, aColSize, oColumnProperties) {
+			var iHeaderStyle = oExcel.generateNewStyle({
+					font: "Calibri 12 B",
+					fill: "#F2F2F2"
+				}),
+				iSheetProperties = 0,
+				iRow = 0;
+
+			// Set first sheet with properties
+			for (var idx in oColumnProperties) {
+				var oCol = oColumnProperties[idx];
+				oExcel.addCell(iSheetProperties, oCol.colIndex, iRow, this.formatter.setPropertyDescription.call(this, oCol.i18n), iHeaderStyle,
+					aColSize["Sheet" +
+						iSheetProperties]);
+			}
+		},
+
+		/*
+		 * Generate file to save
+		 */
+		_generateExcel: function (oExcel) {
+			var dDate = new Date(),
+				iMonth = parseInt(dDate.getMonth(), 10) + 1,
+				sFileName = dDate.getFullYear() + "-" + iMonth + "-" + dDate.getDate() + "_" + dDate.getHours() +
+				":" + dDate.getMinutes() + ":" + dDate.getSeconds() + ".xlsx";
+
+			oExcel.generate(sFileName);
+		},
+
+		/*
+		 * Set Rows to Excel File
+		 */
+		_setExcelRows: function (oExcel, aData, aColSize, oColumnProperties) {
+			var iDefaultStyle = oExcel.generateNewStyle({
+					align: "L T W" //Left Top Wrap
+				}),
+				iGreenStyle = oExcel.generateNewStyle({
+					font: "Calibri 12 " + "#00B050" + " B",
+					align: "L T W" //Left Top Wrap
+				}),
+				iModifiedStyle = oExcel.generateNewStyle({
+					font: "Calibri 12 B",
+					fill: "#C6E0B4",
+					align: "L T W" //Left Top Wrap
+				}),
+				iFirstRow = 1, // Start To 1 because Row 0 is Header
+				iRow = iFirstRow;
+
+			for (var iEquip in aData) {
+				var oEquipment = aData[iEquip];
+				for (var sProp in oEquipment) {
+					var oProprerty = oEquipment[sProp];
+					var oColProperty = oColumnProperties[sProp];
+					if (oColProperty) { //Property is customize to export excel
+						var iStyle = iDefaultStyle;
+						if (sProp === "IsCreatedDuringPecDesc" && oEquipment.IsCreatedDuringPec) {
+							iStyle = iGreenStyle;
+						}
+						if (oEquipment.ModifiedProperty.indexOf(oColProperty.propertyId) !== -1) {
+							iStyle = iModifiedStyle;
+						}
+						oExcel.addCell(0, oColProperty.colIndex, iRow, oProprerty, iStyle, aColSize.Sheet0);
+					}
+				}
+				iRow++;
+			}
 		},
 
 		//--------------------------------------------
@@ -834,14 +972,53 @@ sap.ui.define([
 
 			oDetailPageModel.refresh(true);
 		},
-		
+
 		/*
 		 * Event fire on press on icon photo
-		 */		
+		 */
 		onPhotoDownload: function (oEvent) {
 			var oObject = oEvent.getSource().getParent().getRowBindingContext().getObject();
 			var downloadUrl = "/sap/opu/odata/sap/ZSRC4_PEC_SRV/PhotoSet('" + oObject.PhotoId + "')/$value";
 			sap.m.URLHelper.redirect(downloadUrl, true);
+		},
+
+		/*
+		 * Event fire for excel export
+		 */
+		onExportXLS: function (oEvent) {
+			if (!this.fnGetModel("mEquipment")) {
+				return;
+			}
+
+			var oExcel = new Excel("Calibri 12", [{
+					name: "Tab",
+					bFreezePane: true,
+					iCol: 0,
+					iRow: 2
+				}]),
+				oData = this.fnGetModel("mEquipment").getData(),
+				aColSize = {
+					"Sheet0": [] //Sheet 1
+				},
+				sRootPath = sap.ui.require.toUrl("com/vesi/zfioac4_valpec"),
+				oColumnProperties = new JSONModel();
+
+			if (!oData.list || (oData.list && oData.list.length === 0)) {
+				return;
+			}
+
+			oColumnProperties.loadData(sRootPath + "/model/Config/Detail/ExcelExportedProperties.json", null, false); // Config for properties
+			oColumnProperties = oColumnProperties.getData();
+
+			this._setExcelColumns(oExcel, aColSize, oColumnProperties);
+
+			this._setExcelRows(oExcel, oData.list, aColSize, oColumnProperties);
+			//Because we use bold for the font we have to had 1 to the colsize
+			for (var i in aColSize.Sheet0) {
+				aColSize.Sheet0[i] += 1;
+			}
+			oExcel.manageColSize(0, aColSize.Sheet0);
+			this._generateExcel(oExcel);
 		}
 	});
 

@@ -19,9 +19,14 @@
 				<Button 
 					icon="sap-icon://action-settings"
 					press="onEquipmentTablePersonalizationPress"
-					tooltip="{i18n>equipmentTableBtnTooltipToolbarPersonalise}"
+					tooltip="{i18n>EquipmentTableButtonTooltipToolbarPersonalise}"
 					type="Transparent"/>
 				<ToolbarSpacer/>
+				<m:Button
+					press="onOpenExportXLS" 
+					icon="sap-icon://excel-attachment" 
+					tooltip="{i18n>EquipmentTableButtonTooltipExportExcel}"
+					type="Transparent"/>
 				<Button 
 					enabled="{= ${mDetailPage>/bEquipmentSelected}}"
 					icon="sap-icon://accept"
@@ -60,7 +65,7 @@
 			<t:Column 
 				id="EquipmentNameCol"
 				hAlign="Left" 
-				width="25%" 
+				width="20%" 
 				filterProperty="EquipmentName" 
 				sortProperty="EquipmentName">
 				<Label text="{i18n>EquipmentTblColHdrEquipmentName}"/>
@@ -78,6 +83,19 @@
 					<Text text="{mEquipment>CompleteLocationName}"/>
 				</t:template>
 			</t:Column>
+			<t:Column 
+				id="PhotoIdCol"
+				hAlign="Center" 
+				width="5%">
+				<Label text="{i18n>EquipmentTblColHdrPhotoId}"/>
+				<t:template>
+					<core:Icon 
+						src="{= ${mEquipment>PhotoId} === '' ? none : 'sap-icon://camera'}"
+						tooltip="{i18n>EquipmentTableIconTooltipPhotoId}"
+						color="Default"
+						press="onPhotoDownload"/>	
+				</t:template>
+			</t:Column>				
 			<t:Column 
 				id="QuantityCol"
 				hAlign="Center" 

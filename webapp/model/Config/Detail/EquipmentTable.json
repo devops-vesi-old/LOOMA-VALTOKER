@@ -14,23 +14,28 @@
 	"visible": true,
 	"index": 2
 }, {
+	"columnKey": "PhotoIdCol",
+	"text": "EquipmentTblColHdrPhotoId",
+	"visible": true,
+	"index": 3
+}, {
 	"columnKey": "QuantityCol",
 	"text": "EquipmentTblColHdrQuantity",
 	"visible": true,
-	"index": 3
+	"index": 4
 }, {
 	"columnKey": "UserStatusDescCol",
 	"text": "EquipmentTblColHdrUserStatus",
 	"visible": true,
-	"index": 4
+	"index": 5
 }, {
 	"columnKey": "ModificationCol",
 	"text": "EquipmentTblColHdrModification",
 	"visible": true,
-	"index": 5
+	"index": 6
 }, {
 	"columnKey": "ActionCol",
 	"text": "EquipmentTblColHdrAction",
 	"visible": true,
-	"index": 6
+	"index": 7
 }]

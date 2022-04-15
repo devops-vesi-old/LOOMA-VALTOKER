@@ -58,6 +58,16 @@
 				</t:template>
 			</t:Column>
 			<t:Column 
+				hAlign="Center" 
+				width="10%" 
+				filterProperty="TypeDesc" 
+				autoResizable="true">
+				<Label text="{i18n>LocationHierarchyTblColHdrLocationType}"/>
+				<t:template>
+					<Text text="{mLocationHierarchy>TypeDesc}"/>
+				</t:template>
+			</t:Column>			
+			<t:Column 
 				width="10%" 
 				autoResizable="true" 
 				hAlign="Center">

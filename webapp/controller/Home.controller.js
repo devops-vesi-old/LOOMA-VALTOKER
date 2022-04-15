@@ -359,7 +359,7 @@ sap.ui.define([
 		 * Event on Personalization for Site Table
 		 */
 		onSitesTablePersonalizationPress: function () {
-			this._onTablePersonalizePress("/model/Config/Home/SiteTable.json", "TableSite");
+			this._onTablePersonalizePress("/model/Config/Home/siteTable.json", "TableSite");
 		},
 
 		/*

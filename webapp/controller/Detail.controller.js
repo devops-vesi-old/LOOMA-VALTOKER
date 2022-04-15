@@ -219,6 +219,7 @@ sap.ui.define([
 						SiteId: oNodeIn.SiteId,
 						LoomaTypeId: oNodeIn.LoomaTypeId,
 						LoomaTypeDesc: oNodeIn.LoomaTypeDesc,
+						TypeDesc: oNodeIn.TypeDesc === "" ? oNodeIn.TypeId : oNodeIn.TypeDesc,
 						LocationName: oNodeIn.LocationName,
 						DrillState: oNodeIn.DrillState,
 						Sensitive: oNodeIn.Sensitive,
@@ -832,6 +833,15 @@ sap.ui.define([
 			}
 
 			oDetailPageModel.refresh(true);
+		},
+		
+		/*
+		 * Event fire on press on icon photo
+		 */		
+		onPhotoDownload: function (oEvent) {
+			var oObject = oEvent.getSource().getParent().getRowBindingContext().getObject();
+			var downloadUrl = "/sap/opu/odata/sap/ZSRC4_PEC_SRV/PhotoSet('" + oObject.PhotoId + "')/$value";
+			sap.m.URLHelper.redirect(downloadUrl, true);
 		}
 	});
 

@@ -12,7 +12,7 @@
 		<ui:extension>
 			<Toolbar class="sapMTBHeader-CTX">
 				<Title 
-					text="{i18n>SiteTableTitle} ({mSite>/count})" 
+					text="{i18n>siteTableTitle} ({mSite>/count})" 
 					level="H2"
 					class="sapUiSmallMarginEnd"/>
 				<Button 

@@ -29,13 +29,23 @@
 	"visible": true,
 	"index": 5
 }, {
+	"columnKey": "Amdec",
+	"text": "EquipmentTblColHdrAmdecCounter",
+	"visible": true,
+	"index": 6
+}, {
+	"columnKey": "FamilyImportant",
+	"text": "EquipmentTblColHdrFamilyImportantCounter",
+	"visible": true,
+	"index": 7	
+}, {	
 	"columnKey": "ModificationCol",
 	"text": "EquipmentTblColHdrModification",
 	"visible": true,
-	"index": 6
+	"index": 8
 }, {
 	"columnKey": "ActionCol",
 	"text": "EquipmentTblColHdrAction",
 	"visible": true,
-	"index": 7
+	"index": 9
 }]

@@ -18,7 +18,7 @@
 				width="25%" 
 				filterProperty="LocationName" 
 				autoResizable="true">
-				<Label text="{i18n>LocationHierarchyTblColHdrLocationName}"/>
+				<Label text="{i18n>LocationHierarchyTblColHdrLocationName}" wrapping="true"/>
 				<t:template>
 					<HBox>
 						<Link
@@ -46,7 +46,7 @@
 				width="10%" 
 				filterProperty="LoomaTypeId" 
 				autoResizable="true">
-				<Label text="{i18n>LocationHierarchyTblColHdrType}"/>
+				<Label text="{i18n>LocationHierarchyTblColHdrType}" wrapping="true"/>
 				<t:template>
 					<HBox>
 						<core:Icon src="sap-icon://functional-location" visible="{= ${mLocationHierarchy>LoomaTypeId} === 'SITE'}" class="sapUiTinyMarginEnd"/>
@@ -62,7 +62,7 @@
 				width="10%" 
 				filterProperty="TypeDesc" 
 				autoResizable="true">
-				<Label text="{i18n>LocationHierarchyTblColHdrLocationType}"/>
+				<Label text="{i18n>LocationHierarchyTblColHdrLocationType}" wrapping="true"/>
 				<t:template>
 					<Text text="{mLocationHierarchy>TypeDesc}"/>
 				</t:template>
@@ -71,7 +71,7 @@
 				width="10%" 
 				autoResizable="true" 
 				hAlign="Center">
-				<Label text="{i18n>LocationHierarchyTblColHdrStatus}"/>
+				<Label text="{i18n>LocationHierarchyTblColHdrStatus}" wrapping="true"/>
 				<t:template>
 					<Text text="{mLocationHierarchy>UserStatusDesc}"/>
 				</t:template>
@@ -80,7 +80,7 @@
 				width="10%" 
 				autoResizable="true" 
 				hAlign="Center">
-				<Label text="{i18n>LocationHierarchyTblColHdrActif}"/>
+				<Label text="{i18n>LocationHierarchyTblColHdrActif}" wrapping="true"/>
 				<t:template>
 					<core:Icon 
 						src="{= ${mLocationHierarchy>IsActive} ? 'sap-icon://accept' : 'sap-icon://decline'}" 
@@ -92,7 +92,7 @@
 				width="10%" 
 				autoResizable="true" 
 				hAlign="Center">
-				<Label text="{i18n>LocationHierarchyTblColHdrEquipmentRem}"/>
+				<Label text="{i18n>LocationHierarchyTblColHdrEquipmentRem}" wrapping="true"/>
 				<t:template>
 					<Text text="{= ${mDetailPage>/bSwitchDirect} ? ${mLocationHierarchy>EqRemainingDirect} : ${mLocationHierarchy>EqRemaining}}"/>
 				</t:template>
@@ -101,7 +101,7 @@
 				width="10%" 
 				autoResizable="true" 
 				hAlign="Center">
-				<Label text="{i18n>LocationHierarchyTblColHdrEquipmentVal}"/>
+				<Label text="{i18n>LocationHierarchyTblColHdrEquipmentVal}" wrapping="true"/>
 				<t:template>
 					<Text text="{= ${mDetailPage>/bSwitchDirect} ? ${mLocationHierarchy>EqToValidateDirect} : ${mLocationHierarchy>EqToValidate}}"/>
 				</t:template>
@@ -110,7 +110,7 @@
 				width="10%" 
 				autoResizable="true" 
 				hAlign="Center">
-				<Label text="{i18n>LocationHierarchyTblColHdrEquipmentTot}"/>
+				<Label text="{i18n>LocationHierarchyTblColHdrEquipmentTot}" wrapping="true"/>
 				<t:template>
 					<Text text="{= ${mDetailPage>/bSwitchDirect} ? ${mLocationHierarchy>EqTotalDirect} : ${mLocationHierarchy>EqTotal}}"/>
 				</t:template>
@@ -120,7 +120,7 @@
 				filterProperty="Sensitive" 
 				autoResizable="true" 
 				hAlign="Center">
-				<Label text="{i18n>LocationHierarchyTblColHdrSensible}"/>
+				<Label text="{i18n>LocationHierarchyTblColHdrSensible}" wrapping="true"/>
 				<t:template>
 					<core:Icon 
 						src="{= ${mLocationHierarchy>Sensitive} ? 'sap-icon://warning' : null }" 
@@ -130,7 +130,7 @@
 			<t:Column 
 				hAlign="Center" 
 				width="6.5rem">
-				<Label text="{i18n>LocationHierarchyTblColHdrAction}"/>
+				<Label text="{i18n>LocationHierarchyTblColHdrAction}" wrapping="true"/>
 				<t:template>
 					<Bar class="customNoBoxShadow">
 						<contentLeft>

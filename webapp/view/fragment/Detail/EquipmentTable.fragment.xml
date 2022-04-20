@@ -57,7 +57,7 @@
 				width="10%" 
 				filterProperty="EquipmentId" 
 				sortProperty="EquipmentId">
-				<Label text="{i18n>EquipmentTblColHdrEquipmentId}"/>
+				<Label text="{i18n>EquipmentTblColHdrEquipmentId}" wrapping="true"/>
 				<t:template>
 					<Text text="{mEquipment>EquipmentId}"/>
 				</t:template>
@@ -68,7 +68,7 @@
 				width="20%" 
 				filterProperty="EquipmentName" 
 				sortProperty="EquipmentName">
-				<Label text="{i18n>EquipmentTblColHdrEquipmentName}"/>
+				<Label text="{i18n>EquipmentTblColHdrEquipmentName}" wrapping="true"/>
 				<t:template>
 					<Text text="{mEquipment>EquipmentName}"/>
 				</t:template>
@@ -76,9 +76,9 @@
 			<t:Column 
 				id="CompleteLocationNameCol"
 				hAlign="Left" 
-				width="35%" 
+				width="25%" 
 				sortProperty="CompleteLocationName">
-				<Label text="{i18n>EquipmentTblColHdrLocationName}"/>
+				<Label text="{i18n>EquipmentTblColHdrLocationName}" wrapping="true"/>
 				<t:template>
 					<Text text="{mEquipment>CompleteLocationName}"/>
 				</t:template>
@@ -87,7 +87,7 @@
 				id="PhotoIdCol"
 				hAlign="Center" 
 				width="5%">
-				<Label text="{i18n>EquipmentTblColHdrPhotoId}"/>
+				<Label text="{i18n>EquipmentTblColHdrPhotoId}" wrapping="true"/>
 				<t:template>
 					<core:Icon 
 						src="{= ${mEquipment>PhotoId} === '' ? none : 'sap-icon://camera'}"
@@ -102,7 +102,7 @@
 				width="5%" 
 				filterProperty="Quantity" 
 				sortProperty="Quantity">
-				<Label text="{i18n>EquipmentTblColHdrQuantity}"/>
+				<Label text="{i18n>EquipmentTblColHdrQuantity}" wrapping="true"/>
 				<t:template>
 					<Text text="{mEquipment>Quantity}"/>
 				</t:template>
@@ -113,11 +113,38 @@
 				width="10%" 
 				filterProperty="UserStatusDesc" 
 				sortProperty="UserStatusDesc">
-				<Label text="{i18n>EquipmentTblColHdrUserStatus}"/>
+				<Label text="{i18n>EquipmentTblColHdrUserStatus}" wrapping="true"/>
 				<t:template>
 					<Text text="{mEquipment>UserStatusDesc}"/>
 				</t:template>
 			</t:Column>
+			<t:Column 
+				id="AmdecCounter"
+				hAlign="Center"
+				width="5%" 
+				sortProperty="AmdecSorter">
+				<Label text="{i18n>EquipmentTblColHdrAmdecCounter}" wrapping="true"/>
+				<t:template>
+					<ObjectStatus 
+							text="{= ${mEquipment>IsAmdecComplete} ? '' : ${mEquipment>AmdecCounter}}"
+							icon="{= ${mEquipment>IsAmdecComplete} ? 'sap-icon://accept' : 'sap-icon://alert'}"
+							state="{= ${mEquipment>IsAmdecComplete} ? 'Success' : 'Warning'}"/>
+				</t:template>
+			</t:Column>	
+			<t:Column 
+				id="FamilyImportantCounter"
+				hAlign="Center"
+				width="5%" 
+				sortProperty="FamilyCharactImportantSorter">
+				<Label text="{i18n>EquipmentTblColHdrFamilyImportantCounter}" wrapping="true"/>
+				<t:template>
+					<ObjectStatus 
+							text="{= ${mEquipment>IsFamilyCharactImportantComplete} ? '' : ${mEquipment>FamilyCharactImportantCounter}}"
+							icon="{= ${mEquipment>IsFamilyCharactImportantComplete} ? 'sap-icon://accept' : 'sap-icon://alert'}"
+							state="{= ${mEquipment>IsFamilyCharactImportantComplete} ? 'Success' : 'Warning'}"
+							visible="{= ${mEquipment>FamilyCharactImportantCounter} === '-' ? false : true}"/>
+				</t:template>
+			</t:Column>				
 			<t:Column 
 				id="ModificationCol"
 				hAlign="Center"

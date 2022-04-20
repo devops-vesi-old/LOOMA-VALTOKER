@@ -133,5 +133,11 @@
 		"propertyId" : "UsageId",
 		"i18n": "UsageId",
 		"colIndex": 26
-	}
+	},
+	"IsAmdecCompleteDesc": {
+		"propertyId" : "IsAmdecCompleteDesc",
+		"i18n": "IsAmdecCompleteDesc",
+		"colIndex": 27
+	}	
+	
 }

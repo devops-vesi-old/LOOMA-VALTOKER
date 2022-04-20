@@ -135,10 +135,10 @@ sap.ui.define([
 			for (var idx in aFilterBarFilters) {
 				var oToken = aFilterBarFilters[idx];
 				if (oToken.getGroupName() === "MultiInput") {
-					if (oToken[id].indexOf(oToken.getName()) !== -1) {
+					if (oFiltersToGet[id].indexOf(oToken.getName()) !== -1) {
 						var aTokens = oToken.getControl().getTokens();
 						for (var iTok in aTokens) {
-							aFilters.push(new Filter(aTokens[iTok].getName(), FilterOperator.EQ, oToken.getKey()));
+							aFilters.push(new Filter(oToken.getName(), FilterOperator.EQ, aTokens[iTok].getKey()));
 						}
 					}
 				}
@@ -362,7 +362,7 @@ sap.ui.define([
 		 * Event on Personalization for Site Table
 		 */
 		onSitesTablePersonalizationPress: function () {
-			this._onTablePersonalizePress("/model/Config/Home/siteTable.json", "TableSite");
+			this._onTablePersonalizePress("/model/Config/Home/SiteTable.json", "TableSite");
 		},
 
 		/*

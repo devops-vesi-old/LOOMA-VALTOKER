@@ -609,7 +609,7 @@ sap.ui.define([
 
 				//Manage Family Characteristic
 				oLine.FamilyCharacteristic = oLine.FamilyCharacteristic.results;
-				this._fnSetFamilyImportantCounter(oLine, oFamilyCharacteristic.Class, oVH.Family[oLine.FamilyId], sYes, sNo);// Set Family Characteristic Important counter and boolean
+				this._fnSetFamilyImportantCounter(oLine, oFamilyCharacteristic.Class, oVH.Family[oLine.FamilyId], sYes, sNo); // Set Family Characteristic Important counter and boolean
 
 			}
 			return oEquipment;
@@ -978,7 +978,7 @@ sap.ui.define([
 		 * Method is called when press on Modified Info icone
 		 */
 		onDisplayModifiedInfoPopoverPress: function (oEvent) {
-			var oButton = oEvent.getSource(),
+			var oIcon = oEvent.getSource(),
 				oView = this.getView(),
 				sModifiedInfo = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject();
 
@@ -991,12 +991,11 @@ sap.ui.define([
 					controller: this
 				}).then(function (oPopover) {
 					oView.addDependent(oPopover);
-					oPopover.bindElement("/ProductCollection/0");
 					return oPopover;
 				});
 			}
 			this._ModPopover.then(function (oPopover) {
-				oPopover.openBy(oButton);
+				oPopover.openBy(oIcon);
 			});
 		},
 		/*
@@ -1097,6 +1096,43 @@ sap.ui.define([
 			var oObject = oEvent.getSource().getParent().getRowBindingContext().getObject();
 			var downloadUrl = "/sap/opu/odata/sap/ZSRC4_PEC_SRV/PhotoSet('" + oObject.PhotoId + "')/$value";
 			sap.m.URLHelper.redirect(downloadUrl, true);
+		},
+
+		onDisplayComment: function (oEvent) {
+			var oIcon = oEvent.getSource(),
+				oView = this.getView(),
+				oObject = oEvent.getSource().getParent().getRowBindingContext().getObject(),
+				iCols = 20,
+				iRows = 1;
+
+			if (oObject.Comments.length > 100) {
+				iCols = 100;
+				iRows = Math.floor(oObject.Comments.length / 100) + 1;
+			} else if (oObject.Comments.length > 20) {
+				iCols = oObject.Comments.length;
+			}
+
+			iRows = iRows > 30 ? 30 : iRows;
+
+			this.fnSetJSONModel({
+				Comment: oObject.Comments,
+				CommentCols: iCols,
+				CommentRows: iRows
+			}, "mLongTexts");
+
+			if (!this._ModPopover) {
+				this._ModPopover = Fragment.load({
+					id: oView.getId(),
+					name: "com.vesi.zfioac4_valpec.view.fragment.Detail.Comment",
+					controller: this
+				}).then(function (oPopover) {
+					oView.addDependent(oPopover);
+					return oPopover;
+				});
+			}
+			this._ModPopover.then(function (oPopover) {
+				oPopover.openBy(oIcon);
+			});
 		},
 
 		/*

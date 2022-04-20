@@ -95,6 +95,19 @@
 						color="Default"
 						press="onPhotoDownload"/>	
 				</t:template>
+			</t:Column>
+			<t:Column 
+				id="CommentCol"
+				hAlign="Center" 
+				width="5%">
+				<Label text="{i18n>EquipmentTblColHdrComment}" wrapping="true"/>
+				<t:template>
+					<core:Icon 
+						src="{= ${mEquipment>Comments} === '' ? none : 'sap-icon://notification-2'}"
+						tooltip="{i18n>EquipmentTableIconTooltipComment}"
+						color="Default"
+						press="onDisplayComment"/>	
+				</t:template>
 			</t:Column>				
 			<t:Column 
 				id="QuantityCol"

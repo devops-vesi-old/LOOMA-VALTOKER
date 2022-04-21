@@ -1120,8 +1120,8 @@ sap.ui.define([
 				CommentRows: iRows
 			}, "mLongTexts");
 
-			if (!this._ModPopover) {
-				this._ModPopover = Fragment.load({
+			if (!this._ComPopover) {
+				this._ComPopover = Fragment.load({
 					id: oView.getId(),
 					name: "com.vesi.zfioac4_valpec.view.fragment.Detail.Comment",
 					controller: this
@@ -1130,7 +1130,7 @@ sap.ui.define([
 					return oPopover;
 				});
 			}
-			this._ModPopover.then(function (oPopover) {
+			this._ComPopover.then(function (oPopover) {
 				oPopover.openBy(oIcon);
 			});
 		},

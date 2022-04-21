@@ -40,7 +40,7 @@
 				autoResizable="true"
 				hAlign="Begin"
 				resizable="false"
-				width="10%">
+				width="8%">
 				<Text text="{i18n>siteTableColumnHeaderSiteId}"/>
 				<ui:template>
 					<Text text="{mSite>SiteId}"/>
@@ -52,7 +52,7 @@
 				hAlign="Begin"
 				resizable="false"
 				sortProperty="SiteName"
-				width="20%">
+				width="17%">
 				<Text text="{i18n>siteTableColumnHeaderSiteName}"/>
 				<ui:template>
 					<Text text="{mSite>SiteName}"/>
@@ -81,23 +81,43 @@
 				<ui:template>
 					<Text text="{mSite>StatusDesc}"/>
 				</ui:template>
-			</ui:Column>			
+			</ui:Column>	
 			<ui:Column 
 				id="SensibleCol"
 				autoResizable="true"
-				hAlign="Begin"
+				hAlign="Center"
 				resizable="false"
 				sortProperty="Sensible"
 				width="5%">
 				<Text text="{i18n>siteTableColumnHeaderSensible}"/>
 				<ui:template>
-					<Text text="{= ${mSite>Sensible} ? ${i18n>yes} : ${i18n>no} }"/>
+					<core:Icon 
+						src="sap-icon://warning"
+						color="{Negative}" 
+						tooltip="{i18n>yes}"
+						visible="{mSite>Sensitive}"/>					
+				</ui:template>
+			</ui:Column>			
+			<ui:Column 
+				id="IsTakeoverInProgressCol"
+				autoResizable="true"
+				hAlign="Center"
+				resizable="false"
+				sortProperty="IsTakeoverInProgress"
+				width="5%">
+				<Text text="{i18n>siteTableColumnHeaderIsTakeoverInProgress}" wrapping="true"/>
+				<ui:template>
+					<core:Icon 
+						src="sap-icon://activities"
+						color="Critical"
+						tooltip="{i18n>siteTableBtnTooltipTakeoverInProgress}"
+						visible="{mSite>IsTakeoverInProgress}"/>
 				</ui:template>
 			</ui:Column>
 			<ui:Column 
 				id="IsInactiveCol"
 				autoResizable="true"
-				hAlign="Begin"
+				hAlign="Center"
 				resizable="false"
 				width="5%">
 				<Text text="{i18n>siteTableColumnHeaderActiveInactive}"/>

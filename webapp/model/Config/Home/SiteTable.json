@@ -19,30 +19,35 @@
 	"visible": true,
 	"index": 3
 }, {
+	"columnKey": "IsTakeoverInProgress",
+	"text": "siteTableColumnHeaderIsTakeoverInProgress",
+	"visible": true,
+	"index": 4
+}, {	
 	"columnKey": "SensibleCol",
 	"text": "siteTableColumnHeaderSensible",
 	"visible": true,
-	"index": 4
+	"index": 5
 }, {
 	"columnKey": "IsInactiveCol",
 	"text": "siteTableColumnHeaderActiveInactive",
 	"visible": true,
-	"index": 5
+	"index": 6
 }, {
 	"columnKey": "ContractNameCol",
 	"text": "siteTableColumnHeaderContractName",
 	"visible": true,
-	"index": 6
+	"index": 7
 }, {
 	"columnKey": "EquipmentsToValidateCol",
 	"text": "siteTableColumnHeaderEquipmentsToValidate",
 	"visible": true,
-	"index": 7
+	"index": 8
 }, {
 	"columnKey": "EquipmentsTotalCol",
 	"text": "siteTableColumnHeaderEquipmentsTotal",
 	"visible": true,
-	"index": 8
+	"index": 9
 }, {
 	"columnKey": "ContractIdCol",
 	"text": "siteTableColumnHeaderContractId",

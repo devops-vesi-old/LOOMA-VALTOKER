@@ -73,7 +73,23 @@
 							additionalText ="{VH>CharactValueChar}"/>
 					</MultiComboBox>
 				</fb:control>	
-			</fb:FilterGroupItem>				
+			</fb:FilterGroupItem>	
+			<fb:FilterGroupItem 
+				groupName="ComboBoxBoolean"
+				name="IsTakeoverInProgress"
+				label="{i18n>filterGroupItemFilterLabelIsTakeoverInProgress}"
+				visibleInFilterBar="true">
+				<fb:control>
+					<ComboBox
+						id="filterIsTakeoverInProgress" 
+						items="{mFilter>/TakeoverInProgress/List}"
+						selectedKey="{mFilter>/TakeoverInProgress/SelectedKey}">
+						<core:ListItem 
+							key="{mFilter>Id}" 
+							text="{mFilter>Text}"/>
+					</ComboBox>
+				</fb:control>
+			</fb:FilterGroupItem>			
 			<fb:FilterGroupItem 
 				groupName="ComboBoxBoolean"
 				name="IsInactive"
@@ -82,8 +98,8 @@
 				<fb:control>
 					<ComboBox
 						id="filterIsInactive" 
-						items="{mFilter>/active/List}"
-						selectedKey="{mFilter>/active/SelectedKey}">
+						items="{mFilter>/Active/List}"
+						selectedKey="{mFilter>/Active/SelectedKey}">
 						<core:ListItem 
 							key="{mFilter>Id}" 
 							text="{mFilter>Text}"/>

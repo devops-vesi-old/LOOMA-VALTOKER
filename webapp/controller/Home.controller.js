@@ -41,6 +41,8 @@ sap.ui.define([
 			var oFilter = {};
 			//Set default filter for active/inactive
 			this._initFilterActive(oFilter);
+			//Set default filter for takeover in progress
+			this._initFilterTakeoverInProgress(oFilter);
 			//Set JSON model
 			this.fnSetJSONModel(oFilter, "mFilter");
 			//Set Tokens model
@@ -51,17 +53,40 @@ sap.ui.define([
 		 * Called from method "_initFilter" to initialize select list for filter activ/inactiv
 		 */
 		_initFilterActive: function (oFilter) {
-			oFilter.active = {
-				SelectedKey: "false",
+			this._initFilterboolean(oFilter, "Active", true);
+		},
+
+		/*
+		 * Called from method "_initFilter" to initialize select list for filter takeover in progress
+		 */
+		_initFilterTakeoverInProgress: function (oFilter) {
+			this._initFilterboolean(oFilter, "TakeoverInProgress", false);
+		},
+
+		/*
+		 * Called from method to initialize boolean select list for filter takeover in progress
+		 */
+		_initFilterboolean: function (oFilter, sProperty, bInvertBoolean) {
+			var sYesId = "true",
+				sNoId = "false",
+				sSelectedKey = "true";
+
+			if (bInvertBoolean) {
+				sYesId = "false";
+				sNoId = "true";
+				sSelectedKey = "false";
+			}
+			oFilter[sProperty] = {
+				SelectedKey: sSelectedKey,
 				List: [{
 					Id: 0,
-					Text: this.fnGetResourceBundle().getText("filterActiveAll")
+					Text: this.fnGetResourceBundle().getText("filter" + sProperty + "All")
 				}, {
-					Id: "false",
-					Text: this.fnGetResourceBundle().getText("filterActiveYes")
+					Id: sYesId,
+					Text: this.fnGetResourceBundle().getText("filter" + sProperty + "Yes")
 				}, {
-					Id: "true",
-					Text: this.fnGetResourceBundle().getText("filterActiveNo")
+					Id: sNoId,
+					Text: this.fnGetResourceBundle().getText("filter" + sProperty + "No")
 				}]
 			};
 		},

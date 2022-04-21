@@ -4,11 +4,11 @@
 	xmlns:f="sap.f">
 	<ScrollContainer
 		class="sapUiNoContentPadding"
-		height="14rem"
+		height="12rem"
 		horizontal="false"
 		vertical="true">
 		<f:GridContainer 
-			class="sapUiSmallMargin"
+			class="sapUiSmallMargin "
 			items="{mSite>/SiteContact}"
 			snapToRow="true">
 			<f:layout>
@@ -18,13 +18,12 @@
 				<f:GridContainerSettings rowSize="1.5rem" columnSize="1.5rem" gap="0.5rem"/>
 			</f:layoutXS>
 			<f:items>
-				<QuickViewCard>
+				<QuickViewCard class="customQuickViewCard">
 					<layoutData>
-						<f:GridContainerItemLayoutData rows="5" columns="8" />
+						<f:GridContainerItemLayoutData rows="4" columns="8" />
 					</layoutData>			
-					<QuickViewPage 
-						title="{mSite>ContactLastName} {mSite>ContactFirstName}"
-						description="{mSite>ContactId}">
+					<QuickViewPage
+						title="{mSite>ContactLastName} {mSite>ContactFirstName}">
 						<QuickViewGroup>
 							<QuickViewGroupElement 
 							label="{i18n>QuickViewGroupElementLblPhone}"

@@ -68,6 +68,8 @@ sap.ui.define([
 			this._getFamilyCharacteristic();
 			// Get Type Location description
 			this._getLocationTypeDescription();
+			// Get Country Region and Department description
+			this._getAddressDescription();
 
 		},
 
@@ -157,6 +159,47 @@ sap.ui.define([
 				}.bind(this)
 			};
 			this.fnGetODataModel("VH").read("/FamilyCharacteristicSet", mParams);
+		},
+
+		/*
+		 * Called from method "onInit" to initialize Country, Region and Department descriptionmodel
+		 */
+		_getAddressDescription: function () {
+			var mParams = {
+				success: function (oData) {
+					var oAddress = {
+						Country: {},
+						Region: {},
+						Department: {}
+					};
+					var aData = oData.results;
+					for (var idx in aData) {
+						//Manage Country
+						if (!oAddress.Country[aData[idx].CountryId]) {
+							oAddress.Country[aData[idx].CountryId] = {
+								Id: aData[idx].CountryId,
+								Desc: aData[idx].CountryDesc
+							};
+						}
+						//Manage Region
+						if (!oAddress.Region[aData[idx].RegionId]) {
+							oAddress.Region[aData[idx].RegionId] = {
+								Id: aData[idx].RegionId,
+								Desc: aData[idx].RegionDesc
+							};
+						}
+						//Manage Department
+						oAddress.Department[aData[idx].DepartmentId] = {
+							Id: aData[idx].DepartmentId,
+							Desc: aData[idx].DepartmentDesc
+						};
+					}
+					var oVHJsonModel = new JSONModel(oAddress);
+					oVHJsonModel.setSizeLimit(aData.length ? aData.length : oVHJsonModel.iSizeLimit);
+					this.fnSetModel(oVHJsonModel, "mAddress");
+				}.bind(this)
+			};
+			this.fnGetODataModel("VH").read("/DepartmentSet", mParams);
 		},
 
 		/*
@@ -341,7 +384,8 @@ sap.ui.define([
 		 * Method is used to generate site address to display from site Information
 		 */
 		_fnSetSiteAddress: function (oData) {
-			var sAddress = "";
+			var sAddress = "",
+				oCountry = this.fnGetModel("mAddress").getData().Country;
 			if (oData.AddressStreetNo !== "") {
 				sAddress = oData.AddressStreetNo + " ";
 			}
@@ -361,7 +405,8 @@ sap.ui.define([
 				sAddress = sAddress + oData.AddressCity + "\r\n";
 			}
 			if (oData.AddressCountryId !== "") {
-				sAddress = sAddress + oData.AddressCountryId;
+				var sCountry = oCountry[oData.AddressCountryId] ? oCountry[oData.AddressCountryId].Desc : oData.AddressCountryId;
+				sAddress = sAddress + sCountry;
 			}
 			return sAddress;
 		},
@@ -1172,6 +1217,20 @@ sap.ui.define([
 			}
 			oExcel.manageColSize(0, aColSize.Sheet0);
 			this._generateExcel(oExcel);
+		},
+
+		/*
+		 * Event fire when press on collapse all
+		 */
+		onLocationHierarchyCollapseAll: function (oEvent) {
+			this.byId("LocationHierarchyTreeTable").collapseAll();
+		},
+
+		/*
+		 * Event fire when press on expand all
+		 */
+		onLocationHierarchyExpandAll: function (oEvent) {
+			this.byId("LocationHierarchyTreeTable").expandToLevel(4);
 		}
 	});
 

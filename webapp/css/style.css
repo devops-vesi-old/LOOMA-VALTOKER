@@ -7,3 +7,7 @@
 	background-color: transparent !important;
     box-shadow: none !important;
 }
+
+.customQuickViewCard .sapMQuickViewPage .sapUiHLayout {
+	margin-bottom: 0rem !important;
+}

@@ -4,7 +4,7 @@
 	xmlns:fb="sap.ui.comp.filterbar"
 	xmlns:t="sap.ui.table">
 	<t:TreeTable 
-		id="treeTable" 
+		id="LocationHierarchyTreeTable" 
 		selectionMode="None" 
 		enableSelectAll="false" 
 		ariaLabelledBy="title" 
@@ -12,6 +12,20 @@
 		rows="{ path:'mLocationHierarchy>/nodeRoot', 
 				parameters: { arrayNames:['children'], 
 				numberOfExpandedLevels : 1 } }">
+		<t:extension>
+			<Toolbar class="sapMTBHeader-CTX">
+				<Button 
+					icon="sap-icon://collapse-all"
+					press="onLocationHierarchyCollapseAll"
+					text="{i18n>LocationHierarchyCollapseAll}"
+					type="Default"/>
+				<Button 
+					icon="sap-icon://expand-all"
+					press="onLocationHierarchyExpandAll"
+					text="{i18n>LocationHierarchyExpandAll}"
+					type="Default"/>
+			</Toolbar>
+		</t:extension>		
 		<t:columns>
 			<t:Column 
 				hAlign="Center" 

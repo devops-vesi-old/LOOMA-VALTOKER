@@ -5,9 +5,9 @@
 	xmlns:t="sap.ui.table">
 	<t:TreeTable 
 		id="LocationHierarchyTreeTable" 
-		selectionMode="None" 
-		enableSelectAll="false" 
-		ariaLabelledBy="title" 
+		enableSelectAll="true"
+		rowSelectionChange="onSelectionChangeLocationTable"
+		selectionMode="MultiToggle" 
 		visibleRowCountMode="Auto"
 		rows="{ path:'mLocationHierarchy>/nodeRoot', 
 				parameters: { arrayNames:['children'], 
@@ -24,7 +24,22 @@
 					press="onLocationHierarchyExpandAll"
 					text="{i18n>LocationHierarchyExpandAll}"
 					type="Default"/>
-			</Toolbar>
+				<ToolbarSpacer/>
+				<Button 
+					enabled="{= ${mDetailPage>/bLocationSelected}}"
+					icon="sap-icon://accept"
+					press="onApplyLocationMassStatus"
+					text="{i18n>LocationMassButtonTooltipValidate}"
+					tooltip="{i18n>LocationMassButtonTooltipValidate}"
+					type="Accept"/>
+				<Button 
+					enabled="{= ${mDetailPage>/bLocationSelected}}"
+					icon="sap-icon://decline"
+					press="onApplyLocationMassStatus"
+					text="{i18n>LocationMassButtonTooltipReject}"
+					tooltip="{i18n>LocationMassButtonTooltipReject}"
+					type="Reject"/>	
+			</Toolbar>		
 		</t:extension>		
 		<t:columns>
 			<t:Column 

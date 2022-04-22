@@ -28,7 +28,7 @@ sap.ui.define([
 		onInit: function () {
 			this.fnGetRouter().getRoute("Detail").attachPatternMatched(this._onPatternMatched, this);
 			//Set model for formatter Status description
-			this._initEquipementStatusDesc();
+			this._initEquipmentStatusDesc();
 			this._initDetailPageModel();
 			//Set models for VHs
 			this._initVHModels();
@@ -54,9 +54,9 @@ sap.ui.define([
 		},
 
 		/*
-		 * Called from method "onInit" to initialize Equipement User Status Description model
+		 * Called from method "onInit" to initialize Equipment User Status Description model
 		 */
-		_initEquipementStatusDesc: function () {
+		_initEquipmentStatusDesc: function () {
 			this._initStatusDesc("LoomaEquipment");
 		},
 
@@ -311,7 +311,8 @@ sap.ui.define([
 		_initDetailPageModel: function () {
 			var oDetailPage = {
 				"bSwitchDirect": false,
-				"bEquipmentSelected": false
+				"bEquipmentSelected": false,
+				"bLocationSelected": false
 			};
 			this.fnSetJSONModel(oDetailPage, "mDetailPage");
 			this._mDetailPage = this.fnGetModel("mDetailPage");
@@ -440,6 +441,7 @@ sap.ui.define([
 			if (aTableFilters && aTableFilters.length > 0) {
 				aFilters = aFilters.concat(aTableFilters);
 			}
+			this.byId("LocationHierarchyTreeTable").setSelectedIndex(-1);
 			this.fnShowBusyIndicator(null, 0);
 			this.getOwnerComponent().getModel().read("/LocationHierarchySet", {
 				filters: aFilters,
@@ -595,7 +597,7 @@ sap.ui.define([
 					$inlinecount: "allpages"
 				},
 				success: function (oData, response) {
-					var oEquipment = this._buildEquipementModel(oData);
+					var oEquipment = this._buildEquipmentModel(oData);
 					this.fnHideBusyIndicator();
 					this.fnSetJSONModel(oEquipment, "mEquipment");
 				}.bind(this),
@@ -613,7 +615,7 @@ sap.ui.define([
 		/*
 		 * Called from _bindEquipmentTable to build equipement model
 		 */
-		_buildEquipementModel: function (oData) {
+		_buildEquipmentModel: function (oData) {
 			//Reset Selection
 			var aBooleanField = [
 					"PecDeepAnalysisNeeded",
@@ -679,7 +681,7 @@ sap.ui.define([
 		},
 
 		/*
-		 * Called from _buildEquipementModel to set description on modified info from property
+		 * Called from _buildEquipmentModel to set description on modified info from property
 		 */
 		_fnSetPropertyDescription: function (oLine, oLineMod, oDDICValue, oVH, aBooleanField, oLocationDescription, aDateField, sYes, sNo) {
 			oLine.ModifiedProperty.push(oLineMod.FieldI18n); //Save was property was changed
@@ -720,7 +722,7 @@ sap.ui.define([
 		},
 
 		/*
-		 * Called from _buildEquipementModel to set description on modified info from characteristic
+		 * Called from _buildEquipmentModel to set description on modified info from characteristic
 		 */
 		_fnSetCharactisticDescription: function (oLineMod, oFamilyCharacteristic) {
 			if (oFamilyCharacteristic.ValueList[oLineMod.FieldId]) { //Manage Chararacteristic with value list
@@ -753,7 +755,7 @@ sap.ui.define([
 		},
 
 		/*
-		 * Called from _buildEquipementModel to set counter and boolean for missing Amdec
+		 * Called from _buildEquipmentModel to set counter and boolean for missing Amdec
 		 */
 		_fnSetAmdecCounter: function (oLine, sYes, sNo) {
 			var aAmdecProp = [
@@ -783,7 +785,7 @@ sap.ui.define([
 		},
 
 		/*
-		 * Called from _buildEquipementModel to set counter and boolean for missing important Family Characteristic
+		 * Called from _buildEquipmentModel to set counter and boolean for missing important Family Characteristic
 		 */
 		_fnSetFamilyImportantCounter: function (oLine, oClass, oFamily, sYes, sNo) {
 			var iCount = 0,
@@ -902,15 +904,72 @@ sap.ui.define([
 			// Get rows
 			var oEquipmentTable = this.byId("EquipmentTable");
 
-			// this.byId("EquipmentTable").getContextByIndex(1).getObject();
 
-			//Initialize the call by Indicies selected
+			//Initialize the call by Indices selected
 			for (var iInd in aIndexSelected) {
 				var oEquipmentSelected = oEquipmentTable.getContextByIndex(aIndexSelected[iInd]).getObject();
 
 				var payload = {
 					Scope: "PEC",
 					EquipmentId: oEquipmentSelected.EquipmentId,
+					UserStatusId: sNewStatus
+				};
+
+				this.fnShowBusyIndicator(null, 0);
+				oModel.create("/UserStatusSet", payload, oSingleParameters);
+			}
+
+			if (aIndexSelected.length > 0) {
+				oModel.submitChanges(oMassParameters);
+			}
+		},
+		
+		/*
+		 * Method is called to update status for a list of location
+		 */
+		_ApplyLocationMassStatus: function (oEvent, sNewStatus) {
+			// Initialize Id for mass call
+			var sId = oEvent.getSource().getId().split("-").pop();
+
+			// Set parameters for singles calls
+			var oSingleParameters = {
+				async: false,
+				groupId: sId,
+				error: function (oData, resp) {
+					var i = 1;
+				}.bind(this)
+			};
+
+			//Set parameters for mass cal
+			var oMassParameters = {
+				async: false,
+				groupId: sId,
+				success: function (oData, resp) {
+					this._bRefreshHierarchy = true;
+					this.fnHideBusyIndicator();
+					this._bindTreeTable();
+				}.bind(this),
+				error: function (oData, resp) {
+					this.fnHideBusyIndicator();
+				}.bind(this)
+			};
+
+			// Set deferred group for mass call
+			var oModel = this.getOwnerComponent().getModel();
+			oModel.setDeferredGroups([sId]);
+			// Get location table
+			var oLocationTable = this.byId("LocationHierarchyTreeTable");			
+			// Get indices selected
+			var aIndexSelected = oLocationTable.getSelectedIndices();
+
+
+			//Initialize the call by Indices selected
+			for (var iInd in aIndexSelected) {
+				var oLocationSelected = oLocationTable.getContextByIndex(aIndexSelected[iInd]).getObject();
+
+				var payload = {
+					Scope: "PEC",
+					LocationId: oLocationSelected.LocationId,
 					UserStatusId: sNewStatus
 				};
 
@@ -937,6 +996,22 @@ sap.ui.define([
 
 			case "Reject": // Deleted Status to apply
 				return "E0006";
+			}
+
+			return "";
+		},
+
+		/*
+		 * Method is called to return the right user status id for equipment
+		 */
+		_fnSetLocationUserStatusId: function (oEvent) {
+
+			switch (oEvent.getSource().getType()) {
+			case "Accept": // Validated Status to apply
+				return "E0003";
+
+			case "Reject": // Deleted Status to apply
+				return "E0004";
 			}
 
 			return "";
@@ -1074,17 +1149,7 @@ sap.ui.define([
 		 * Method is called when press on location single button
 		 */
 		onApplyLocationStatus: function (oEvent) {
-
-			switch (oEvent.getSource().getType()) {
-			case "Accept": // Validated Status to apply
-				var sUserStatusId = "E0003";
-				break;
-
-			case "Reject": // Deleted Status to apply
-				sUserStatusId = "E0004";
-				break;
-			}
-
+			var sUserStatusId = this._fnSetLocationUserStatusId(oEvent);
 			this._ApplyLocationStatus(oEvent, sUserStatusId);
 		},
 
@@ -1094,6 +1159,16 @@ sap.ui.define([
 		onApplyEquipmentStatus: function (oEvent) {
 			var sUserStatusId = this._fnSetEquipmentUserStatusId(oEvent);
 			this._ApplyEquipmentStatus(oEvent, sUserStatusId);
+		},
+
+		/*
+		 * Method is called when press on Location hierarchy mass button
+		 */
+		onApplyLocationMassStatus: function (oEvent) {
+			if (this.byId("LocationHierarchyTreeTable").getSelectedIndices().length > 0) {
+				var sUserStatusId = this._fnSetLocationUserStatusId(oEvent);
+				this._ApplyLocationMassStatus(oEvent, sUserStatusId);
+			}
 		},
 
 		/*
@@ -1140,6 +1215,20 @@ sap.ui.define([
 				oDetailPageModel.getData().bEquipmentSelected = true;
 			} else {
 				oDetailPageModel.getData().bEquipmentSelected = false;
+			}
+
+			oDetailPageModel.refresh(true);
+		},
+
+		/*
+		 * Event fire on Selection change on Location hierarchy Tree Table
+		 */
+		onSelectionChangeLocationTable: function (oEvent) {
+			var oDetailPageModel = this.fnGetModel("mDetailPage");
+			if (oEvent.getSource().getSelectedIndices().length > 0) {
+				oDetailPageModel.getData().bLocationSelected = true;
+			} else {
+				oDetailPageModel.getData().bLocationSelected = false;
 			}
 
 			oDetailPageModel.refresh(true);

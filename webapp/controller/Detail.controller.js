@@ -32,6 +32,8 @@ sap.ui.define([
 			this._initDetailPageModel();
 			//Set models for VHs
 			this._initVHModels();
+			// Set default filter for multicombobox
+			this._initDefaultFilterMCB();
 			//set models for Property and characteristics modified
 			this._initGlobalModels();
 			//Set icon tab bar density
@@ -285,6 +287,22 @@ sap.ui.define([
 				}.bind(this)
 			};
 			this.fnGetODataModel("VH").read("/FamilySet", mParams);
+		},
+
+		/*
+		 * Called from method "onInit" to initialize default selected keys for MultiComboBox
+		 */
+		_initDefaultFilterMCB: function () {
+			var aDefault = {
+				filterStatusInternalId: ["E0002", "E0004", "E0009", "E0003"],
+				filterDomainId: [],
+				filterFunctionId: [],
+				filterFamilyId: []
+
+			};
+			for (var sIdMCB in aDefault) {
+				this.byId(sIdMCB).setSelectedKeys(aDefault[sIdMCB]);
+			}
 		},
 
 		/*
@@ -1102,15 +1120,8 @@ sap.ui.define([
 		onFiltersClear: function (oEvent) {
 			// Reset model for filters
 			this._initDetailPageModel();
-
-			// Reset MultiCombox
-			var aFilterBarFilters = this.byId("detailFilterBar").getAllFilterItems();
-			for (var iFil in aFilterBarFilters) {
-				var oFilter = aFilterBarFilters[iFil];
-				if (oFilter.getGroupName() === "MultiComboBox") {
-					oFilter.getControl().removeAllSelectedItems();
-				}
-			}
+			// Reser default selected keys for multicombobox
+			this._initDefaultFilterMCB();
 		},
 
 		/*

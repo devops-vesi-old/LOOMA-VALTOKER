@@ -9,14 +9,14 @@
         "entryPath": "/sap/bc/ui5_ui5/sap/zaclib"
       },
       "description": "zaclib"
-    },  	
+    },
     {
       "path": "/resources",
       "target": {
         "type": "service",
         "name": "sapui5",
         "entryPath": "/resources",
-        "version": "1.84.4"
+        "version": "1.84.21"
       },
       "description": "SAPUI5 Resources"
     },
@@ -26,7 +26,7 @@
         "type": "service",
         "name": "sapui5",
         "entryPath": "/test-resources",
-        "version": "1.84.4"
+        "version": "1.84.21"
       },
       "description": "SAPUI5 Resources"
     },
@@ -36,7 +36,7 @@
         "type": "service",
         "name": "sapui5",
         "entryPath": "/resources",
-        "version": "1.84.4"
+        "version": "1.84.21"
       },
       "description": "SAPUI5 Resources"
     },
@@ -46,7 +46,7 @@
         "type": "service",
         "name": "sapui5",
         "entryPath": "/test-resources",
-        "version": "1.84.4"
+        "version": "1.84.21"
       },
       "description": "SAPUI5 Test Resources"
     },

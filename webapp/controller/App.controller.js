@@ -5,7 +5,12 @@ sap.ui.define([
 
 	return Controller.extend("com.vesi.zfioac4_valpec.controller.App", {
 		onInit: function () {
-			// this.getView().addStyleClass(this.getOwnerComponent().getContentDensityClass());
+			var sLang = sap.ui.getCore().getConfiguration().getLanguage().toUpperCase(),
+				aImplementedLanguage = ["FR", "EN"];
+			sLang = sLang.slice(0, 2);
+			if (aImplementedLanguage.indexOf(sLang) === -1) {
+				sap.ui.getCore().getConfiguration().setLanguage("en");
+			}
 		}
 	});
 });

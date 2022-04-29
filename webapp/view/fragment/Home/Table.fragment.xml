@@ -11,15 +11,15 @@
 		rows="{mSite>/list}">
 		<ui:extension>
 			<Toolbar class="sapMTBHeader-CTX">
-				<Title 
-					text="{i18n>siteTableTitle} ({mSite>/count})" 
-					level="H2"
-					class="sapUiSmallMarginEnd"/>
 				<Button 
 					icon="sap-icon://action-settings"
 					press="onSitesTablePersonalizationPress"
 					tooltip="{i18n>siteTableBtnTooltipToolbarPersonalise}"
 					type="Transparent"/>
+				<Title 
+					text="{i18n>siteTableTitle} ({mSite>/count})" 
+					level="H2"
+					class="sapUiSmallMarginEnd"/>
 				<ToolbarSpacer/>
 			</Toolbar>
 		</ui:extension>		
@@ -93,7 +93,7 @@
 				<ui:template>
 					<core:Icon 
 						src="sap-icon://warning"
-						color="{Negative}" 
+						color="Negative" 
 						tooltip="{i18n>yes}"
 						visible="{mSite>Sensitive}"/>					
 				</ui:template>

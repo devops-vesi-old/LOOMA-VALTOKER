@@ -1,0 +1,18 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core">
+	<Dialog
+		id="PhotoDialog"
+		title="{i18n>EquipmentTableIconTooltipPhotoId} {mPhoto>/EquipmentName}">
+		<content>
+			<Image 
+				tooltip="{i18n>EquipmentTableIconTooltipPhotoId}" 
+				src="{ path: 'mPhoto>/PhotoId' , formatter: '.formatter.fnImageUrlFormatter' }"/>
+		</content>
+		<endButton>
+			<Button 
+				press="onCloseDialogPress"
+				text="{i18n>close}"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

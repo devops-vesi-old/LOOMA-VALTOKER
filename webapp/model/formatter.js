@@ -166,7 +166,7 @@ sap.ui.define([],
 				if (!sIdProperty) {
 					return "";
 				}
-				return this.fnGetResourceBundle().getText("ModifiedInfoLbl" + sIdProperty);
+				return this.fnGetResourceBundle("ModifiedInfoLbl" + sIdProperty);
 
 			},
 
@@ -177,7 +177,7 @@ sap.ui.define([],
 				if (bDirect === undefined || sNbEquipmentDirect === undefined || sNbEquipment === undefined) {
 					return false;
 				}
-				var iNbEquipmentDirect = parseInt(sNbEquipmentDirect,10);
+				var iNbEquipmentDirect = parseInt(sNbEquipmentDirect, 10);
 				var iNbEquipment = parseInt(sNbEquipment, 10);
 				if (bDirect) {
 					if (iNbEquipmentDirect > 0) {
@@ -190,6 +190,75 @@ sap.ui.define([],
 				}
 
 				return false;
+			},
+
+			/*
+			 * Set link enabled
+			 */
+			fnImageUrlFormatter: function (sPhotoId) {
+				var src = "";
+				if (sPhotoId) {
+					src = "/sap/opu/odata/sap/ZSRC4_PEC_SRV/PhotoSet('" + encodeURIComponent(sPhotoId) + "')/$value";
+				}
+				return src;
+			},
+
+			/*
+			 * Set the highlight indicator for object in tree table and equipement table
+			 */
+			fnSetHighlight: function (iStatusFSM) {
+				switch (iStatusFSM) {
+				case 0:
+					return "None";
+				case 1:
+					return "Success";
+				case 2:
+					return "Warning";
+				default:
+					return "None";
+				}
+			},
+
+			/*
+			 * Set the status FSM icon for object in tree table and equipement table
+			 */
+			fnSetIconFSM: function (iStatusFSM) {
+				switch (iStatusFSM) {
+				case 1:
+					return "sap-icon://connected";
+				case 2:
+					return "sap-icon://disconnected";
+				default:
+					return null;
+				}
+			},
+
+			/*
+			 * Set the status FSM tooltip for object in tree table and equipement table
+			 */
+			fnSetIconTooltipFSM: function (iStatusFSM) {
+				switch (iStatusFSM) {
+				case 1:
+					return this.fnGetResourceBundle("IconStatusFSMTooltipConnected");
+				case 2:
+					return this.fnGetResourceBundle("IconStatusFSMTooltipDisconnected");
+				default:
+					return "";
+				}
+			},
+
+			/*
+			 * Set the status FSM icon type for object in tree table and equipement table
+			 */
+			fnSetIconColorFSM: function (iStatusFSM) {
+				switch (iStatusFSM) {
+				case 1:
+					return "Positive";
+				case 2:
+					return "Critical";
+				default:
+					return "Default";
+				}
 			}
 		};
 

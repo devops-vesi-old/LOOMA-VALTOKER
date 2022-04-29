@@ -52,7 +52,7 @@
 	"DomainDesc": {
 		"propertyId" : "DomainId",
 		"i18n": "DomainId",
-		"colIndex": 11
+		"colIndex": 10
 	},	
 	"FunctionDesc": {
 		"propertyId" : "FunctionId",

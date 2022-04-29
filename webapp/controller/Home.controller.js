@@ -80,13 +80,13 @@ sap.ui.define([
 				SelectedKey: sSelectedKey,
 				List: [{
 					Id: 0,
-					Text: this.fnGetResourceBundle().getText("filter" + sProperty + "All")
+					Text: this.fnGetResourceBundle("filter" + sProperty + "All")
 				}, {
 					Id: sYesId,
-					Text: this.fnGetResourceBundle().getText("filter" + sProperty + "Yes")
+					Text: this.fnGetResourceBundle("filter" + sProperty + "Yes")
 				}, {
 					Id: sNoId,
-					Text: this.fnGetResourceBundle().getText("filter" + sProperty + "No")
+					Text: this.fnGetResourceBundle("filter" + sProperty + "No")
 				}]
 			};
 		},

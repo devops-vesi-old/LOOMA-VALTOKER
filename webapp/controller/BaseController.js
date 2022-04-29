@@ -23,8 +23,12 @@ sap.ui.define([
 		fnGetModel: function (sName) {
 			return this.getView().getModel(sName);
 		},
-		fnGetResourceBundle: function (sKey) {
-			return this.getOwnerComponent().getModel("i18n").getResourceBundle();
+		fnGetResourceBundle: function (sKey, aParam) {
+			var aParamText = [];
+			if (aParam && aParam.length) {
+				aParamText = aParam;
+			}
+			return this.getOwnerComponent().getModel("i18n").getResourceBundle().getText(sKey, aParamText);
 		},
 		fnGetODataModel: function (sName) {
 			if (!sName || sName === "") {
@@ -48,10 +52,10 @@ sap.ui.define([
 				});
 			}
 		},
-		
+
 		/*
 		 * Called to hide busy Indicator
-		 */		
+		 */
 		fnHideBusyIndicator: function () {
 			sap.ui.core.BusyIndicator.hide();
 		},
@@ -106,11 +110,10 @@ sap.ui.define([
 		},
 		_getItemAggrDataForPerso: function (aColumnData) {
 			var aItems = [];
-			var oi18n = this.fnGetResourceBundle();
 			aColumnData.forEach(function (el) {
 				aItems.push({
 					columnKey: el.columnKey,
-					text: oi18n.getText(el.text)
+					text: this.fnGetResourceBundle(el.text)
 				});
 			});
 			return aItems;

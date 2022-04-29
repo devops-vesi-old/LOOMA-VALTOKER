@@ -18,6 +18,7 @@
 				<fb:control>
 					<MultiComboBox 
 						id="filterDomainId" 
+						selectionFinish="onSelectionFinishedMCBVH"
 						showSecondaryValues="true"
 						items="{
 							path:'mVH>/Domain',
@@ -37,10 +38,12 @@
 				<fb:control>
 					<MultiComboBox 
 						id="filterFunctionId" 
+						selectionFinish="onSelectionFinishedMCBVH"
 						showSecondaryValues="true"
 						items="{
 							path:'mVH>/Function',
-							sorter: {path: 'Desc'}}">
+							sorter: {path: 'Desc'},
+							filters:[{path:'', test:'.formatter.fnFilterFunction'}]}">
 						<core:ListItem
 							key="{mVH>Id}" 
 							text="{mVH>Desc}"
@@ -59,7 +62,8 @@
 						showSecondaryValues="true"
 						items="{
 							path:'mVH>/Family',
-							sorter: {path: 'Desc'}}">
+							sorter: {path: 'Desc'},
+							filters:[{path:'', test:'.formatter.fnFilterFamily'}]}">
 						<core:ListItem
 							key="{mVH>Id}" 
 							text="{mVH>Desc}"

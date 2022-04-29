@@ -259,7 +259,31 @@ sap.ui.define([],
 				default:
 					return "Default";
 				}
-			}
+			},
+			
+			/*
+			* Method to filter Function multi combobox
+			*/
+			fnFilterFunction:function(a) {
+				var aSelectedDomain = this.byId("filterDomainId").getSelectedKeys();
+				if (aSelectedDomain.length > 0 && aSelectedDomain.indexOf(a.DomainId) === -1) {
+					return false; // hide
+				}
+				return true; // visible
+			},
+			
+			/*
+			* Method to filter Family multi combobox
+			*/
+			fnFilterFamily:function(a) {
+				var aSelectedDomain = this.byId("filterDomainId").getSelectedKeys(),
+					aSelectedFunction = this.byId("filterFunctionId").getSelectedKeys();
+				if ((aSelectedDomain.length > 0 && aSelectedDomain.indexOf(a.DomainId) === -1 )||
+					(aSelectedFunction.length > 0 && aSelectedFunction.indexOf(a.FunctionId) === -1) ) {
+					return false; // hide
+				}
+				return true; // visible
+			}			
 		};
 
 	});

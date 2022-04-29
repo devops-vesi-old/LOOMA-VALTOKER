@@ -270,12 +270,15 @@ sap.ui.define([
 						//Manage Function
 						if (!oVH.Function[aData[idx].FunctionId]) {
 							oVH.Function[aData[idx].FunctionId] = {
+								DomainId: aData[idx].DomainId,
 								Id: aData[idx].FunctionId,
 								Desc: aData[idx].FunctionDesc
 							};
 						}
 						//Manage Family
 						oVH.Family[aData[idx].FamilyId] = {
+							DomainId: aData[idx].DomainId,
+							FunctionId: aData[idx].FunctionId,
 							Id: aData[idx].FamilyId,
 							Desc: aData[idx].FamilyDesc,
 							ClassId: aData[idx].ClassId
@@ -1033,58 +1036,6 @@ sap.ui.define([
 		 */
 		_ApplyEquipmentMassStatus: function (oEvent, sNewStatus) {
 			this._ApplyMassStatus(oEvent, sNewStatus, true);
-			// // Initialize Id for mass call
-			// var sId = oEvent.getSource().getId().split("-").pop();
-
-			// // Set parameters for singles calls
-			// var oSingleParameters = {
-			// 	async: false,
-			// 	groupId: sId
-			// };
-
-			// //Set parameters for mass cal
-			// var oMassParameters = {
-			// 	async: false,
-			// 	groupId: sId,
-			// 	success: function (oData, resp) {
-			// 		this._bRefreshHierarchy = true;
-			// 		this.fnHideBusyIndicator();
-			// 		this._bindTreeTable();
-			// 		this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
-			// 		sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
-			// 	}.bind(this),
-			// 	error: function (oData, resp) {
-			// 		this.fnHideBusyIndicator();
-			// 		this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
-			// 		this._MessageError("oErrorMassEquipement", this.fnGetResourceBundle("DialogErrorStatusChange"));
-			// 	}.bind(this)
-			// };
-
-			// // Set deferred group for mass call
-			// var oModel = this.getOwnerComponent().getModel();
-			// oModel.setDeferredGroups([sId]);
-			// // Get indices selected
-			// var aIndexSelected = this.byId("EquipmentTable").getSelectedIndices();
-			// // Get rows
-			// var oEquipmentTable = this.byId("EquipmentTable");
-
-			// //Initialize the call by Indices selected
-			// for (var iInd in aIndexSelected) {
-			// 	var oEquipmentSelected = oEquipmentTable.getContextByIndex(aIndexSelected[iInd]).getObject();
-
-			// 	var payload = {
-			// 		Scope: "PEC",
-			// 		EquipmentId: oEquipmentSelected.EquipmentId,
-			// 		UserStatusId: sNewStatus
-			// 	};
-
-			// 	this.fnShowBusyIndicator(null, 0);
-			// 	oModel.create("/UserStatusSet", payload, oSingleParameters);
-			// }
-
-			// if (aIndexSelected.length > 0) {
-			// 	oModel.submitChanges(oMassParameters);
-			// }
 		},
 
 		/*
@@ -1092,56 +1043,6 @@ sap.ui.define([
 		 */
 		_ApplyLocationMassStatus: function (oEvent, sNewStatus) {
 			this._ApplyMassStatus(oEvent, sNewStatus, false);
-			// // Initialize Id for mass call
-			// var sId = oEvent.getSource().getId().split("-").pop();
-
-			// // Set parameters for singles calls
-			// var oSingleParameters = {
-			// 	async: false,
-			// 	groupId: sId
-			// };
-
-			// //Set parameters for mass cal
-			// var oMassParameters = {
-			// 	async: false,
-			// 	groupId: sId,
-			// 	success: function (oData, resp) {
-			// 		this._bRefreshHierarchy = true;
-			// 		this.fnHideBusyIndicator();
-			// 		this._bindTreeTable();
-			// 		sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
-			// 	}.bind(this),
-			// 	error: function (oData, resp) {
-			// 		this.fnHideBusyIndicator();
-			// 		this._MessageError("oErrorMassLocation", this.fnGetResourceBundle("DialogErrorStatusChange"));
-			// 	}.bind(this)
-			// };
-
-			// // Set deferred group for mass call
-			// var oModel = this.getOwnerComponent().getModel();
-			// oModel.setDeferredGroups([sId]);
-			// // Get location table
-			// var oLocationTable = this.byId("LocationHierarchyTreeTable");
-			// // Get indices selected
-			// var aIndexSelected = oLocationTable.getSelectedIndices();
-
-			// //Initialize the call by Indices selected
-			// for (var iInd in aIndexSelected) {
-			// 	var oLocationSelected = oLocationTable.getContextByIndex(aIndexSelected[iInd]).getObject();
-
-			// 	var payload = {
-			// 		Scope: "PEC",
-			// 		LocationId: oLocationSelected.LocationId,
-			// 		UserStatusId: sNewStatus
-			// 	};
-
-			// 	this.fnShowBusyIndicator(null, 0);
-			// 	oModel.create("/UserStatusSet", payload, oSingleParameters);
-			// }
-
-			// if (aIndexSelected.length > 0) {
-			// 	oModel.submitChanges(oMassParameters);
-			// }
 		},
 
 		/*
@@ -1371,38 +1272,6 @@ sap.ui.define([
 		onApplyLocationMassStatus: function (oEvent) {
 			var sUserStatusId = this._fnSetLocationUserStatusId(oEvent);
 			this.onApplyMassStatus(oEvent, "LocationHierarchyTreeTable", "Location", "_ApplyLocationMassStatus", sUserStatusId);
-			// if (this.byId("LocationHierarchyTreeTable").getSelectedIndices().length > 0) {
-			// 	var sStatusText = oEvent.getSource().getText(),
-			// 		sUserStatusId = this._fnSetLocationUserStatusId(oEvent),
-			// 		sMassDialog = "_MassLocationDialog" + sUserStatusId;
-			// 	this._oEventLocation = oEvent;
-			// 	this._sUserStatusIdLocation = sUserStatusId;
-			// 	if (!this[sMassDialog]) {
-			// 		this[sMassDialog] = new sap.m.Dialog({
-			// 			type: sap.m.DialogType.Message,
-			// 			title: this.fnGetResourceBundle("DialogMassLocationTitle"),
-			// 			content: new sap.m.Text({
-			// 				text: this.fnGetResourceBundle("DialogMassLocationMessage", [sStatusText])
-			// 			}),
-			// 			beginButton: new sap.m.Button({
-			// 				type: sap.m.ButtonType.Emphasized,
-			// 				text: this.fnGetResourceBundle("yes"),
-			// 				press: function () {
-			// 					this._ApplyLocationMassStatus(this._oEventLocation, this._sUserStatusIdLocation);
-			// 					this[sMassDialog].close();
-			// 				}.bind(this)
-			// 			}),
-			// 			endButton: new sap.m.Button({
-			// 				text: this.fnGetResourceBundle("no"),
-			// 				press: function () {
-			// 					this[sMassDialog].close();
-			// 				}.bind(this)
-			// 			})
-			// 		});
-			// 	}
-
-			// 	this[sMassDialog].open();
-			// }
 		},
 
 		/*
@@ -1411,38 +1280,6 @@ sap.ui.define([
 		onApplyEquipmentMassStatus: function (oEvent) {
 			var sUserStatusId = this._fnSetEquipmentUserStatusId(oEvent);
 			this.onApplyMassStatus(oEvent, "EquipmentTable", "Equipment", "_ApplyEquipmentMassStatus", sUserStatusId);
-			// if (this.byId("EquipmentTable").getSelectedIndices().length > 0) {
-			// 	var sStatusText = oEvent.getSource().getText(),
-			// 		sUserStatusId = this._fnSetEquipmentUserStatusId(oEvent),
-			// 		sMassDialog = "_MassEquipmentDialog" + sUserStatusId;
-			// 	this._oEventEquipment = oEvent;
-			// 	this._sUserStatusIdEquipment = sUserStatusId;
-			// 	if (!this[sMassDialog]) {
-			// 		this[sMassDialog] = new sap.m.Dialog({
-			// 			type: sap.m.DialogType.Message,
-			// 			title: this.fnGetResourceBundle("DialogMassEquipmentTitle"),
-			// 			content: new sap.m.Text({
-			// 				text: this.fnGetResourceBundle("DialogMassEquipmentMessage", [sStatusText])
-			// 			}),
-			// 			beginButton: new sap.m.Button({
-			// 				type: sap.m.ButtonType.Emphasized,
-			// 				text: this.fnGetResourceBundle("yes"),
-			// 				press: function () {
-			// 					this._ApplyEquipmentMassStatus(this._oEventEquipment, this._sUserStatusIdEquipment);
-			// 					this[sMassDialog].close();
-			// 				}.bind(this)
-			// 			}),
-			// 			endButton: new sap.m.Button({
-			// 				text: this.fnGetResourceBundle("no"),
-			// 				press: function () {
-			// 					this[sMassDialog].close();
-			// 				}.bind(this)
-			// 			})
-			// 		});
-			// 	}
-
-			// 	this[sMassDialog].open();
-			// }
 		},
 
 		/*
@@ -1616,7 +1453,7 @@ sap.ui.define([
 		},
 
 		/*
-		 *
+		 * Event fire when press on button Synchronise with FSM
 		 */
 		onSynchroniseWithFSM: function () {
 			if (!this._oSynchroniseDialog) {
@@ -1654,6 +1491,13 @@ sap.ui.define([
 
 			this._oSynchroniseDialog.open();
 
+		},
+		
+		/*
+		 * Event fire when needed after a selection on multicombobox
+		 */		
+		onSelectionFinishedMCBVH:function() {
+			this.fnGetModel("mVH").refresh(true);
 		}
 
 	});

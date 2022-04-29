@@ -64,7 +64,7 @@
 				hAlign="Begin"
 				resizable="false"
 				sortProperty="TypeDesc"
-				width="15%">
+				width="12%">
 				<Text text="{i18n>siteTableColumnHeaderType}"/>
 				<ui:template>
 					<Text text="{mSite>TypeDesc}"/>
@@ -76,7 +76,7 @@
 				hAlign="Begin"
 				resizable="false"
 				sortProperty="StatusDesc"
-				width="15%">
+				width="10%">
 				<Text text="{i18n>siteTableColumnHeaderStatus}"/>
 				<ui:template>
 					<Text text="{mSite>StatusDesc}"/>
@@ -159,7 +159,7 @@
 				hAlign="Begin"
 				resizable="false"
 				sortProperty="EquipmentsToValidate"
-				width="5%">
+				width="10%">
 				<Text text="{i18n>siteTableColumnHeaderEquipmentsToValidate}"/>
 				<ui:template>
 					<Text text="{mSite>EquipmentsToValidate}" />
@@ -171,7 +171,7 @@
 				hAlign="Begin"
 				resizable="false"
 				sortProperty="EquipmentsTotal"
-				width="5%">
+				width="10%">
 				<Text text="{i18n>siteTableColumnHeaderEquipmentsTotal}"/>
 				<ui:template>
 					<Text text="{mSite>EquipmentsTotal}" />

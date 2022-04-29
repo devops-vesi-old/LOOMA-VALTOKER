@@ -54,7 +54,7 @@
 			<t:Column 
 				id="EquipmentIdCol"
 				hAlign="Center" 
-				width="8%" 
+				width="7%" 
 				filterProperty="EquipmentId" 
 				sortProperty="EquipmentId">
 				<Label text="{i18n>EquipmentTblColHdrEquipmentId}" wrapping="true"/>
@@ -78,7 +78,7 @@
 			<t:Column 
 				id="EquipmentNameCol"
 				hAlign="Left" 
-				width="12%" 
+				width="13%" 
 				filterProperty="EquipmentName" 
 				sortProperty="EquipmentName">
 				<Label text="{i18n>EquipmentTblColHdrEquipmentName}" wrapping="true"/>
@@ -89,7 +89,7 @@
 			<t:Column 
 				id="CompleteLocationNameCol"
 				hAlign="Left" 
-				width="25%" 
+				width="20%" 
 				sortProperty="CompleteLocationName">
 				<Label text="{i18n>EquipmentTblColHdrLocationName}" wrapping="true"/>
 				<t:template>
@@ -112,7 +112,7 @@
 			<t:Column 
 				id="CommentCol"
 				hAlign="Center" 
-				width="5%">
+				width="7%">
 				<Label text="{i18n>EquipmentTblColHdrComment}" wrapping="true"/>
 				<t:template>
 					<core:Icon 
@@ -160,7 +160,7 @@
 			<t:Column 
 				id="FamilyImportantCounter"
 				hAlign="Center"
-				width="5%" 
+				width="10%" 
 				sortProperty="FamilyCharactImportantSorter">
 				<Label text="{i18n>EquipmentTblColHdrFamilyImportantCounter}" wrapping="true"/>
 				<t:template>

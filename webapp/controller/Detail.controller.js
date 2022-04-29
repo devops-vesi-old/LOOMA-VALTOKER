@@ -953,28 +953,6 @@ sap.ui.define([
 		_ApplyLocationStatus: function (oEvent, sNewStatus) {
 			var sLocationId = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().LocationId;
 			this._ApplyStatus(oEvent, sNewStatus, "", sLocationId);
-			// var oParameters = {
-			// 	async: false,
-			// 	success: function (oData, resp) {
-			// 		this._bRefreshHierarchy = true;
-			// 		this.fnHideBusyIndicator();
-			// 		this._bindTreeTable();
-			// 		sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
-			// 	}.bind(this),
-			// 	error: function (oData, resp) {
-			// 		this.fnHideBusyIndicator();
-			// 		this._MessageError("oErrorLocationStatus", this.fnGetResourceBundle("DialogErrorStatusChange"));
-			// 	}.bind(this)
-			// };
-
-			// var payload = {
-			// 	Scope: "PEC",
-			// 	LocationId: oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().LocationId,
-			// 	UserStatusId: sNewStatus
-			// };
-
-			// this.fnShowBusyIndicator(null, 0);
-			// this.getOwnerComponent().getModel().create("/UserStatusSet", payload, oParameters);
 		},
 
 		/*
@@ -983,8 +961,92 @@ sap.ui.define([
 		_ApplyEquipmentStatus: function (oEvent, sNewStatus) {
 			var sEquipmentId = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().EquipmentId;
 			this._ApplyStatus(oEvent, sNewStatus, sEquipmentId, "");
-			// var oParameters = {
+		},
+		
+		/*
+		 * Method is called to update status for a list of Object
+		 */
+		_ApplyMassStatus: function (oEvent, sNewStatus, bIsEquipments) {
+			// Initialize Id for mass call
+			var sId = oEvent.getSource().getId().split("-").pop(),
+				sObjectName = bIsEquipments ? "Equipment" : "Location",
+				sTableName = bIsEquipments ? "EquipmentTable" : "LocationHierarchyTreeTable";
+
+			// Set parameters for singles calls
+			var oSingleParameters = {
+				async: false,
+				groupId: sId
+			};
+
+			//Set parameters for mass cal
+			var oMassParameters = {
+				async: false,
+				groupId: sId,
+				success: function (oData, resp) {
+					this._bRefreshHierarchy = true;
+					this.fnHideBusyIndicator();
+					this._bindTreeTable();
+					if (bIsEquipments) {
+						this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
+					}
+					sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
+				}.bind(this),
+				error: function (oData, resp) {
+					this.fnHideBusyIndicator();
+					if (bIsEquipments) {
+					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
+					}
+					this._MessageError("oErrorMass"+sObjectName, this.fnGetResourceBundle("DialogErrorStatusChange"));
+				}.bind(this)
+			};
+
+			// Set deferred group for mass call
+			var oModel = this.getOwnerComponent().getModel();
+			oModel.setDeferredGroups([sId]);
+			// Get rows
+			var oObjectTable = this.byId(sTableName);			
+			// Get indices selected
+			var aIndexSelected = oObjectTable.getSelectedIndices();
+
+			//Initialize the call by Indices selected
+			for (var iInd in aIndexSelected) {
+				var oObjectSelected = oObjectTable.getContextByIndex(aIndexSelected[iInd]).getObject();
+
+				var payload = {
+					Scope: "PEC",
+					EquipmentId: bIsEquipments ? oObjectSelected.EquipmentId : "",
+					LocationId : bIsEquipments ? "" : oObjectSelected.LocationId,
+					UserStatusId: sNewStatus
+				};
+
+				this.fnShowBusyIndicator(null, 0);
+				oModel.create("/UserStatusSet", payload, oSingleParameters);
+			}
+
+			if (aIndexSelected.length > 0) {
+				oModel.submitChanges(oMassParameters);
+			}
+		},
+		
+
+		/*
+		 * Method is called to update status for a list of equipment
+		 */
+		_ApplyEquipmentMassStatus: function (oEvent, sNewStatus) {
+			this._ApplyMassStatus(oEvent, sNewStatus, true);
+			// // Initialize Id for mass call
+			// var sId = oEvent.getSource().getId().split("-").pop();
+
+			// // Set parameters for singles calls
+			// var oSingleParameters = {
 			// 	async: false,
+			// 	groupId: sId
+			// };
+
+			// //Set parameters for mass cal
+			// var oMassParameters = {
+			// 	async: false,
+			// 	groupId: sId,
 			// 	success: function (oData, resp) {
 			// 		this._bRefreshHierarchy = true;
 			// 		this.fnHideBusyIndicator();
@@ -995,132 +1057,92 @@ sap.ui.define([
 			// 	error: function (oData, resp) {
 			// 		this.fnHideBusyIndicator();
 			// 		this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
-			// 		this._MessageError("oErrorEquipementStatus", this.fnGetResourceBundle("DialogErrorStatusChange"));
+			// 		this._MessageError("oErrorMassEquipement", this.fnGetResourceBundle("DialogErrorStatusChange"));
 			// 	}.bind(this)
 			// };
 
-			// var payload = {
-			// 	Scope: "PEC",
-			// 	EquipmentId: oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().EquipmentId,
-			// 	UserStatusId: sNewStatus
-			// };
+			// // Set deferred group for mass call
+			// var oModel = this.getOwnerComponent().getModel();
+			// oModel.setDeferredGroups([sId]);
+			// // Get indices selected
+			// var aIndexSelected = this.byId("EquipmentTable").getSelectedIndices();
+			// // Get rows
+			// var oEquipmentTable = this.byId("EquipmentTable");
 
-			// this.fnShowBusyIndicator(null, 0);
-			// this.getOwnerComponent().getModel().create("/UserStatusSet", payload, oParameters);
-		},
+			// //Initialize the call by Indices selected
+			// for (var iInd in aIndexSelected) {
+			// 	var oEquipmentSelected = oEquipmentTable.getContextByIndex(aIndexSelected[iInd]).getObject();
 
-		/*
-		 * Method is called to update status for a list of equipment
-		 */
-		_ApplyEquipmentMassStatus: function (oEvent, sNewStatus) {
-			// Initialize Id for mass call
-			var sId = oEvent.getSource().getId().split("-").pop();
+			// 	var payload = {
+			// 		Scope: "PEC",
+			// 		EquipmentId: oEquipmentSelected.EquipmentId,
+			// 		UserStatusId: sNewStatus
+			// 	};
 
-			// Set parameters for singles calls
-			var oSingleParameters = {
-				async: false,
-				groupId: sId
-			};
+			// 	this.fnShowBusyIndicator(null, 0);
+			// 	oModel.create("/UserStatusSet", payload, oSingleParameters);
+			// }
 
-			//Set parameters for mass cal
-			var oMassParameters = {
-				async: false,
-				groupId: sId,
-				success: function (oData, resp) {
-					this._bRefreshHierarchy = true;
-					this.fnHideBusyIndicator();
-					this._bindTreeTable();
-					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
-					sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
-				}.bind(this),
-				error: function (oData, resp) {
-					this.fnHideBusyIndicator();
-					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
-					this._MessageError("oErrorMassEquipement", this.fnGetResourceBundle("DialogErrorStatusChange"));
-				}.bind(this)
-			};
-
-			// Set deferred group for mass call
-			var oModel = this.getOwnerComponent().getModel();
-			oModel.setDeferredGroups([sId]);
-			// Get indices selected
-			var aIndexSelected = this.byId("EquipmentTable").getSelectedIndices();
-			// Get rows
-			var oEquipmentTable = this.byId("EquipmentTable");
-
-			//Initialize the call by Indices selected
-			for (var iInd in aIndexSelected) {
-				var oEquipmentSelected = oEquipmentTable.getContextByIndex(aIndexSelected[iInd]).getObject();
-
-				var payload = {
-					Scope: "PEC",
-					EquipmentId: oEquipmentSelected.EquipmentId,
-					UserStatusId: sNewStatus
-				};
-
-				this.fnShowBusyIndicator(null, 0);
-				oModel.create("/UserStatusSet", payload, oSingleParameters);
-			}
-
-			if (aIndexSelected.length > 0) {
-				oModel.submitChanges(oMassParameters);
-			}
+			// if (aIndexSelected.length > 0) {
+			// 	oModel.submitChanges(oMassParameters);
+			// }
 		},
 
 		/*
 		 * Method is called to update status for a list of location
 		 */
 		_ApplyLocationMassStatus: function (oEvent, sNewStatus) {
-			// Initialize Id for mass call
-			var sId = oEvent.getSource().getId().split("-").pop();
+			this._ApplyMassStatus(oEvent, sNewStatus, false);
+			// // Initialize Id for mass call
+			// var sId = oEvent.getSource().getId().split("-").pop();
 
-			// Set parameters for singles calls
-			var oSingleParameters = {
-				async: false,
-				groupId: sId
-			};
+			// // Set parameters for singles calls
+			// var oSingleParameters = {
+			// 	async: false,
+			// 	groupId: sId
+			// };
 
-			//Set parameters for mass cal
-			var oMassParameters = {
-				async: false,
-				groupId: sId,
-				success: function (oData, resp) {
-					this._bRefreshHierarchy = true;
-					this.fnHideBusyIndicator();
-					this._bindTreeTable();
-					sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
-				}.bind(this),
-				error: function (oData, resp) {
-					this.fnHideBusyIndicator();
-					this._MessageError("oErrorMassLocation", this.fnGetResourceBundle("DialogErrorStatusChange"));
-				}.bind(this)
-			};
+			// //Set parameters for mass cal
+			// var oMassParameters = {
+			// 	async: false,
+			// 	groupId: sId,
+			// 	success: function (oData, resp) {
+			// 		this._bRefreshHierarchy = true;
+			// 		this.fnHideBusyIndicator();
+			// 		this._bindTreeTable();
+			// 		sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
+			// 	}.bind(this),
+			// 	error: function (oData, resp) {
+			// 		this.fnHideBusyIndicator();
+			// 		this._MessageError("oErrorMassLocation", this.fnGetResourceBundle("DialogErrorStatusChange"));
+			// 	}.bind(this)
+			// };
 
-			// Set deferred group for mass call
-			var oModel = this.getOwnerComponent().getModel();
-			oModel.setDeferredGroups([sId]);
-			// Get location table
-			var oLocationTable = this.byId("LocationHierarchyTreeTable");
-			// Get indices selected
-			var aIndexSelected = oLocationTable.getSelectedIndices();
+			// // Set deferred group for mass call
+			// var oModel = this.getOwnerComponent().getModel();
+			// oModel.setDeferredGroups([sId]);
+			// // Get location table
+			// var oLocationTable = this.byId("LocationHierarchyTreeTable");
+			// // Get indices selected
+			// var aIndexSelected = oLocationTable.getSelectedIndices();
 
-			//Initialize the call by Indices selected
-			for (var iInd in aIndexSelected) {
-				var oLocationSelected = oLocationTable.getContextByIndex(aIndexSelected[iInd]).getObject();
+			// //Initialize the call by Indices selected
+			// for (var iInd in aIndexSelected) {
+			// 	var oLocationSelected = oLocationTable.getContextByIndex(aIndexSelected[iInd]).getObject();
 
-				var payload = {
-					Scope: "PEC",
-					LocationId: oLocationSelected.LocationId,
-					UserStatusId: sNewStatus
-				};
+			// 	var payload = {
+			// 		Scope: "PEC",
+			// 		LocationId: oLocationSelected.LocationId,
+			// 		UserStatusId: sNewStatus
+			// 	};
 
-				this.fnShowBusyIndicator(null, 0);
-				oModel.create("/UserStatusSet", payload, oSingleParameters);
-			}
+			// 	this.fnShowBusyIndicator(null, 0);
+			// 	oModel.create("/UserStatusSet", payload, oSingleParameters);
+			// }
 
-			if (aIndexSelected.length > 0) {
-				oModel.submitChanges(oMassParameters);
-			}
+			// if (aIndexSelected.length > 0) {
+			// 	oModel.submitChanges(oMassParameters);
+			// }
 		},
 
 		/*

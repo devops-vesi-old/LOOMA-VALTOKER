@@ -370,7 +370,7 @@ sap.ui.define([
 						StatusFSM: oLocationFSM[oNodeIn.LocationId].StatusFSM,
 						children: []
 					};
-					
+
 					if (oNodeOut.LoomaTypeId === "SITE" && oNodeOut.StatusFSM === 1) {
 						oDetailPageModel.getData().SynchroniseFSM = true;
 					}
@@ -592,9 +592,9 @@ sap.ui.define([
 				MessageBox.error(sMsg);
 			}
 		},
-		
-		_MessageError:function(sDialogName, sText) {
-		if (!this[sDialogName]) {
+
+		_MessageError: function (sDialogName, sText) {
+			if (!this[sDialogName]) {
 				this[sDialogName] = new sap.m.Dialog({
 					type: sap.m.DialogType.Message,
 					title: "Error",
@@ -610,7 +610,7 @@ sap.ui.define([
 				});
 			}
 
-			this[[sDialogName]].open();	
+			this[[sDialogName]].open();
 		},
 
 		/*
@@ -911,24 +911,35 @@ sap.ui.define([
 			oLine.FamilyCharactImportantSorter = iTot === 0 ? 1 : iCount / iTot;
 		},
 
-		_ApplyLocationStatus: function (oEvent, sNewStatus) {
+		/*
+		 * Method is called to update status for 1 object
+		 */
+		_ApplyStatus: function (oEvent, sNewStatus, sEquipmentId, sLocationId) {
+			var sObjectName = sEquipmentId === "" ? "Location" : "Equipement";
 			var oParameters = {
 				async: false,
 				success: function (oData, resp) {
 					this._bRefreshHierarchy = true;
 					this.fnHideBusyIndicator();
 					this._bindTreeTable();
+					if (sEquipmentId !== "") {
+						this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
+					}
 					sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
 				}.bind(this),
 				error: function (oData, resp) {
 					this.fnHideBusyIndicator();
-					this._MessageError("oErrorLocationStatus",this.fnGetResourceBundle("DialogErrorStatusChange"));
+					if (sEquipmentId !== "") {
+						this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
+					}
+					this._MessageError("oError" + sObjectName + "Status", this.fnGetResourceBundle("DialogErrorStatusChange"));
 				}.bind(this)
 			};
 
 			var payload = {
 				Scope: "PEC",
-				LocationId: oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().LocationId,
+				EquipmentId: sEquipmentId,
+				LocationId: sLocationId,
 				UserStatusId: sNewStatus
 			};
 
@@ -937,33 +948,65 @@ sap.ui.define([
 		},
 
 		/*
+		 * Method is called to update status for 1 location
+		 */
+		_ApplyLocationStatus: function (oEvent, sNewStatus) {
+			var sLocationId = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().LocationId;
+			this._ApplyStatus(oEvent, sNewStatus, "", sLocationId);
+			// var oParameters = {
+			// 	async: false,
+			// 	success: function (oData, resp) {
+			// 		this._bRefreshHierarchy = true;
+			// 		this.fnHideBusyIndicator();
+			// 		this._bindTreeTable();
+			// 		sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
+			// 	}.bind(this),
+			// 	error: function (oData, resp) {
+			// 		this.fnHideBusyIndicator();
+			// 		this._MessageError("oErrorLocationStatus", this.fnGetResourceBundle("DialogErrorStatusChange"));
+			// 	}.bind(this)
+			// };
+
+			// var payload = {
+			// 	Scope: "PEC",
+			// 	LocationId: oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().LocationId,
+			// 	UserStatusId: sNewStatus
+			// };
+
+			// this.fnShowBusyIndicator(null, 0);
+			// this.getOwnerComponent().getModel().create("/UserStatusSet", payload, oParameters);
+		},
+
+		/*
 		 * Method is called to update status for 1 equipment
 		 */
 		_ApplyEquipmentStatus: function (oEvent, sNewStatus) {
-			var oParameters = {
-				async: false,
-				success: function (oData, resp) {
-					this._bRefreshHierarchy = true;
-					this.fnHideBusyIndicator();
-					this._bindTreeTable();
-					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
-					sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
-				}.bind(this),
-				error: function (oData, resp) {
-					this.fnHideBusyIndicator();
-					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
-					this._MessageError("oErrorEquipementStatus",this.fnGetResourceBundle("DialogErrorStatusChange"));
-				}.bind(this)
-			};
+			var sEquipmentId = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().EquipmentId;
+			this._ApplyStatus(oEvent, sNewStatus, sEquipmentId, "");
+			// var oParameters = {
+			// 	async: false,
+			// 	success: function (oData, resp) {
+			// 		this._bRefreshHierarchy = true;
+			// 		this.fnHideBusyIndicator();
+			// 		this._bindTreeTable();
+			// 		this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
+			// 		sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
+			// 	}.bind(this),
+			// 	error: function (oData, resp) {
+			// 		this.fnHideBusyIndicator();
+			// 		this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
+			// 		this._MessageError("oErrorEquipementStatus", this.fnGetResourceBundle("DialogErrorStatusChange"));
+			// 	}.bind(this)
+			// };
 
-			var payload = {
-				Scope: "PEC",
-				EquipmentId: oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().EquipmentId,
-				UserStatusId: sNewStatus
-			};
+			// var payload = {
+			// 	Scope: "PEC",
+			// 	EquipmentId: oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().EquipmentId,
+			// 	UserStatusId: sNewStatus
+			// };
 
-			this.fnShowBusyIndicator(null, 0);
-			this.getOwnerComponent().getModel().create("/UserStatusSet", payload, oParameters);
+			// this.fnShowBusyIndicator(null, 0);
+			// this.getOwnerComponent().getModel().create("/UserStatusSet", payload, oParameters);
 		},
 
 		/*
@@ -993,7 +1036,7 @@ sap.ui.define([
 				error: function (oData, resp) {
 					this.fnHideBusyIndicator();
 					this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
-					this._MessageError("oErrorMassEquipement",this.fnGetResourceBundle("DialogErrorStatusChange"));
+					this._MessageError("oErrorMassEquipement", this.fnGetResourceBundle("DialogErrorStatusChange"));
 				}.bind(this)
 			};
 
@@ -1049,7 +1092,7 @@ sap.ui.define([
 				}.bind(this),
 				error: function (oData, resp) {
 					this.fnHideBusyIndicator();
-					this._MessageError("oErrorMassLocation",this.fnGetResourceBundle("DialogErrorStatusChange"));
+					this._MessageError("oErrorMassLocation", this.fnGetResourceBundle("DialogErrorStatusChange"));
 				}.bind(this)
 			};
 

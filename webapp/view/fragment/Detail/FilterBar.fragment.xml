@@ -97,8 +97,7 @@
 							},
 							sorter: { 
 								path: 'StatusDesc' 
-								}}"
-						selectedKeys="E0005">
+								}}">
 						<core:ListItem 
 							key="{VH>StatusInternalId}" 
 							text="{VH>StatusDesc}"

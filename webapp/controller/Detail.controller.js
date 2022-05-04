@@ -297,7 +297,10 @@ sap.ui.define([
 		 */
 		_initDefaultFilterMCB: function () {
 			var aDefault = {
-				filterStatusInternalId: ["E0002", "E0004", "E0009", "E0003"],
+				filterStatusInternalId: [
+					"E0004", // To be deleted
+					"E0003" // Takeover done
+					],
 				filterDomainId: [],
 				filterFunctionId: [],
 				filterFamilyId: []

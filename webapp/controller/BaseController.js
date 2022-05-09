@@ -110,12 +110,13 @@ sap.ui.define([
 		},
 		_getItemAggrDataForPerso: function (aColumnData) {
 			var aItems = [];
-			aColumnData.forEach(function (el) {
+			for (var iCol in aColumnData) {
+				var oCol = aColumnData[iCol];
 				aItems.push({
-					columnKey: el.columnKey,
-					text: this.fnGetResourceBundle(el.text)
+					columnKey: oCol.columnKey,
+					text: this.fnGetResourceBundle(oCol.text)
 				});
-			});
+			}
 			return aItems;
 		},
 		_fnOpenPersoDialog: function (oPersoData, sOrigTableId) {

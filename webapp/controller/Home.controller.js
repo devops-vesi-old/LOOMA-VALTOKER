@@ -360,7 +360,7 @@ sap.ui.define([
 					};
 					this.fnHideBusyIndicator();
 					this.fnSetJSONModel(oSite, "mSite");
-				}
+				}.bind(this)
 			};
 			this.fnShowBusyIndicator(null, 0);
 			this.fnGetODataModel().read("/SiteSet", mParams);

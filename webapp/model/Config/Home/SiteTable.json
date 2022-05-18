@@ -19,7 +19,7 @@
 	"visible": true,
 	"index": 3
 }, {
-	"columnKey": "IsTakeoverInProgress",
+	"columnKey": "IsTakeoverInProgressCol",
 	"text": "siteTableColumnHeaderIsTakeoverInProgress",
 	"visible": true,
 	"index": 4

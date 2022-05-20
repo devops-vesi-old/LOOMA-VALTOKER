@@ -2,7 +2,7 @@
 	xmlns="sap.m" 
 	xmlns:core="sap.ui.core">
 	<Popover 
-		id="FamilyCharactPopover" 
+		id="OtherPropertiesPopover" 
 		placement="Left" 
 		showHeader="false">
 		<Panel width="100%">

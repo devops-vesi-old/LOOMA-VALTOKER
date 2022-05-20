@@ -1566,13 +1566,13 @@ sap.ui.define([
 						"AmdecStateId",
 						"AmdecDisrepairId",
 						"AmdecAccessibilityId",
-						"AmdecReliabilityId",
+						"AmdecFunctionningId"
 					],
 					Amdec2: [
 						"AmdecCriticityId",
 						"AmdecDetectabilityId",
-						"AmdecFunctionningId"
-					],
+						"AmdecReliabilityId"
+					]
 				},
 				oObjectView = oEvent.getSource(),
 				idFrag = oObjectView.getId().split("Object").pop().split("-").shift(),

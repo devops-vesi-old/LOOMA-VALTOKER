@@ -48,14 +48,19 @@
 	"text": "EquipmentTblColHdrFamilyImportantCounter",
 	"visible": true,
 	"index": 9	
+}, {
+	"columnKey": "OtherProperties",
+	"text": "EquipmentTblColHdrOtherProperties",
+	"visible": true,
+	"index": 10	
 }, {	
 	"columnKey": "ModificationCol",
 	"text": "EquipmentTblColHdrModification",
 	"visible": true,
-	"index": 10
+	"index": 11
 }, {
 	"columnKey": "ActionCol",
 	"text": "EquipmentTblColHdrAction",
 	"visible": true,
-	"index": 11
+	"index": 12
 }]

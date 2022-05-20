@@ -35,11 +35,11 @@
 					tooltip="{i18n>EquipmentMassButtonTooltipValidate}"
 					type="Accept"/>
 				<Button 
-					enabled="{= ${mDetailPage>/bEquipmentSelected}}"
+					enabled="{= ${mDetailPage>/bEquipmentSelectedDeletable}}"
 					icon="sap-icon://delete"
 					press="onApplyEquipmentMassStatus"
 					text="{i18n>EquipmentMassButtonTooltipReject}"
-					tooltip="{i18n>EquipmentMassButtonTooltipReject}"
+					tooltip="{= ${mDetailPage>/bEquipmentSelectedDeletable} ? ${i18n>EquipmentMassButtonTooltipReject} : ${i18n>EquipmentMassButtonTooltipRejectDisable}}"
 					type="Reject"/>
 				<Button 
 					enabled="{= ${mDetailPage>/bEquipmentSelected}}"
@@ -141,7 +141,10 @@
 				sortProperty="UserStatusDesc">
 				<Label text="{i18n>EquipmentTblColHdrUserStatus}" wrapping="true"/>
 				<t:template>
-					<Text text="{mEquipment>UserStatusDesc}"/>
+					<ObjectStatus 
+							text="{mEquipment>UserStatusDesc}"
+							icon="{= ${mEquipment>UserStatusId} === 'E0005' ? 'sap-icon://accept' : ''}"
+							state="{= ${mEquipment>UserStatusId} === 'E0005' ? 'Success' : ${mEquipment>UserStatusId} === 'E0006' ? 'Warning' : 'None'}"/>					
 				</t:template>
 			</t:Column>
 			<t:Column 
@@ -152,9 +155,12 @@
 				<Label text="{i18n>EquipmentTblColHdrAmdecCounter}" wrapping="true"/>
 				<t:template>
 					<ObjectStatus 
-							text="{= ${mEquipment>IsAmdecComplete} ? '' : ${mEquipment>AmdecCounter}}"
-							icon="{= ${mEquipment>IsAmdecComplete} ? 'sap-icon://accept' : 'sap-icon://alert'}"
-							state="{= ${mEquipment>IsAmdecComplete} ? 'Success' : 'Warning'}"/>
+						id="ObjectAmdec"
+						text="{= ${mEquipment>IsAmdecComplete} ? '' : ${mEquipment>AmdecCounter}}"
+						icon="{= ${mEquipment>IsAmdecComplete} ? 'sap-icon://accept' : 'sap-icon://alert'}"
+						active="true"
+						press="onDisplayDetailEquipment"
+						state="{= ${mEquipment>IsAmdecComplete} ? 'Success' : 'Warning'}"/>
 				</t:template>
 			</t:Column>	
 			<t:Column 
@@ -165,10 +171,26 @@
 				<Label text="{i18n>EquipmentTblColHdrFamilyImportantCounter}" wrapping="true"/>
 				<t:template>
 					<ObjectStatus 
-							text="{= ${mEquipment>IsFamilyCharactImportantComplete} ? '' : ${mEquipment>FamilyCharactImportantCounter}}"
-							icon="{= ${mEquipment>IsFamilyCharactImportantComplete} ? 'sap-icon://accept' : 'sap-icon://alert'}"
-							state="{= ${mEquipment>IsFamilyCharactImportantComplete} ? 'Success' : 'Warning'}"
-							visible="{= ${mEquipment>FamilyCharactImportantCounter} === '-' ? false : true}"/>
+						id="ObjectFamilyCharact"
+						text="{= ${mEquipment>IsFamilyCharactImportantComplete} ? '' : ${mEquipment>FamilyCharactImportantCounter}}"
+						icon="{= ${mEquipment>IsFamilyCharactImportantComplete} ? 'sap-icon://accept' : 'sap-icon://alert'}"
+						state="{= ${mEquipment>IsFamilyCharactImportantComplete} ? 'Success' : 'Warning'}"
+						active="true"
+						press="onDisplayDetailEquipment"
+						visible="{= ${mEquipment>FamilyCharactImportantCounter} === '-' ? false : true}"/>
+				</t:template>
+			</t:Column>	
+			<t:Column 
+				id="OtherProperties"
+				hAlign="Center"
+				width="5%" >
+				<Label text="{i18n>EquipmentTblColHdrOtherProperties}" wrapping="true"/>
+				<t:template>
+					<core:Icon 
+						id="ObjectOtherProperties"
+						src="sap-icon://display-more"
+						color="Neutral"
+						press="onDisplayDetailEquipment"/>
 				</t:template>
 			</t:Column>				
 			<t:Column 
@@ -198,7 +220,7 @@
 			<t:Column 
 				id="ActionCol"
 				hAlign="Center" 
-				width="9rem">
+				width="9.5rem">
 				<Label text="{i18n>EquipmentTblColHdrAction}"/>
 				<t:template>
 					<Bar class="customNoBoxShadow">
@@ -214,8 +236,9 @@
 							<Button 
 								icon="sap-icon://delete"
 								press="onApplyEquipmentStatus"
-								tooltip="{i18n>EquipmentTableButtonTooltipReject}"
+								tooltip="{= ${mLocationHierarchy>Deletable} ? ${i18n>EquipmentTableButtonTooltipReject} : ${i18n>EquipmentTableButtonTooltipRejectDisable}}"
 								type="Reject"
+								enabled="{mEquipment>Deletable}"
 								visible="{= ${mEquipment>UserStatusId} !== 'E0006'}"/>
 						</contentMiddle>
 						<contentRight>

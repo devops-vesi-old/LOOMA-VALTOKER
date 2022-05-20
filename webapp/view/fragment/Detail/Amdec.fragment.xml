@@ -1,0 +1,57 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core">
+	<Popover 
+		id="AmdecPopover" 
+		placement="Left" 
+		showHeader="false">
+		<VBox>
+			<Panel width="100%">
+				<headerToolbar>
+					<OverflowToolbar>
+						<Title text="{i18n>TitleAmdecIndicator1}"/>
+					</OverflowToolbar>
+				</headerToolbar>
+				<content>
+					<VBox  items="{mDisplayPopover>/Amdec1}">
+						<HBox alignItems="Start">
+							<HBox width="13rem">
+								<ObjectStatus 
+									text="{mDisplayPopover>i18n}"
+									icon="{mDisplayPopover>icon}"
+									state="{mDisplayPopover>state}"/>
+							</HBox>
+							<Text 
+								text=":" 
+								width="0.5rem"/>
+							<Text text="{mDisplayPopover>text}"/>
+						</HBox>
+					</VBox>
+				</content>
+			</Panel>				
+			<Panel width="100%">
+				<headerToolbar>
+					<OverflowToolbar>
+						<Title text="{i18n>TitleAmdecIndicator2}"/>
+					</OverflowToolbar>
+				</headerToolbar>
+				<content>
+					<VBox  items="{mDisplayPopover>/Amdec2}">
+						<HBox alignItems="Start">
+							<HBox width="13rem">
+								<ObjectStatus 
+									text="{mDisplayPopover>i18n}"
+									icon="{mDisplayPopover>icon}"
+									state="{mDisplayPopover>state}"/>
+							</HBox>
+							<Text 
+								text=":" 
+								width="0.5rem"/>
+							<Text text="{mDisplayPopover>text}"/>
+						</HBox>
+					</VBox>
+				</content>				
+			</Panel>
+		</VBox>
+	</Popover>
+</core:FragmentDefinition>

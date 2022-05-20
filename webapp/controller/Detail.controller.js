@@ -45,6 +45,7 @@ sap.ui.define([
 		//--------------------------------------------
 		_onPatternMatched: function (oEvent) {
 			var sObjectId = oEvent.getParameter("arguments").SiteId;
+			this._bRefreshHierarchy = false;
 			this.fnSetJSONModel({}, "mSite");
 			this.fnSetJSONModel({}, "mLocationHierarchy");
 			this.fnSetJSONModel({}, "mEquipment");
@@ -126,7 +127,8 @@ sap.ui.define([
 						}
 
 						oCharacteristic.Class[oLine.ClassId][oLine.CharactId] = {
-							CharactImportant: oLine.CharactImportant
+							CharactImportant: oLine.CharactImportant,
+							CharactName: oLine.CharactName
 						};
 
 						if (oLine.CharactImportant) {
@@ -141,7 +143,8 @@ sap.ui.define([
 								CharactLength: oLine.CharactLength,
 								CharactDecimal: oLine.CharactDecimal,
 								CharactUnit: oLine.CharactUnit,
-								CharactListOfValue: oLine.CharactListOfValue
+								CharactListOfValue: oLine.CharactListOfValue,
+								CharactInterval: oLine.CharactInterval,
 							};
 						}
 
@@ -300,7 +303,7 @@ sap.ui.define([
 				filterStatusInternalId: [
 					"E0004", // To be deleted
 					"E0003" // Takeover done
-					],
+				],
 				filterDomainId: [],
 				filterFunctionId: [],
 				filterFamilyId: []
@@ -318,7 +321,9 @@ sap.ui.define([
 			var oDetailPage = {
 				"bSwitchDirect": false,
 				"bEquipmentSelected": false,
-				"bLocationSelected": false
+				"bEquipmentSelectedDeletable": false,
+				"bLocationSelected": false,
+				"bLocationSelectedDeletable": false
 			};
 			this.fnSetJSONModel(oDetailPage, "mDetailPage");
 			this._mDetailPage = this.fnGetModel("mDetailPage");
@@ -374,6 +379,9 @@ sap.ui.define([
 						EqToValidate: oNodeIn.EquipmentNumber.ToValidate,
 						EqToValidateDirect: oNodeIn.EquipmentNumber.ToValidateDirect,
 						StatusFSM: oLocationFSM[oNodeIn.LocationId].StatusFSM,
+						Deletable: oNodeIn.Deletable,
+						SiteHierPecCompleted: oNodeIn.SiteHierPecCompleted,
+						SitePecInProgress: oNodeIn.SitePecInProgress,
 						children: []
 					};
 
@@ -571,6 +579,9 @@ sap.ui.define([
 			oBase.UserStatusId = oNewHierarchy.UserStatusId;
 			oBase.UserStatusDesc = oNewHierarchy.UserStatusDesc;
 			oBase.StatusFSM = oNewHierarchy.StatusFSM;
+			oBase.Deletable = oNewHierarchy.Deletable;
+			oBase.SiteHierPecCompleted = oNewHierarchy.SiteHierPecCompleted;
+			oBase.SitePecInProgress = oNewHierarchy.SitePecInProgress;
 			for (var idx in oBase.children) {
 				oBase.children[idx] = this._setUpdateFields(oBase.children[idx], oNewHierarchy.children[idx]);
 			}
@@ -749,11 +760,22 @@ sap.ui.define([
 				oLine.PecQuoteDesc = oLine.PecQuoteId ? sYes : sNo;
 				oLine.PecTrainingReqDesc = oLine.PecTrainingReqId ? sYes : sNo;
 				oLine.Critical = oLine.CriticalId ? sYes : sNo;
-				oLine.DomainDesc = oLine.DomainId === "" ? "" : oVH["Domain"][oLine.DomainId].Desc;
-				oLine.FunctionDesc = oLine.FunctionId === "" ? "" : oVH["Function"][oLine.FunctionId].Desc;
-				oLine.FamilyDesc = oLine.FamilyId === "" ? "" : oVH["Family"][oLine.FamilyId].Desc;
+				oLine.DomainDesc = oLine.DomainId === "" ? "" : oVH.Domain[oLine.DomainId].Desc;
+				oLine.FunctionDesc = oLine.FunctionId === "" ? "" : oVH.Function[oLine.FunctionId].Desc;
+				oLine.FamilyDesc = oLine.FamilyId === "" ? "" : oVH.Family[oLine.FamilyId].Desc;
 				oLine.WarrantyEndDateText = oLine.WarrantyEndDate === null ? "" : this._oFormatDate.format(oLine.WarrantyEndDate);
 				oLine.UserStatusDesc = this.formatter.setStatusDescription.call(this, oLine.UserStatusId);
+				oLine.AmdecAccessibilityDesc = oLine.AmdecAccessibilityId === "" ? "" : oDDICValue.AmdecAccessibilityId[oLine.AmdecAccessibilityId]
+					.ValueDesc;
+				oLine.AmdecCriticityDesc = oLine.AmdecCriticityId === "" ? "" : oDDICValue.AmdecCriticityId[oLine.AmdecCriticityId].ValueDesc;
+				oLine.AmdecDetectabilityDesc = oLine.AmdecDetectabilityId === "" ? "" : oDDICValue.AmdecDetectabilityId[oLine.AmdecDetectabilityId]
+					.ValueDesc;
+				oLine.AmdecDisrepairDesc = oLine.AmdecDisrepairId === "" ? "" : oDDICValue.AmdecDisrepairId[oLine.AmdecDisrepairId].ValueDesc;
+				oLine.AmdecFunctionningDesc = oLine.AmdecFunctionningId === "" ? "" : oDDICValue.AmdecFunctionningId[oLine.AmdecFunctionningId].ValueDesc;
+				oLine.AmdecReliabilityDesc = oLine.AmdecReliabilityId === "" ? "" : oDDICValue.AmdecReliabilityId[oLine.AmdecReliabilityId].ValueDesc;
+				oLine.AmdecStateDesc = oLine.AmdecStateId === "" ? "" : oDDICValue.AmdecStateId[oLine.AmdecStateId].ValueDesc;
+				oLine.UsageDesc = oLine.UsageId === "" ? "" : oDDICValue.UsageId[oLine.UsageId].ValueDesc;
+
 				for (var sPorperty in oLine) {
 					if (oDDICValue[sPorperty]) { //Manage only properties with value list (from DDIC)
 						var sLink = sPorperty.split("Id").shift();
@@ -778,7 +800,7 @@ sap.ui.define([
 
 				//Manage Family Characteristic
 				oLine.FamilyCharacteristic = oLine.FamilyCharacteristic.results;
-				this._fnSetFamilyImportantCounter(oLine, oFamilyCharacteristic.Class, oVH.Family[oLine.FamilyId], sYes, sNo); // Set Family Characteristic Important counter and boolean
+				this._fnSetFamilyImportantCounter(oLine, oFamilyCharacteristic, oVH.Family[oLine.FamilyId], sYes, sNo); // Set Family Characteristic Important counter and boolean
 
 			}
 			return oEquipment;
@@ -857,6 +879,42 @@ sap.ui.define([
 				oLineMod.ValueNewDesc = oLineMod.ValueNew;
 			}
 		},
+		/*
+		 * Set descriptions and characteristics descriptions for familyon equipement
+		 */
+		_fnSetFamilyCharactisticDescription: function (oCharact, oInfo) {
+			var oCharacteristics = oInfo.Characteristic;
+			oCharact.ValueToDisplay = "";
+			switch (oCharact.CharactDataType) {
+			case "CHAR":
+				oCharact.ValueToDisplay = oCharact.CharactValueDescription === "" ? oCharact.CharactValueChar : oCharact.CharactValueDescription;
+				break;
+			case "NUM":
+				oCharact.ValueToDisplay = parseFloat(oCharact.CharactValueNumDecFrom).toFixed(oCharacteristics[oCharact.CharactId].CharactDecimal);
+				if (oCharacteristics[oCharact.CharactId].CharactInterval) {
+					if (parseFloat(oCharact.CharactValueNumDecTo > 0)) {
+						var valTo = parseFloat(oCharact.CharactValueNumDecTo).toFixed(oCharacteristics[oCharact.CharactId].CharactDecimal);
+						oCharact.ValueToDisplay += " - " + valTo;
+					}
+				}
+				if (oCharact.CharactUnit !== "") {
+					oCharact.ValueToDisplay += " " + oCharact.CharactUnit;
+				}
+				break;
+			case "DATE":
+				oCharact.ValueToDisplay = this._oFormatDate.format(new Date(oCharact.CharactValueDateFrom));
+				if (oCharacteristics[oCharact.CharactId].CharactInterval) {
+					if (oCharact.CharactValueDateTo) {
+						var valTo = this._oFormatDate.format(new Date(oCharact.CharactValueDateTo));
+						oCharact.ValueToDisplay += " - " + valTo;
+					}
+				}
+				if (oCharact.CharactUnit !== "") {
+					oCharact.ValueToDisplay += " " + oCharact.CharactUnit;
+				}
+				break;
+			}
+		},
 
 		/*
 		 * Called from _buildEquipmentModel to set counter and boolean for missing Amdec
@@ -891,9 +949,11 @@ sap.ui.define([
 		/*
 		 * Called from _buildEquipmentModel to set counter and boolean for missing important Family Characteristic
 		 */
-		_fnSetFamilyImportantCounter: function (oLine, oClass, oFamily, sYes, sNo) {
+		_fnSetFamilyImportantCounter: function (oLine, oInfo, oFamily, sYes, sNo) {
 			var iCount = 0,
-				iTot = 0;
+				iTot = 0,
+				aChecked = [],
+				oClass = oInfo.Class;
 
 			if (!oFamily || oFamily.ClassId === "") {
 				oLine.FamilyCharactImportantCounter = "-";
@@ -906,7 +966,10 @@ sap.ui.define([
 			}
 
 			for (var idx in oLine.FamilyCharacteristic) {
-				if (oLine.FamilyCharacteristic[idx].CharactImportant) {
+				var oCharact = oLine.FamilyCharacteristic[idx];
+				this._fnSetFamilyCharactisticDescription(oCharact, oInfo, sYes, sNo);
+				if (oCharact.CharactImportant & aChecked.indexOf(oCharact) === -1) {
+					aChecked.push(oCharact.CharactId);
 					iCount++;
 				}
 			}
@@ -920,7 +983,7 @@ sap.ui.define([
 		/*
 		 * Method is called to update status for 1 object
 		 */
-		_ApplyStatus: function (oEvent, sNewStatus, sEquipmentId, sLocationId) {
+		_ApplyStatus: function (oEvent, sNewStatus, sEquipmentId, sLocationId, bToDelete) {
 			var sObjectName = sEquipmentId === "" ? "Location" : "Equipement";
 			var oParameters = {
 				async: false,
@@ -946,7 +1009,8 @@ sap.ui.define([
 				Scope: "PEC",
 				EquipmentId: sEquipmentId,
 				LocationId: sLocationId,
-				UserStatusId: sNewStatus
+				UserStatusId: sNewStatus,
+				ToDelete: bToDelete
 			};
 
 			this.fnShowBusyIndicator(null, 0);
@@ -957,8 +1021,14 @@ sap.ui.define([
 		 * Method is called to update status for 1 location
 		 */
 		_ApplyLocationStatus: function (oEvent, sNewStatus) {
-			var sLocationId = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().LocationId;
-			this._ApplyStatus(oEvent, sNewStatus, "", sLocationId);
+			var oObject = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject(),
+				sLocationId = oObject.LocationId,
+				bToDelete = oObject.SitePecInProgress;
+
+			if (sNewStatus !== "E0008") {
+				bToDelete = false;
+			}
+			this._ApplyStatus(oEvent, sNewStatus, "", sLocationId, bToDelete);
 		},
 
 		/*
@@ -966,7 +1036,7 @@ sap.ui.define([
 		 */
 		_ApplyEquipmentStatus: function (oEvent, sNewStatus) {
 			var sEquipmentId = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().EquipmentId;
-			this._ApplyStatus(oEvent, sNewStatus, sEquipmentId, "");
+			this._ApplyStatus(oEvent, sNewStatus, sEquipmentId, "", false);
 		},
 
 		/*
@@ -1078,6 +1148,11 @@ sap.ui.define([
 
 			case "Reject": // Deleted Status to apply
 				return "E0004";
+
+			case "Emphasized": // Take over in progress or Return to takeover Status to apply 
+				if (oEvent.getSource().getIcon() === "sap-icon://complete") {
+					return "E0008"; // Take over in progress
+				}
 			}
 
 			return "";
@@ -1159,6 +1234,61 @@ sap.ui.define([
 				}
 				iRow++;
 			}
+		},
+
+		/*
+		 * Fill missing important characteristic
+		 */
+		_missingImportantCharact: function (oObject) {
+			var aImportantFilled = [],
+				aImportantMissing = [],
+				oVH = this.fnGetModel("mVH").getData(),
+				oFamilyCharacteristic = this.fnGetModel("mFamilyCharacteristic").getData();
+
+			for (var i1 in oObject.FamilyCharacteristic) {
+				aImportantFilled.push(oObject.FamilyCharacteristic[i1].CharactId);
+			}
+
+			var sFamily = oVH.Family[oObject.FamilyId];
+			if (sFamily) {
+				var oClass = oFamilyCharacteristic.Class[sFamily.ClassId];
+				for (var i2 in oClass) {
+					var oCharact = oClass[i2];
+					if (oCharact.CharactImportant && aImportantFilled.indexOf(i2) === -1) {
+						aImportantMissing.push(oCharact);
+					}
+				}
+			}
+
+			return aImportantMissing;
+		},
+
+		/*
+		 * Fill other properties to display in popover
+		 */
+		_otherProperties: function (oObject) {
+			var aFieldToCheck = ["BrandId",
+					"Critical",
+					"InstallYear",
+					"Manufref",
+					"PecDeepAnalysisNeededDesc",
+					"PecQuoteDesc",
+					"PecTrainingReqDesc",
+					"Qrcode",
+					"SerialNumber",
+					"WarrantyEndDateText"
+				],
+				aOtherProperties = [];
+
+			for (var iProp in aFieldToCheck) {
+				var sProp = aFieldToCheck[iProp];
+				aOtherProperties.push({
+					label: this.fnGetResourceBundle("LabelProperty" + sProp),
+					valueToDisplay: oObject[sProp]
+				});
+			}
+
+			return aOtherProperties;
 		},
 
 		//--------------------------------------------
@@ -1252,7 +1382,7 @@ sap.ui.define([
 							type: sap.m.ButtonType.Emphasized,
 							text: this.fnGetResourceBundle("yes"),
 							press: function () {
-									this[sFunctionName](this._oEvent, this._sUserStatusId);
+								this[sFunctionName](this._oEvent, this._sUserStatusId);
 								this[sMassDialog].close();
 							}.bind(this)
 						}),
@@ -1314,11 +1444,22 @@ sap.ui.define([
 		 * Event fire on Selection change on Equipment Table
 		 */
 		onSelectionChangeEquipmentTable: function (oEvent) {
-			var oDetailPageModel = this.fnGetModel("mDetailPage");
+			var oDetailPageModel = this.fnGetModel("mDetailPage"),
+				aSelectedIndices = oEvent.getSource().getSelectedIndices(),
+				oTreeTable = this.byId("EquipmentTable");
 			if (oEvent.getSource().getSelectedIndices().length > 0) {
 				oDetailPageModel.getData().bEquipmentSelected = true;
+				oDetailPageModel.getData().bEquipmentSelectedDeletable = true;
+				for (var iSel in aSelectedIndices) {
+					var oObject = oTreeTable.getContextByIndex(aSelectedIndices[iSel]).getObject();
+					if (!oObject.Deletable) {
+						oDetailPageModel.getData().bEquipmentSelectedDeletable = false;
+						break;
+					}
+				}
 			} else {
 				oDetailPageModel.getData().bEquipmentSelected = false;
+				oDetailPageModel.getData().bEquipmentSelectedDeletable = false;
 			}
 
 			oDetailPageModel.refresh(true);
@@ -1328,11 +1469,22 @@ sap.ui.define([
 		 * Event fire on Selection change on Location hierarchy Tree Table
 		 */
 		onSelectionChangeLocationTable: function (oEvent) {
-			var oDetailPageModel = this.fnGetModel("mDetailPage");
-			if (oEvent.getSource().getSelectedIndices().length > 0) {
+			var oDetailPageModel = this.fnGetModel("mDetailPage"),
+				aSelectedIndices = oEvent.getSource().getSelectedIndices(),
+				oTreeTable = this.byId("LocationHierarchyTreeTable");
+			if (aSelectedIndices.length > 0) {
 				oDetailPageModel.getData().bLocationSelected = true;
+				oDetailPageModel.getData().bLocationSelectedDeletable = true;
+				for (var iSel in aSelectedIndices) {
+					var oObject = oTreeTable.getContextByIndex(aSelectedIndices[iSel]).getObject();
+					if (!oObject.Deletable) {
+						oDetailPageModel.getData().bLocationSelectedDeletable = false;
+						break;
+					}
+				}
 			} else {
 				oDetailPageModel.getData().bLocationSelected = false;
+				oDetailPageModel.getData().bLocationSelectedDeletable = false;
 			}
 
 			oDetailPageModel.refresh(true);
@@ -1365,6 +1517,9 @@ sap.ui.define([
 			});
 		},
 
+		/*
+		 * Fire when press on comment icon
+		 */
 		onDisplayComment: function (oEvent) {
 			var oIcon = oEvent.getSource(),
 				oView = this.getView(),
@@ -1399,6 +1554,85 @@ sap.ui.define([
 			}
 			this._ComPopover.then(function (oPopover) {
 				oPopover.openBy(oIcon);
+			});
+		},
+
+		/*
+		 * Fire when press on Amdec / Family / Others properties
+		 */
+		onDisplayDetailEquipment: function (oEvent) {
+			var oAmdec = {
+					Amdec1: [
+						"AmdecStateId",
+						"AmdecDisrepairId",
+						"AmdecAccessibilityId",
+						"AmdecReliabilityId",
+					],
+					Amdec2: [
+						"AmdecCriticityId",
+						"AmdecDetectabilityId",
+						"AmdecFunctionningId"
+					],
+				},
+				oObjectView = oEvent.getSource(),
+				idFrag = oObjectView.getId().split("Object").pop().split("-").shift(),
+				idThisPopover = "_" + idFrag + "Popover",
+				oView = this.getView(),
+				oObject = oEvent.getSource().getParent().getRowBindingContext().getObject(),
+				sFragmentName = "com.vesi.zfioac4_valpec.view.fragment.Detail." + idFrag,
+				oModel = {
+					Amdec1: [],
+					Amdec2: [],
+					FamilyCharact: [],
+					DisplayMissingCharact: false,
+					MissingImportantCharact: [],
+					OtherProperties: []
+				};
+
+			//AMDEC
+			if (idFrag === "Amdec") {
+				for (var iAmdec in oAmdec) {
+					var aAmdec = oAmdec[iAmdec];
+					for (var iProp in aAmdec) {
+						var sPropId = aAmdec[iProp],
+							sPropDesc = sPropId.split("Id").shift() + "Desc",
+							sI18n = "ModifiedInfoLbl" + sPropId,
+							sPropIdValue = oObject[sPropId],
+							sPropDescValue = oObject[sPropDesc];
+
+						oModel[iAmdec].push({
+							id: sPropIdValue,
+							icon: sPropIdValue === "" ? "sap-icon://alert" : "",
+							i18n: this.fnGetResourceBundle(sI18n),
+							state: sPropIdValue === "" ? "Warning" : "Success",
+							text: sPropIdValue === "" ? "" : sPropIdValue + " - " + sPropDescValue
+						});
+					}
+				}
+			} else if (idFrag === "FamilyCharact") {
+				oModel.FamilyCharact = oObject.FamilyCharacteristic;
+				oModel.MissingImportantCharact = this._missingImportantCharact(oObject);
+				if (oModel.MissingImportantCharact.length > 0) {
+					oModel.DisplayMissingCharact = true;
+				}
+			} else if (idFrag === "OtherProperties") {
+				oModel.OtherProperties = this._otherProperties(oObject);
+			}
+
+			this.fnSetJSONModel(oModel, "mDisplayPopover");
+
+			if (!this[idThisPopover]) {
+				this[idThisPopover] = Fragment.load({
+					id: oView.getId(),
+					name: sFragmentName,
+					controller: this
+				}).then(function (oPopover) {
+					oView.addDependent(oPopover);
+					return oPopover;
+				});
+			}
+			this[idThisPopover].then(function (oPopover) {
+				oPopover.openBy(oObjectView);
 			});
 		},
 
@@ -1495,11 +1729,11 @@ sap.ui.define([
 			this._oSynchroniseDialog.open();
 
 		},
-		
+
 		/*
 		 * Event fire when needed after a selection on multicombobox
-		 */		
-		onSelectionFinishedMCBVH:function() {
+		 */
+		onSelectionFinishedMCBVH: function () {
 			this.fnGetModel("mVH").refresh(true);
 		}
 

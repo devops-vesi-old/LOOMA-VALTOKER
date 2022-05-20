@@ -905,7 +905,7 @@ sap.ui.define([
 				oCharact.ValueToDisplay = this._oFormatDate.format(new Date(oCharact.CharactValueDateFrom));
 				if (oCharacteristics[oCharact.CharactId].CharactInterval) {
 					if (oCharact.CharactValueDateTo) {
-						var valTo = this._oFormatDate.format(new Date(oCharact.CharactValueDateTo));
+						valTo = this._oFormatDate.format(new Date(oCharact.CharactValueDateTo));
 						oCharact.ValueToDisplay += " - " + valTo;
 					}
 				}

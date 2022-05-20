@@ -968,7 +968,7 @@ sap.ui.define([
 			for (var idx in oLine.FamilyCharacteristic) {
 				var oCharact = oLine.FamilyCharacteristic[idx];
 				this._fnSetFamilyCharactisticDescription(oCharact, oInfo, sYes, sNo);
-				if (oCharact.CharactImportant & aChecked.indexOf(oCharact) === -1) {
+				if (oCharact.CharactImportant && aChecked.indexOf(oCharact) === -1) {
 					aChecked.push(oCharact.CharactId);
 					iCount++;
 				}

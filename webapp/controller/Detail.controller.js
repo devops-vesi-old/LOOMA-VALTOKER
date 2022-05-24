@@ -756,10 +756,10 @@ sap.ui.define([
 				//Manage descriptions (needed for extract excel)
 				oLine.CompleteLocationName = oLocationDescription[oLine.LocationId].LocationName;
 				oLine.IsCreatedDuringPecDesc = oLine.IsCreatedDuringPec ? sYes : sNo;
-				oLine.PecDeepAnalysisNeededDesc = oLine.PecDeepAnalysisNeededId ? sYes : sNo;
-				oLine.PecQuoteDesc = oLine.PecQuoteId ? sYes : sNo;
-				oLine.PecTrainingReqDesc = oLine.PecTrainingReqId ? sYes : sNo;
-				oLine.Critical = oLine.CriticalId ? sYes : sNo;
+				oLine.PecDeepAnalysisNeededDesc = oLine.PecDeepAnalysisNeeded ? sYes : sNo;
+				oLine.PecQuoteDesc = oLine.PecQuote ? sYes : sNo;
+				oLine.PecTrainingReqDesc = oLine.PecTrainingReq ? sYes : sNo;
+				oLine.Critical = oLine.Critical ? sYes : sNo;
 				oLine.DomainDesc = oLine.DomainId === "" ? "" : oVH.Domain[oLine.DomainId].Desc;
 				oLine.FunctionDesc = oLine.FunctionId === "" ? "" : oVH.Function[oLine.FunctionId].Desc;
 				oLine.FamilyDesc = oLine.FamilyId === "" ? "" : oVH.Family[oLine.FamilyId].Desc;

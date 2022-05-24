@@ -127,12 +127,24 @@
 				hAlign="Center" 
 				width="5%" 
 				filterProperty="Quantity" 
-				sortProperty="Quantity">
+				sortProperty="Quantity"
+				visible="false">
 				<Label text="{i18n>EquipmentTblColHdrQuantity}" wrapping="true"/>
 				<t:template>
 					<Text text="{mEquipment>Quantity}"/>
 				</t:template>
-			</t:Column>			
+			</t:Column>	
+			<t:Column 
+				id="FamilyCol"
+				hAlign="Left" 
+				width="10%" 
+				filterProperty="FamilyDesc" 
+				sortProperty="FamilyDesc">
+				<Label text="{i18n>EquipmentTblColHdrFamilyDesc}" wrapping="false"/>
+				<t:template>
+					<Text text="{mEquipment>FamilyDesc}"/>
+				</t:template>
+			</t:Column>				
 			<t:Column 
 				id="UserStatusDescCol"
 				hAlign="Left"

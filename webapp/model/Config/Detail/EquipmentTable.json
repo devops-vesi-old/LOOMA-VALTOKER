@@ -8,12 +8,12 @@
 	"text": "EquipmentTblColHdrEquipmentName",
 	"visible": true,
 	"index": 1
-}, {	
+}, {
 	"columnKey": "StautsFSMCol",
 	"text": "EquipmentTblColHdrEquipmentName",
 	"visible": true,
 	"index": 2
-}, {	
+}, {
 	"columnKey": "CompleteLocationNameCol",
 	"text": "EquipmentTblColHdrLocationName",
 	"visible": true,
@@ -28,9 +28,9 @@
 	"text": "EquipmentTblColHdrComment",
 	"visible": true,
 	"index": 5
-}, {	
-	"columnKey": "QuantityCol",
-	"text": "EquipmentTblColHdrQuantity",
+}, {
+	"columnKey": "FamilyCol",
+	"text": "EquipmentTblColHdrFamilyDesc",
 	"visible": true,
 	"index": 6
 }, {
@@ -39,21 +39,21 @@
 	"visible": true,
 	"index": 7
 }, {
-	"columnKey": "Amdec",
+	"columnKey": "AmdecCounter",
 	"text": "EquipmentTblColHdrAmdecCounter",
 	"visible": true,
 	"index": 8
 }, {
-	"columnKey": "FamilyImportant",
+	"columnKey": "FamilyImportantCounter",
 	"text": "EquipmentTblColHdrFamilyImportantCounter",
 	"visible": true,
-	"index": 9	
+	"index": 9
 }, {
 	"columnKey": "OtherProperties",
 	"text": "EquipmentTblColHdrOtherProperties",
 	"visible": true,
-	"index": 10	
-}, {	
+	"index": 10
+}, {
 	"columnKey": "ModificationCol",
 	"text": "EquipmentTblColHdrModification",
 	"visible": true,
@@ -63,4 +63,8 @@
 	"text": "EquipmentTblColHdrAction",
 	"visible": true,
 	"index": 12
+}, {
+	"columnKey": "QuantityCol",
+	"text": "EquipmentTblColHdrQuantity",
+	"visible": false
 }]

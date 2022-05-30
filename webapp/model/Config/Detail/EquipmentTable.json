@@ -14,23 +14,23 @@
 	"visible": true,
 	"index": 2
 }, {
+	"columnKey": "FamilyCol",
+	"text": "EquipmentTblColHdrFamilyDesc",
+	"visible": true,
+	"index": 3
+}, {	
 	"columnKey": "CompleteLocationNameCol",
 	"text": "EquipmentTblColHdrLocationName",
 	"visible": true,
-	"index": 3
+	"index": 4
 }, {
 	"columnKey": "PhotoIdCol",
 	"text": "EquipmentTblColHdrPhotoId",
 	"visible": true,
-	"index": 4
+	"index": 5
 }, {
 	"columnKey": "CommentCol",
 	"text": "EquipmentTblColHdrComment",
-	"visible": true,
-	"index": 5
-}, {
-	"columnKey": "FamilyCol",
-	"text": "EquipmentTblColHdrFamilyDesc",
 	"visible": true,
 	"index": 6
 }, {

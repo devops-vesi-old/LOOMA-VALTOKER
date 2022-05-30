@@ -166,7 +166,7 @@ sap.ui.define([],
 				if (!sIdProperty) {
 					return "";
 				}
-				return this.fnGetResourceBundle("ModifiedInfoLbl" + sIdProperty);
+				return this.fnGetResourceBundle("ModifiedInfoLbl" + sIdProperty, []);
 
 			},
 

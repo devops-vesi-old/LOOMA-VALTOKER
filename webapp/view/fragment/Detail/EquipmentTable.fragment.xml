@@ -74,6 +74,17 @@
 						src="{path: 'mEquipment>StatusFSM', formatter:'.formatter.fnSetIconFSM'}"
 						tooltip="{path: 'mEquipment>StatusFSM', formatter:'.formatter.fnSetIconTooltipFSM'}"/>
 				</t:template>
+			</t:Column>		
+			<t:Column 
+				id="FamilyCol"
+				hAlign="Left" 
+				width="10%" 
+				filterProperty="FamilyDesc" 
+				sortProperty="FamilyDesc">
+				<Label text="{i18n>EquipmentTblColHdrFamilyDesc}" wrapping="false"/>
+				<t:template>
+					<Text text="{mEquipment>FamilyDesc}"/>
+				</t:template>
 			</t:Column>				
 			<t:Column 
 				id="EquipmentNameCol"
@@ -134,17 +145,6 @@
 					<Text text="{mEquipment>Quantity}"/>
 				</t:template>
 			</t:Column>	
-			<t:Column 
-				id="FamilyCol"
-				hAlign="Left" 
-				width="10%" 
-				filterProperty="FamilyDesc" 
-				sortProperty="FamilyDesc">
-				<Label text="{i18n>EquipmentTblColHdrFamilyDesc}" wrapping="false"/>
-				<t:template>
-					<Text text="{mEquipment>FamilyDesc}"/>
-				</t:template>
-			</t:Column>				
 			<t:Column 
 				id="UserStatusDescCol"
 				hAlign="Left"

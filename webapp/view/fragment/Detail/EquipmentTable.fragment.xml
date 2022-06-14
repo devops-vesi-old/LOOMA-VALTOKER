@@ -248,7 +248,7 @@
 							<Button 
 								icon="sap-icon://delete"
 								press="onApplyEquipmentStatus"
-								tooltip="{= ${mLocationHierarchy>Deletable} ? ${i18n>EquipmentTableButtonTooltipReject} : ${i18n>EquipmentTableButtonTooltipRejectDisable}}"
+								tooltip="{= ${mEquipment>Deletable} ? ${i18n>EquipmentTableButtonTooltipReject} : ${i18n>EquipmentTableButtonTooltipRejectDisable}}"
 								type="Reject"
 								enabled="{mEquipment>Deletable}"
 								visible="{= ${mEquipment>UserStatusId} !== 'E0006'}"/>

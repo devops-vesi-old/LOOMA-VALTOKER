@@ -786,15 +786,74 @@ sap.ui.define([
 				oLine.StatusFSM = this._setEquipmentStatusFSM(oEquipmentFSM, oLine); // Set 
 
 				//Manage Modified info
-				oLine.ModifiedInfo = oLine.ModifiedInfo.results;
+				oLine.ModifiedInfoTmp = oLine.ModifiedInfo.results;
+				oLine.ModifiedInfo = [];
 				oLine.ModifiedProperty = [];
-				for (var iLine in oLine.ModifiedInfo) {
-					var oLineMod = oLine.ModifiedInfo[iLine];
+
+				//Manage Modified info on characteristics with multi value
+				for (var iLine in oLine.ModifiedInfoTmp) {
+					var oLineMod = oLine.ModifiedInfoTmp[iLine];
+					if (oLineMod.IsCharacteristic) { //Line is a characteristic
+						var sSplitOld = oLineMod.ValueOld.split("¤");
+						var sSplitNew = oLineMod.ValueNew.split("¤");
+						var sToDeleteOld = [];
+						for (var iOld in sSplitOld) {
+							var sCurrentOld = sSplitOld[iOld];
+							var indexToDeleteNew = sSplitNew.indexOf(sCurrentOld);
+							if (indexToDeleteNew !== -1) {
+								sToDeleteOld.push(sCurrentOld);
+								sSplitNew.splice(indexToDeleteNew, 1);
+							}
+						}
+						for (iOld in sToDeleteOld) {
+							var indexToDeleteOld = sSplitOld.indexOf(sToDeleteOld[iOld]);
+							sSplitOld.splice(indexToDeleteOld, 1);
+						}
+						var sNewLine = JSON.parse(JSON.stringify(oLineMod));
+						var iMax = Math.max(sSplitOld.length, sSplitNew.length);
+						var iLoop = 0;
+						//Generate as many rows as needed
+						while (iLoop < iMax) {
+							var sOld = sSplitOld[iLoop] ? sSplitOld[iLoop] : "";
+							var sNew = sSplitNew[iLoop] ? sSplitNew[iLoop] : "";
+							sNewLine.ValueOld = sOld;
+							sNewLine.ValueNew = sNew;
+							//flag to hide description
+							sNewLine.bHideDescription = iLoop === 0 ? false : true;
+							oLine.ModifiedInfo.push(JSON.parse(JSON.stringify(sNewLine)));
+							iLoop++;
+						}
+						
+					} else {
+						oLine.ModifiedInfo.push(oLineMod);	
+					}
+				}
+
+				//Manage Modified info description
+				for (iLine in oLine.ModifiedInfo) {
+					oLineMod = oLine.ModifiedInfo[iLine];
 					if (oLineMod.IsProperty) { //Line is a property
 						this._fnSetPropertyDescription(oLine, oLineMod, oDDICValue, oVH, aBooleanField, oLocationDescription, aDateField, sYes, sNo);
 
 					} else { //Line is a characteristic
 						this._fnSetCharactisticDescription(oLineMod, oFamilyCharacteristic);
+					}
+				}
+
+				//Manage the new way to display modified info
+				oLine.ModifiedInfoProperty = [];
+				oLine.ModifiedInfoFamilyCharact = [];
+				oLine.bDisplayModifiedInfoProperty = false;
+				oLine.bDisplayModifiedInfoFamilyCharact = false;
+
+				for (iLine in oLine.ModifiedInfo) {
+					oLineMod = oLine.ModifiedInfo[iLine];
+					if (oLineMod.IsProperty) { //Line is a property
+						oLine.ModifiedInfoProperty.push(oLineMod);
+						oLine.bDisplayModifiedInfoProperty = true;
+					} else { //Line is a characteristic
+						oLine.ModifiedInfoFamilyCharact.push(oLineMod);
+						oLine.bDisplayModifiedInfoFamilyCharact = true;
 					}
 				}
 
@@ -968,7 +1027,7 @@ sap.ui.define([
 			for (var idx in oLine.FamilyCharacteristic) {
 				var oCharact = oLine.FamilyCharacteristic[idx];
 				this._fnSetFamilyCharactisticDescription(oCharact, oInfo, sYes, sNo);
-				if (oCharact.CharactImportant && aChecked.indexOf(oCharact) === -1) {
+				if (oCharact.CharactImportant && aChecked.indexOf(oCharact.CharactId) === -1) {
 					aChecked.push(oCharact.CharactId);
 					iCount++;
 				}
@@ -1316,7 +1375,7 @@ sap.ui.define([
 				oView = this.getView(),
 				sModifiedInfo = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject();
 
-			this.fnSetJSONModel(sModifiedInfo.ModifiedInfo, "mModifiedInfo");
+			this.fnSetJSONModel(sModifiedInfo, "mModifiedInfo");
 
 			if (!this._ModPopover) {
 				this._ModPopover = Fragment.load({

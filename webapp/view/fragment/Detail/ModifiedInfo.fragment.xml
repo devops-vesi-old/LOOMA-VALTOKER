@@ -1,52 +1,77 @@
 <core:FragmentDefinition
 	xmlns="sap.m"
-	xmlns:core="sap.ui.core" 
-	xmlns:t="sap.ui.table">
-	<ResponsivePopover
-		id="ModifiedInfoPopover"
-		class="sapUiContentPadding customPopoverModified"
-		horizontalScrolling="false"
-		showHeader="false"
-		placement="Left" >
-		<content>
-			<Table 
-				id="ModifiedInfoTable" 
-				items="{mModifiedInfo>/}">
-				<columns>
-					<Column 
-						hAlign="Begin" 
-						width="30%">
-						<Label text="{i18n>ModifiedInfoTblColHdrDescription}"/>
-					</Column>
-					<Column 
-						hAlign="Begin" 
-						width="35%">
-						<Label text="{i18n>ModifiedInfoTblColHdrValueOld}"/>
-					</Column>
-					<Column 
-						hAlign="Begin" 
-						width="35%">
-						<Label text="{i18n>ModifiedInfoTblColHdrValueNew}"/>
-					</Column>					
-				</columns>
-				<items>
-					<ColumnListItem>
-						<cells>
-						<Text text="{= ${mModifiedInfo>IsProperty} ? ${path:'mModifiedInfo>FieldI18n', formatter:'.formatter.setPropertyDescription'} : ${mModifiedInfo>FieldDesc}}"/>
-						<ObjectStatus 
-							class="sapUiSmallMarginBottom"
-							text="{mModifiedInfo>ValueOldDesc}"
-							icon="sap-icon://decline"
-							state="Error"/>	
-						<ObjectStatus 
-							class="sapUiSmallMarginBottom"
-							text="{mModifiedInfo>ValueNewDesc}"
-							icon="sap-icon://accept"
-							state="Success"/>							
-					</cells>
-					</ColumnListItem>
-				</items>
-			</Table>
-		</content>
-	</ResponsivePopover>
+	xmlns:core="sap.ui.core">
+	<Popover 
+		id="ModifiedInfoPopover" 
+		placement="Left" 
+		showHeader="false">
+		<VBox>
+			<Panel width="100%" visible="{mModifiedInfo>/bDisplayModifiedInfoProperty}">
+				<headerToolbar>
+					<OverflowToolbar>
+						<Title text="{i18n>TitleModifiedInfoProperty}"/>
+					</OverflowToolbar>
+				</headerToolbar>
+				<content>
+					<VBox  items="{mModifiedInfo>/ModifiedInfoProperty}">
+						<HBox alignItems="Start">
+							<HBox width="13rem">
+								<Text text="{= ${mModifiedInfo>IsProperty} ? ${path:'mModifiedInfo>FieldI18n', formatter:'.formatter.setPropertyDescription'} : ${mModifiedInfo>FieldDesc}}"/>
+							</HBox>
+							<HBox width="0.5rem">
+								<Text text=":"/>
+							</HBox>
+							<HBox width="20rem">
+								<ObjectStatus 
+									text="{mModifiedInfo>ValueOldDesc}"
+									icon="sap-icon://decline"
+									state="Error"/>	
+							</HBox>
+							<HBox width="20rem">
+								<ObjectStatus 
+								text="{mModifiedInfo>ValueNewDesc}"
+								icon="sap-icon://accept"
+								state="Success"/>
+							</HBox>
+						</HBox>
+					</VBox>
+				</content>
+			</Panel>
+			<Panel width="100%" visible="{mModifiedInfo>/bDisplayModifiedInfofamilyCharact}">
+				<headerToolbar>
+					<OverflowToolbar>
+						<Title text="{i18n>TitleModifiedInfoFamilyCharact}"/>
+					</OverflowToolbar>
+				</headerToolbar>
+				<content>
+					<VBox  items="{mModifiedInfo>/ModifiedInfoFamilyCharact}">
+						<HBox alignItems="Start">
+							<HBox width="13rem">
+								<Text 
+									text="{= ${mModifiedInfo>IsProperty} ? ${path:'mModifiedInfo>FieldI18n', formatter:'.formatter.setPropertyDescription'} : ${mModifiedInfo>FieldDesc}}"
+									visible="{= ${mModifiedInfo>bHideDescription} !== true}"/>
+							</HBox>
+							<HBox width="0.5rem">
+								<Text 
+									text=":" 
+									visible="{= ${mModifiedInfo>bHideDescription} !== true}"/>
+							</HBox>
+							<HBox width="20rem">
+								<ObjectStatus 
+									text="{mModifiedInfo>ValueOldDesc}"
+									icon="sap-icon://decline"
+									state="Error"/>	
+							</HBox>
+							<HBox width="20rem">
+								<ObjectStatus 
+								text="{mModifiedInfo>ValueNewDesc}"
+								icon="sap-icon://accept"
+								state="Success"/>
+							</HBox>
+						</HBox>
+					</VBox>
+				</content>
+			</Panel>
+		</VBox>
+	</Popover>
 </core:FragmentDefinition>

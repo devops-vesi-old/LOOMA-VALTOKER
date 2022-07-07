@@ -13,10 +13,11 @@
 					</OverflowToolbar>
 				</headerToolbar>
 				<content>
-					<VBox  items="{mModifiedInfo>/ModifiedInfoProperty}">
+					<VBox  items="{path: 'mModifiedInfo>/ModifiedInfoProperty', 
+									sorter: {path: 'sDescription', descending: false}}">
 						<HBox alignItems="Start">
 							<HBox width="13rem">
-								<Text text="{= ${mModifiedInfo>IsProperty} ? ${path:'mModifiedInfo>FieldI18n', formatter:'.formatter.setPropertyDescription'} : ${mModifiedInfo>FieldDesc}}"/>
+								<Text text="{mModifiedInfo>sDescription}"/>
 							</HBox>
 							<HBox width="0.5rem">
 								<Text text=":"/>
@@ -37,18 +38,19 @@
 					</VBox>
 				</content>
 			</Panel>
-			<Panel width="100%" visible="{mModifiedInfo>/bDisplayModifiedInfofamilyCharact}">
+			<Panel width="100%" visible="{mModifiedInfo>/bDisplayModifiedInfoFamilyCharact}">
 				<headerToolbar>
 					<OverflowToolbar>
 						<Title text="{i18n>TitleModifiedInfoFamilyCharact}"/>
 					</OverflowToolbar>
 				</headerToolbar>
 				<content>
-					<VBox  items="{mModifiedInfo>/ModifiedInfoFamilyCharact}">
+					<VBox  items="{path: 'mModifiedInfo>/ModifiedInfoFamilyCharact', 
+									sorter: {path: 'FieldDesc', descending: false}}">
 						<HBox alignItems="Start">
 							<HBox width="13rem">
 								<Text 
-									text="{= ${mModifiedInfo>IsProperty} ? ${path:'mModifiedInfo>FieldI18n', formatter:'.formatter.setPropertyDescription'} : ${mModifiedInfo>FieldDesc}}"
+									text="{mModifiedInfo>FieldDesc}"
 									visible="{= ${mModifiedInfo>bHideDescription} !== true}"/>
 							</HBox>
 							<HBox width="0.5rem">

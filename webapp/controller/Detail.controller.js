@@ -825,6 +825,7 @@ sap.ui.define([
 						}
 						
 					} else {
+						oLineMod.sDescription = this.formatter.setPropertyDescription.call(this, oLineMod.FieldI18n);
 						oLine.ModifiedInfo.push(oLineMod);	
 					}
 				}

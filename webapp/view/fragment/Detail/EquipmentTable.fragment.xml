@@ -288,7 +288,7 @@
 					<Text text="{mEquipment>LastChangedByName}"/>
 				</t:template>
 			</t:Column>	
-			<t:Column 
+			<t:Column
 				id="LastChangedOnCol"
 				hAlign="Center" 
 				width="5%" 

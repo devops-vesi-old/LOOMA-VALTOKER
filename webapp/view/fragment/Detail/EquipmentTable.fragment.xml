@@ -264,6 +264,46 @@
 					</Bar>
 				</t:template>
 			</t:Column>
+			<t:Column 
+				id="LastChangedByIdCol"
+				hAlign="Center" 
+				width="5%" 
+				filterProperty="LastChangedById" 
+				sortProperty="LastChangedById"
+				visible="false">
+				<Label text="{i18n>EquipmentTblColHdrLastChangedById}" wrapping="true"/>
+				<t:template>
+					<Text text="{mEquipment>LastChangedById}"/>
+				</t:template>
+			</t:Column>	
+			<t:Column 
+				id="LastChangedByNameCol"
+				hAlign="Center" 
+				width="5%" 
+				filterProperty="LastChangedByName" 
+				sortProperty="LastChangedByName"
+				visible="false">
+				<Label text="{i18n>EquipmentTblColHdrLastChangedByName}" wrapping="true"/>
+				<t:template>
+					<Text text="{mEquipment>LastChangedByName}"/>
+				</t:template>
+			</t:Column>	
+			<t:Column 
+				id="LastChangedOnCol"
+				hAlign="Center" 
+				width="5%" 
+				sortProperty="LastChangedOn"
+				visible="false">
+				<Label text="{i18n>EquipmentTblColHdrLastChangedOn}" wrapping="true"/>
+				<t:template>
+					<Text text="{
+						path: 'mEquipment>LastChangedOn',
+						type: 'sap.ui.model.type.Date',
+						formatOptions: {
+							style: 'short'
+						}}"/>
+				</t:template>
+			</t:Column>				
 		</t:columns>
 		<t:rowSettingsTemplate>
 			<t:RowSettings 

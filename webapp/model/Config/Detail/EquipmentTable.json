@@ -67,4 +67,16 @@
 	"columnKey": "QuantityCol",
 	"text": "EquipmentTblColHdrQuantity",
 	"visible": false
+}, {
+	"columnKey": "LastChangedByIdCol",
+	"text": "EquipmentTblColHdrLastChangedById",
+	"visible": false
+}, {
+	"columnKey": "LastChangedByNameCol",
+	"text": "EquipmentTblColHdrLastChangedByName",
+	"visible": false
+}, {
+	"columnKey": "LastChangedOnCol",
+	"text": "EquipmentTblColHdrLastChangedOn",
+	"visible": false
 }]

@@ -301,10 +301,9 @@ sap.ui.define([],
 				} else if (oEquipmentInfo.HasSubEquipment) {
 					// Current equipment has sub-equipments
 					return "sap-icon://org-chart";
-				} else {
-					// Other case = no icon, it will be not visible
-					return "sap-icon://circle-task-2";
 				}
+				// Other case = no icon, it will be not visible
+				return "sap-icon://circle-task-2";
 			},
 
 			/*
@@ -324,10 +323,9 @@ sap.ui.define([],
 				} else if (oEquipmentInfo.HasSubEquipment) {
 					// Current equipment has sub-equipments
 					return this.fnGetResourceBundle("IconLinkedObjectSubEquipment");
-				} else {
-					// Other case = empty string
-					return "";
 				}
+				// Other case = empty string
+				return "";
 			},
 
 			/*
@@ -344,10 +342,9 @@ sap.ui.define([],
 				if (oEquipmentInfo.SuperiorEquiId !== "" || oEquipmentInfo.HasSubEquipment) {
 					// Visible
 					return true;
-				} else {
-					// Hide
-					return false;
 				}
+				// Hide
+				return false;
 			}
 
 		};

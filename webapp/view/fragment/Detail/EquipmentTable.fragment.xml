@@ -108,6 +108,21 @@
 				</t:template>
 			</t:Column>
 			<t:Column 
+				id="LinkedObjectCol"
+				hAlign="Center" 
+				width="5%"
+				visible="false">
+				<Label text="{i18n>EquipmentTblColHdrLinkedObject}" wrapping="true"/>
+				<t:template>
+					<core:Icon 
+						src="{path: 'mEquipment>', formatter: '.formatter.fnSetLinkedObjectIcon'}"
+						tooltip="{path: 'mEquipment>', formatter: '.formatter.fnSetLinkedObjectTooltip'}"
+						color="Default"
+						press="onLinkedObject"
+						visible="{path: 'mEquipment>', formatter: '.formatter.fnSetLinkedObjectVisible'}"/>	
+				</t:template>
+			</t:Column>			
+			<t:Column 
 				id="PhotoIdCol"
 				hAlign="Center" 
 				width="5%">

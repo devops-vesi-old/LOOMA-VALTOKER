@@ -823,10 +823,10 @@ sap.ui.define([
 							oLine.ModifiedInfo.push(JSON.parse(JSON.stringify(sNewLine)));
 							iLoop++;
 						}
-						
+
 					} else {
 						oLineMod.sDescription = this.formatter.setPropertyDescription.call(this, oLineMod.FieldI18n);
-						oLine.ModifiedInfo.push(oLineMod);	
+						oLine.ModifiedInfo.push(oLineMod);
 					}
 				}
 
@@ -1351,6 +1351,82 @@ sap.ui.define([
 			return aOtherProperties;
 		},
 
+		_getObjectLinkedDatas: function (bSubEquipment, oEquipment, oEvent) {
+			var oObjectView = oEvent.getSource(),
+				idFrag = "LinkedObject",
+				idThisPopover = "_" + idFrag + "Popover",
+				oView = this.getView(),
+				sFragmentName = "com.vesi.zfioac4_valpec.view.fragment.Detail." + idFrag,
+				fnError = function (oError) {
+					this.fnHideBusyIndicator();
+					this.fnSetJSONModel({
+						IsSub: false,
+						List: []
+					}, "mLinkedObject");
+					this._oDataError(oError);
+				},
+				fnSuccess = function (oData) {
+					this.fnHideBusyIndicator();
+					if (bSubEquipment) {
+						var aResult = oData.results;
+					} else {
+						aResult = [
+							oData
+						];
+					}
+					var oLocationDescription = this.fnGetModel("mLocationDescription").getData();
+					for (var iLine in aResult) {
+						var oLine = aResult[iLine];
+						oLine.UserStatusDesc = this.formatter.setStatusDescription.call(this, oLine.UserStatusId);
+						oLine.CompleteLocationName = oLocationDescription[oLine.LocationId].LocationName;
+					}
+					var oModel = {
+						IsSub: bSubEquipment,
+						List: aResult
+					};
+
+					this.fnSetJSONModel(oModel, "mLinkedObject");
+					//Display popover for datas
+					if (!this[idThisPopover]) {
+						this[idThisPopover] = Fragment.load({
+							id: oView.getId(),
+							name: sFragmentName,
+							controller: this
+						}).then(function (oPopover) {
+							oView.addDependent(oPopover);
+							return oPopover;
+						});
+					}
+					this[idThisPopover].then(function (oPopover) {
+						oPopover.openBy(oObjectView);
+					});
+
+				};
+
+			var oParam = {
+				success: fnSuccess.bind(this),
+				error: fnError.bind(this)
+			};
+
+			switch (bSubEquipment) {
+			case true:
+				var sRequest = "/EquipmentSet",
+					aFilters = [];
+				aFilters.push(new Filter("SuperiorEquiId", FilterOperator.EQ, oEquipment.EquipmentId));
+				oParam.filters = aFilters;
+				break;
+
+			case false:
+				sRequest = this.getOwnerComponent().getModel().createKey("/EquipmentSet", {
+					EquipmentId: oEquipment.SuperiorEquiId
+				});
+				break;
+			}
+
+			this.fnShowBusyIndicator(null, 0);
+			this.getOwnerComponent().getModel().read(sRequest, oParam);
+		},
+
 		//--------------------------------------------
 		// Event functions
 		//--------------------------------------------
@@ -1638,7 +1714,7 @@ sap.ui.define([
 				idFrag = oObjectView.getId().split("Object").pop().split("-").shift(),
 				idThisPopover = "_" + idFrag + "Popover",
 				oView = this.getView(),
-				oObject = oEvent.getSource().getParent().getRowBindingContext().getObject(),
+				oObject = oObjectView === "" ? {} : oEvent.getSource().getParent().getRowBindingContext().getObject(),
 				sFragmentName = "com.vesi.zfioac4_valpec.view.fragment.Detail." + idFrag,
 				oModel = {
 					Amdec1: [],
@@ -1778,7 +1854,6 @@ sap.ui.define([
 						}.bind(this)
 					}),
 					endButton: new sap.m.Button({
-						text: this.fnGetResourceBundle("no"),
 						press: function () {
 							this._oSynchroniseDialog.close();
 						}.bind(this)
@@ -1795,8 +1870,16 @@ sap.ui.define([
 		 */
 		onSelectionFinishedMCBVH: function () {
 			this.fnGetModel("mVH").refresh(true);
-		}
+		},
 
+		/*
+		 * Event fire when press on icon for object linked
+		 */
+		onLinkedObject: function (oEvent) {
+			var bSubEquipment = oEvent.getSource().getSrc() === "sap-icon://org-chart",
+				oEquipment = oEvent.getSource().getParent().getRowBindingContext().getObject();
+			this._getObjectLinkedDatas(bSubEquipment, oEquipment, oEvent);
+		}
 	});
 
 });

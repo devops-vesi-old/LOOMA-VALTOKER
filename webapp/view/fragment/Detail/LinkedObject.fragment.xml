@@ -1,0 +1,37 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core">
+	<Popover 
+		id="LinkedObjectPopover" 
+		placement="Right" 
+		showHeader="false">
+		<Panel width="100%">
+			<headerToolbar>
+				<OverflowToolbar>
+					<Title text="{= ${mLinkedObject>/IsSub} ? ${i18n>TitleLinkedObjectSubEquipment} : ${i18n>TitleLinkedObjectSuperior}}"/>
+				</OverflowToolbar>
+			</headerToolbar>
+			<content>
+				<VBox  items="{mLinkedObject>/List}">
+					<HBox alignItems="Start">
+						<HBox width="8rem">
+							<Text text="{mLinkedObject>EquipmentId}"/>
+						</HBox>
+						<HBox width="15rem">
+							<Text text="{mLinkedObject>EquipmentName}"/>
+						</HBox>
+						<HBox width="12rem">
+							<ObjectStatus 
+								text="{mLinkedObject>UserStatusDesc}"
+								icon="{= ${mLinkedObject>UserStatusId} === 'E0005' ? 'sap-icon://accept' : ''}"
+								state="{= ${mLinkedObject>UserStatusId} === 'E0005' ? 'Success' : ${mLinkedObject>UserStatusId} === 'E0006' ? 'Warning' : 'None'}"/>
+						</HBox>
+						<HBox width="25rem">
+							<Text text="{mLinkedObject>CompleteLocationName}"/>
+						</HBox>
+					</HBox>
+				</VBox>
+			</content>
+		</Panel>
+	</Popover>
+</core:FragmentDefinition>

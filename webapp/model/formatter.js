@@ -260,30 +260,96 @@ sap.ui.define([],
 					return "Default";
 				}
 			},
-			
+
 			/*
-			* Method to filter Function multi combobox
-			*/
-			fnFilterFunction:function(a) {
+			 * Method to filter Function multi combobox
+			 */
+			fnFilterFunction: function (a) {
 				var aSelectedDomain = this.byId("filterDomainId").getSelectedKeys();
 				if (aSelectedDomain.length > 0 && aSelectedDomain.indexOf(a.DomainId) === -1) {
 					return false; // hide
 				}
 				return true; // visible
 			},
-			
+
 			/*
-			* Method to filter Family multi combobox
-			*/
-			fnFilterFamily:function(a) {
+			 * Method to filter Family multi combobox
+			 */
+			fnFilterFamily: function (a) {
 				var aSelectedDomain = this.byId("filterDomainId").getSelectedKeys(),
 					aSelectedFunction = this.byId("filterFunctionId").getSelectedKeys();
-				if ((aSelectedDomain.length > 0 && aSelectedDomain.indexOf(a.DomainId) === -1 )||
-					(aSelectedFunction.length > 0 && aSelectedFunction.indexOf(a.FunctionId) === -1) ) {
+				if ((aSelectedDomain.length > 0 && aSelectedDomain.indexOf(a.DomainId) === -1) ||
+					(aSelectedFunction.length > 0 && aSelectedFunction.indexOf(a.FunctionId) === -1)) {
 					return false; // hide
 				}
 				return true; // visible
-			}			
+			},
+
+			/*
+			 * Method to set icon for linked object
+			 * It can be for superior equipment if current equipment has an superior equipment
+			 * or ofr sub equipment if current equipment has the flag hasSubEquipment = true
+			 */
+			fnSetLinkedObjectIcon: function (oEquipmentInfo) {
+				if (!oEquipmentInfo) {
+					//Object undefined= no icon, it will be not visible
+					return "sap-icon://circle-task-2";
+				}
+				if (oEquipmentInfo.SuperiorEquiId !== "") {
+					// Current equipment has superior equipment					
+					return "sap-icon://arrow-top";
+				} else if (oEquipmentInfo.HasSubEquipment) {
+					// Current equipment has sub-equipments
+					return "sap-icon://org-chart";
+				} else {
+					// Other case = no icon, it will be not visible
+					return "sap-icon://circle-task-2";
+				}
+			},
+
+			/*
+			 * Method to set tooltip for linked object
+			 * It can be for superior equipment if current equipment has an superior equipment
+			 * or ofr sub equipment if current equipment has the flag hasSubEquipment = true
+			 */
+			fnSetLinkedObjectTooltip: function (oEquipmentInfo) {
+				if (!oEquipmentInfo) {
+					//Object undefined
+					return "";
+				}
+
+				if (oEquipmentInfo.SuperiorEquiId !== "") {
+					// Current equipment has superior equipment					
+					return this.fnGetResourceBundle("IconLinkedObjectSuperior");
+				} else if (oEquipmentInfo.HasSubEquipment) {
+					// Current equipment has sub-equipments
+					return this.fnGetResourceBundle("IconLinkedObjectSubEquipment");
+				} else {
+					// Other case = empty string
+					return "";
+				}
+			},
+
+			/*
+			 * Method to set tooltip for linked object
+			 * It can be for superior equipment if current equipment has an superior equipment
+			 * or ofr sub equipment if current equipment has the flag hasSubEquipment = true
+			 */
+			fnSetLinkedObjectVisible: function (oEquipmentInfo) {
+				if (!oEquipmentInfo) {
+					//Object undefined
+					return false;
+				}
+
+				if (oEquipmentInfo.SuperiorEquiId !== "" || oEquipmentInfo.HasSubEquipment) {
+					// Visible
+					return true;
+				} else {
+					// Hide
+					return false;
+				}
+			}
+
 		};
 
 	});

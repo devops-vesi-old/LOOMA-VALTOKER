@@ -70,7 +70,7 @@
 }, {
 	"columnKey": "LinkedObjectCol",
 	"text": "EquipmentTblColHdrLinkedObject",
-	"visible": true
+	"visible": false
 }, {
 	"columnKey": "LastChangedByIdCol",
 	"text": "EquipmentTblColHdrLastChangedById",

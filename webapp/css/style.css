@@ -4,10 +4,44 @@
 }
 
 .customNoBoxShadow.sapMBar {
-	background-color: transparent !important;
+    background-color: transparent !important;
     box-shadow: none !important;
 }
 
 .customQuickViewCard .sapMQuickViewPage .sapUiHLayout {
-	margin-bottom: 0rem !important;
+    margin-bottom: 0rem !important;
+}
+
+.customSemanticPage .sapFDynamicPageTitleMainInner,
+.customSemanticPage .sapFDynamicPageTitleMainInner .sapFDynamicPageTitleMainHeading,
+.customSemanticPage .sapFDynamicPageTitleMainInner .sapFDynamicPageTitleMainHeading .sapFDynamicPageTitleMainHeadingInner {
+    width: 100% !important;
+}
+
+.customLineHeight2Rem {
+    line-height: 2rem !important;
+}
+
+.customPaddingTop0_25Rem {
+    padding-top: 0.25rem !important;
+}
+
+.customfontSize1_5Rem {
+    font-size: 1.5rem !important;
+}
+
+.customWidthLegendLeft {
+    width: 13rem !important;
+}
+
+.customWidthLegendRight {
+    width: 30rem !important;
+}
+
+.customFontBold {
+    font-weight: bold !important;
+}
+
+.customItemPaddingTop0_25Rem.sapMVBox>.sapMFlexItem {
+    padding-top: 0.25rem !important;
 }

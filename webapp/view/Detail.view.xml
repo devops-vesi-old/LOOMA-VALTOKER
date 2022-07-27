@@ -6,20 +6,31 @@
 	xmlns:mvc="sap.ui.core.mvc"
 	xmlns:semantic="sap.f.semantic"
 	controllerName="com.vesi.zfioac4_valpec.controller.Detail">
-	<semantic:SemanticPage>
+	<semantic:SemanticPage class="customSemanticPage">
 		<!-- Title Heading-->
 		<semantic:titleHeading>
-			<HBox>
-				<Title 
-					class="sapUiSmallMarginEnd"
-					text="{mSite>/SiteName}"/>
-				<Text 
-					class="sapUiSmallMarginEnd"
-					text="{mSite>/TypeDesc}"/>
-				<Text 
-					class="sapUiSmallMarginEnd"
-					text="({mSite>/SiteId})"/>
-			</HBox>
+			<Toolbar>
+				<content>
+					<HBox>
+						<Title 
+							class="sapUiSmallMarginEnd"
+							text="{mSite>/SiteName}"/>
+						<Text 
+							class="sapUiSmallMarginEnd"
+							text="{mSite>/TypeDesc}"/>
+						<Text 
+							class="sapUiSmallMarginEnd"
+							text="({mSite>/SiteId})"/>
+					</HBox>
+					<ToolbarSpacer/>
+					<core:Icon
+						src="sap-icon://legend"
+						color="Default"
+						press="fnOnPressLegend"
+						tooltip="{i18n>LegendTooltip}"
+						width="1rem"/>
+				</content>
+			</Toolbar>
 		</semantic:titleHeading>
 		<!-- Header Expanded -->
 		<semantic:titleExpandedContent>

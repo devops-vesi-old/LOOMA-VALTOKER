@@ -1879,6 +1879,28 @@ sap.ui.define([
 			var bSubEquipment = oEvent.getSource().getSrc() === "sap-icon://org-chart",
 				oEquipment = oEvent.getSource().getParent().getRowBindingContext().getObject();
 			this._getObjectLinkedDatas(bSubEquipment, oEquipment, oEvent);
+		},
+
+		/*
+		 * Event fire chen click on legend
+		 */
+		fnOnPressLegend: function (oEvent) {
+			var oIcon = oEvent.getSource(),
+				oView = this.getView();
+
+			if (!this._LegendPopover) {
+				this._LegendPopover = Fragment.load({
+					id: oView.getId(),
+					name: "com.vesi.zfioac4_valpec.view.fragment.Detail.Legend",
+					controller: this
+				}).then(function (oPopover) {
+					oView.addDependent(oPopover);
+					return oPopover;
+				});
+			}
+			this._LegendPopover.then(function (oPopover) {
+				oPopover.openBy(oIcon);
+			});
 		}
 	});
 

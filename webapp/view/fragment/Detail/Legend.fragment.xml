@@ -138,7 +138,9 @@
 					<HBox alignItems="Start">
 						<HBox class="customWidthLegendLeft" justifyContent="Center">
 							<VBox alignItems="Center">
-								<Text text="{i18n>filterGroupItemFilterLabelDirect}"/>
+								<Text 
+									class="customTextAlignCenter"
+									text="{i18n>filterGroupItemFilterLabelDirect}"/>
 								<Switch
 									state="false"
 									customTextOn="{i18n>yes}"

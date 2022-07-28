@@ -45,3 +45,7 @@
 .customItemPaddingTop0_25Rem.sapMVBox>.sapMFlexItem {
     padding-top: 0.25rem !important;
 }
+
+.customTextAlignCenter {
+	text-align: center !important;
+}

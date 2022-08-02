@@ -72,6 +72,10 @@
 	"text": "EquipmentTblColHdrLinkedObject",
 	"visible": false
 }, {
+	"columnKey": "NameplateIdCol",
+	"text": "EquipmentTblColHdrNameplateId",
+	"visible": false
+}, {	
 	"columnKey": "LastChangedByIdCol",
 	"text": "EquipmentTblColHdrLastChangedById",
 	"visible": false

@@ -318,7 +318,21 @@
 							style: 'short'
 						}}"/>
 				</t:template>
-			</t:Column>				
+			</t:Column>	
+			<t:Column 
+				id="NameplateIdCol"
+				hAlign="Center" 
+				width="7%"
+				visible="false">
+				<Label text="{i18n>EquipmentTblColHdrNameplateId}" wrapping="true"/>
+				<t:template>
+					<core:Icon 
+						src="{= ${mEquipment>NameplateId} === '' ? none : 'sap-icon://camera'}"
+						tooltip="{i18n>EquipmentTableIconTooltipNameplateId}"
+						color="Default"
+						press="onNameplateDownload"/>	
+				</t:template>
+			</t:Column>
 		</t:columns>
 		<t:rowSettingsTemplate>
 			<t:RowSettings 

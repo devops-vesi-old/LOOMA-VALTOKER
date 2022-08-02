@@ -1427,6 +1427,29 @@ sap.ui.define([
 			this.getOwnerComponent().getModel().read(sRequest, oParam);
 		},
 
+		/*
+		 * fonction to dispay photo photo
+		 */
+		_displayPhoto: function (oPhoto) {
+			var oView = this.getView();
+
+			this.fnSetJSONModel(oPhoto, "mPhoto");
+
+			if (!this._PhotoDialog) {
+				this._PhotoDialog = Fragment.load({
+					id: oView.getId(),
+					name: "com.vesi.zfioac4_valpec.view.fragment.Detail.PhotoDialog",
+					controller: this
+				}).then(function (oDialog) {
+					oView.addDependent(oDialog);
+					return oDialog;
+				});
+			}
+			this._PhotoDialog.then(function (oDialog) {
+				oDialog.open();
+			});
+		},
+
 		//--------------------------------------------
 		// Event functions
 		//--------------------------------------------
@@ -1627,30 +1650,33 @@ sap.ui.define([
 		},
 
 		/*
-		 * Event fire on press on icon photo
+		 * Event fire on press on icon Photo
 		 */
 		onPhotoDownload: function (oEvent) {
 			var oObject = oEvent.getSource().getParent().getRowBindingContext().getObject(),
-				// downloadUrl = "/sap/opu/odata/sap/ZSRC4_PEC_SRV/PhotoSet('" + oObject.PhotoId + "')/$value",
-				oView = this.getView(),
-				oPhoto = oObject;
-			// sap.m.URLHelper.redirect(downloadUrl, true);
+				oPhoto = {
+					Title: this.fnGetResourceBundle('EquipmentTableIconTooltipPhotoId'),
+					PhotoId: oObject.PhotoId,
+					EntitySet: 'PhotoSet',
+					EquipmentName: oObject.EquipmentName
+				};
 
-			this.fnSetJSONModel(oPhoto, "mPhoto");
+			this._displayPhoto(oPhoto);
+		},
 
-			if (!this._PhotoDialog) {
-				this._PhotoDialog = Fragment.load({
-					id: oView.getId(),
-					name: "com.vesi.zfioac4_valpec.view.fragment.Detail.PhotoDialog",
-					controller: this
-				}).then(function (oDialog) {
-					oView.addDependent(oDialog);
-					return oDialog;
-				});
-			}
-			this._PhotoDialog.then(function (oDialog) {
-				oDialog.open();
-			});
+		/*
+		 * Event fire on press on icon Nameplate
+		 */
+		onNameplateDownload: function (oEvent) {
+			var oObject = oEvent.getSource().getParent().getRowBindingContext().getObject(),
+				oNameplate = {
+					Title: this.fnGetResourceBundle('EquipmentTableIconTooltipNameplateId'),
+					PhotoId: oObject.PhotoId,
+					EntitySet: 'NameplateSet',
+					EquipmentName: oObject.EquipmentName
+				};
+
+			this._displayPhoto(oNameplate);
 		},
 
 		/*

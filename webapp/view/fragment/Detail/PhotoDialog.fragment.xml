@@ -3,11 +3,11 @@
 	xmlns:core="sap.ui.core">
 	<Dialog
 		id="PhotoDialog"
-		title="{i18n>EquipmentTableIconTooltipPhotoId} {mPhoto>/EquipmentName}">
+		title="{mPhoto>/Title} {mPhoto>/EquipmentName}">
 		<content>
 			<Image 
 				tooltip="{i18n>EquipmentTableIconTooltipPhotoId}" 
-				src="{ path: 'mPhoto>/PhotoId' , formatter: '.formatter.fnImageUrlFormatter' }"/>
+				src="{ parts: ['mPhoto>/PhotoId', 'mPhoto>/EntitySet'] , formatter: '.formatter.fnImageUrlFormatter' }"/>
 		</content>
 		<endButton>
 			<Button 

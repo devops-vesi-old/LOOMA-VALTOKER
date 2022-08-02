@@ -195,10 +195,10 @@ sap.ui.define([],
 			/*
 			 * Set link enabled
 			 */
-			fnImageUrlFormatter: function (sPhotoId) {
+			fnImageUrlFormatter: function (sPhotoId, sEntitySet) {
 				var src = "";
 				if (sPhotoId) {
-					src = "/sap/opu/odata/sap/ZSRC4_PEC_SRV/PhotoSet('" + encodeURIComponent(sPhotoId) + "')/$value";
+					src = "/sap/opu/odata/sap/ZSRC4_PEC_SRV/" + sEntitySet + "('" + encodeURIComponent(sPhotoId) + "')/$value";
 				}
 				return src;
 			},

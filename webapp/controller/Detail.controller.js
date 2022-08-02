@@ -1655,9 +1655,9 @@ sap.ui.define([
 		onPhotoDownload: function (oEvent) {
 			var oObject = oEvent.getSource().getParent().getRowBindingContext().getObject(),
 				oPhoto = {
-					Title: this.fnGetResourceBundle('EquipmentTableIconTooltipPhotoId'),
+					Title: this.fnGetResourceBundle("EquipmentTableIconTooltipPhotoId"),
 					PhotoId: oObject.PhotoId,
-					EntitySet: 'PhotoSet',
+					EntitySet: "PhotoSet",
 					EquipmentName: oObject.EquipmentName
 				};
 
@@ -1670,9 +1670,9 @@ sap.ui.define([
 		onNameplateDownload: function (oEvent) {
 			var oObject = oEvent.getSource().getParent().getRowBindingContext().getObject(),
 				oNameplate = {
-					Title: this.fnGetResourceBundle('EquipmentTableIconTooltipNameplateId'),
-					PhotoId: oObject.PhotoId,
-					EntitySet: 'NameplateSet',
+					Title: this.fnGetResourceBundle("EquipmentTableIconTooltipNameplateId"),
+					PhotoId: oObject.NameplateId,
+					EntitySet: "NameplateSet",
 					EquipmentName: oObject.EquipmentName
 				};
 

@@ -327,7 +327,7 @@
 				<Label text="{i18n>EquipmentTblColHdrNameplateId}" wrapping="true"/>
 				<t:template>
 					<core:Icon 
-						src="{= ${mEquipment>NameplateId} === '' ? none : 'sap-icon://camera'}"
+						src="{= ${mEquipment>NameplateId} === '' ? none : 'sap-icon://tag'}"
 						tooltip="{i18n>EquipmentTableIconTooltipNameplateId}"
 						color="Default"
 						press="onNameplateDownload"/>	

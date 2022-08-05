@@ -3,7 +3,7 @@
 	xmlns:core="sap.ui.core">
 	<Popover 
 		id="OtherPropertiesPopover" 
-		placement="Left" 
+		placement="Horizontal" 
 		showHeader="false">
 		<Panel width="100%">
 			<headerToolbar>

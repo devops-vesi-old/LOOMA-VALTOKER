@@ -3,7 +3,7 @@
 	xmlns:core="sap.ui.core">
 	<Popover
 		id="CommentPopover"
-		placement="Right"
+		placement="Horizontal"
 		showHeader="false">
 		<TextArea 
 			cols="{mLongTexts>/CommentCols}"

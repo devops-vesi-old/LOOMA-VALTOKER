@@ -1745,6 +1745,8 @@ sap.ui.define([
 				oModel = {
 					Amdec1: [],
 					Amdec2: [],
+					AmdecComment1: "",
+					AmdecComment2: "",
 					FamilyCharact: [],
 					DisplayMissingCharact: false,
 					MissingImportantCharact: [],
@@ -1753,6 +1755,8 @@ sap.ui.define([
 
 			//AMDEC
 			if (idFrag === "Amdec") {
+				oModel.AmdecComment1 = oObject.AmdecTechnicalScoreComment;
+				oModel.AmdecComment2 = oObject.AmdecSeverityScoreComment;
 				for (var iAmdec in oAmdec) {
 					var aAmdec = oAmdec[iAmdec];
 					for (var iProp in aAmdec) {

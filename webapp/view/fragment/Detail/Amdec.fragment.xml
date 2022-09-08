@@ -13,6 +13,9 @@
 					</OverflowToolbar>
 				</headerToolbar>
 				<content>
+					<Text 
+						text="{mDisplayPopover>/AmdecComment1}" 
+						visible="{= ${mDisplayPopover>/AmdecComment1} === '' ? false : true}"/>					
 					<VBox  items="{mDisplayPopover>/Amdec1}">
 						<HBox alignItems="Start">
 							<HBox width="13rem">
@@ -36,6 +39,9 @@
 					</OverflowToolbar>
 				</headerToolbar>
 				<content>
+					<Text 
+						text="{mDisplayPopover>/AmdecComment2}" 
+						visible="{= ${mDisplayPopover>/AmdecComment2} === '' ? false : true}"/>						
 					<VBox  items="{mDisplayPopover>/Amdec2}">
 						<HBox alignItems="Start">
 							<HBox width="13rem">

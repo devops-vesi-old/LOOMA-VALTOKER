@@ -66,6 +66,7 @@
 						<Link
 							class="sapUiSmallMarginEnd"
 							text="{mLocationHierarchy>LocationName}"
+							tooltip="{mLocationHierarchy>LocationName}"
 							wrapping="false" 
 							press="onGetEquiForLocationPress"
 							enabled="{

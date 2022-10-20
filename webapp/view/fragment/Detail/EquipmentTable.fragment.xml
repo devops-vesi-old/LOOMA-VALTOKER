@@ -83,7 +83,10 @@
 				sortProperty="FamilyDesc">
 				<Label text="{i18n>EquipmentTblColHdrFamilyDesc}" wrapping="false"/>
 				<t:template>
-					<Text text="{mEquipment>FamilyDesc}"/>
+					<Text 
+						text="{mEquipment>FamilyDesc}" 
+						tooltip="{mEquipment>FamilyDesc}"
+						wrapping="false"/>
 				</t:template>
 			</t:Column>				
 			<t:Column 
@@ -94,7 +97,10 @@
 				sortProperty="EquipmentName">
 				<Label text="{i18n>EquipmentTblColHdrEquipmentName}" wrapping="true"/>
 				<t:template>
-					<Text text="{mEquipment>EquipmentName}"/>
+					<Text 
+						text="{mEquipment>EquipmentName}"
+						tooltip="{mEquipment>EquipmentName}"
+						wrapping="false"/>
 				</t:template>
 			</t:Column>
 			<t:Column 
@@ -104,7 +110,10 @@
 				sortProperty="CompleteLocationName">
 				<Label text="{i18n>EquipmentTblColHdrLocationName}" wrapping="true"/>
 				<t:template>
-					<Text text="{mEquipment>CompleteLocationName}"/>
+					<Text 
+						text="{mEquipment>CompleteLocationName}" 
+						tooltip="{mEquipment>CompleteLocationName}" 
+						wrapping="false"/>
 				</t:template>
 			</t:Column>
 			<t:Column 
@@ -170,6 +179,7 @@
 				<t:template>
 					<ObjectStatus 
 							text="{mEquipment>UserStatusDesc}"
+							tooltip="{mEquipment>UserStatusDesc}"
 							icon="{= ${mEquipment>UserStatusId} === 'E0005' ? 'sap-icon://accept' : ''}"
 							state="{= ${mEquipment>UserStatusId} === 'E0005' ? 'Success' : ${mEquipment>UserStatusId} === 'E0006' ? 'Warning' : 'None'}"/>					
 				</t:template>

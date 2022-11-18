@@ -1,143 +1,153 @@
 {
 	"EquipmentId": {
-		"propertyId" : "EquipmentId",
+		"propertyId": "EquipmentId",
 		"i18n": "EquipmentId",
 		"colIndex": 0
 	},
 	"EquipmentName": {
-		"propertyId" : "EquipmentName",
+		"propertyId": "EquipmentName",
 		"i18n": "EquipmentName",
 		"colIndex": 1
 	},
 	"IsCreatedDuringPecDesc": {
-		"propertyId" : "IsCreatedDuringPec",
+		"propertyId": "IsCreatedDuringPec",
 		"i18n": "IsCreatedDuringPec",
 		"colIndex": 2
 	},
 	"UserStatusDesc": {
-		"propertyId" : "UserStatusDesc",
+		"propertyId": "UserStatusDesc",
 		"i18n": "UserStatusDesc",
 		"colIndex": 3
 	},
 	"CompleteLocationName": {
-		"propertyId" : "LocationId",
+		"propertyId": "LocationId",
 		"i18n": "LocationId",
 		"colIndex": 4
 	},
 	"SuperiorEquiId": {
-		"propertyId" : "SuperiorEquiId",
+		"propertyId": "SuperiorEquiId",
 		"i18n": "SuperiorEquiId",
 		"colIndex": 5
 	},
 	"BrandId": {
-		"propertyId" : "BrandId",
+		"propertyId": "BrandId",
 		"i18n": "BrandId",
 		"colIndex": 6
 	},
 	"Manufref": {
-		"propertyId" : "Manufref",
+		"propertyId": "Manufref",
 		"i18n": "Manufref",
 		"colIndex": 7
 	},
 	"SerialNumber": {
-		"propertyId" : "SerialNumber",
+		"propertyId": "SerialNumber",
 		"i18n": "SerialNumber",
 		"colIndex": 8
 	},
 	"Quantity": {
-		"propertyId" : "Quantity",
+		"propertyId": "Quantity",
 		"i18n": "Quantity",
 		"colIndex": 9
 	},
 	"DomainDesc": {
-		"propertyId" : "DomainId",
+		"propertyId": "DomainId",
 		"i18n": "DomainId",
 		"colIndex": 10
-	},	
+	},
 	"FunctionDesc": {
-		"propertyId" : "FunctionId",
+		"propertyId": "FunctionId",
 		"i18n": "FunctionId",
 		"colIndex": 11
 	},
 	"FamilyDesc": {
-		"propertyId" : "FamilyId",
+		"propertyId": "FamilyId",
 		"i18n": "FamilyId",
 		"colIndex": 12
 	},
 	"WarrantyEndDateText": {
-		"propertyId" : "WarrantyEndDate",
+		"propertyId": "WarrantyEndDate",
 		"i18n": "WarrantyEndDate",
 		"colIndex": 13
 	},
 	"Qrcode": {
-		"propertyId" : "Qrcode",
+		"propertyId": "Qrcode",
 		"i18n": "Qrcode",
 		"colIndex": 14
 	},
 	"PecDeepAnalysisNeededDesc": {
-		"propertyId" : "PecDeepAnalysisNeeded",
+		"propertyId": "PecDeepAnalysisNeeded",
 		"i18n": "PecDeepAnalysisNeeded",
 		"colIndex": 15
 	},
 	"PecQuoteDesc": {
-		"propertyId" : "PecQuote",
+		"propertyId": "PecQuote",
 		"i18n": "PecQuote",
 		"colIndex": 16
 	},
 	"PecTrainingReqDesc": {
-		"propertyId" : "PecTrainingReq",
+		"propertyId": "PecTrainingReq",
 		"i18n": "PecTrainingReq",
 		"colIndex": 17
 	},
 	"CriticalDesc": {
-		"propertyId" : "Critical",
+		"propertyId": "Critical",
 		"i18n": "Critical",
 		"colIndex": 18
 	},
-	"AmdecFunctionningDesc": {
-		"propertyId" : "AmdecFunctionningId",
-		"i18n": "AmdecFunctionningId",
+	"AmdecTechnicalScoreComment": {
+		"propertyId": "AmdecTechnicalScoreComment",
+		"i18n": "AmdecTechnicalScoreComment",
 		"colIndex": 19
 	},
-	"AmdecStateDesc": {
-		"propertyId" : "AmdecStateId",
-		"i18n": "AmdecStateId",
+	"AmdecFunctionningDesc": {
+		"propertyId": "AmdecFunctionningId",
+		"i18n": "AmdecFunctionningId",
 		"colIndex": 20
 	},
-	"AmdecDisrepairDesc": {
-		"propertyId" : "AmdecDisrepairId",
-		"i18n": "AmdecDisrepairId",
+	"AmdecStateDesc": {
+		"propertyId": "AmdecStateId",
+		"i18n": "AmdecStateId",
 		"colIndex": 21
 	},
-	"AmdecAccessibilityDesc": {
-		"propertyId" : "AmdecAccessibilityId",
-		"i18n": "AmdecAccessibilityId",
+	"AmdecDisrepairDesc": {
+		"propertyId": "AmdecDisrepairId",
+		"i18n": "AmdecDisrepairId",
 		"colIndex": 22
 	},
-	"AmdecReliabilityDesc": {
-		"propertyId" : "AmdecReliabilityId",
-		"i18n": "AmdecReliabilityId",
+	"AmdecAccessibilityDesc": {
+		"propertyId": "AmdecAccessibilityId",
+		"i18n": "AmdecAccessibilityId",
 		"colIndex": 23
 	},
-	"AmdecCriticityDesc": {
-		"propertyId" : "AmdecCriticityId",
-		"i18n": "AmdecCriticityId",
+	"AmdecSeverityScoreComment": {
+		"propertyId": "AmdecSeverityScoreComment",
+		"i18n": "AmdecSeverityScoreComment",
 		"colIndex": 24
 	},
-	"AmdecDetectabilityDesc": {
-		"propertyId" : "AmdecDetectabilityId",
-		"i18n": "AmdecDetectabilityId",
+	"AmdecReliabilityDesc": {
+		"propertyId": "AmdecReliabilityId",
+		"i18n": "AmdecReliabilityId",
 		"colIndex": 25
 	},
-	"UsageDesc": {
-		"propertyId" : "UsageId",
-		"i18n": "UsageId",
+	"AmdecCriticityDesc": {
+		"propertyId": "AmdecCriticityId",
+		"i18n": "AmdecCriticityId",
 		"colIndex": 26
 	},
-	"IsAmdecCompleteDesc": {
-		"propertyId" : "IsAmdecCompleteDesc",
-		"i18n": "IsAmdecCompleteDesc",
+	"AmdecDetectabilityDesc": {
+		"propertyId": "AmdecDetectabilityId",
+		"i18n": "AmdecDetectabilityId",
 		"colIndex": 27
-	}	
-	
+	},
+	"UsageDesc": {
+		"propertyId": "UsageId",
+		"i18n": "UsageId",
+		"colIndex": 28
+	},
+	"IsAmdecCompleteDesc": {
+		"propertyId": "IsAmdecCompleteDesc",
+		"i18n": "IsAmdecCompleteDesc",
+		"colIndex": 29
+	}
+
 }

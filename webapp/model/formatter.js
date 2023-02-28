@@ -1,7 +1,7 @@
 /**
  * @class formatter
  * @classdesc This is the controller for common formatter functions
- * @name com.vesi.zfioac4_valpec.model.formatter
+ * @name com.vesi.zfac4_takeover.model.formatter
  */
 sap.ui.define([],
 	function () {

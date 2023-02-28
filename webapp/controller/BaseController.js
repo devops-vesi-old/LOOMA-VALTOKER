@@ -89,7 +89,7 @@ sap.ui.define([
 		 * Method requires Personalisation JSON Path and Table Id as importing parameter to work
 		 */
 		_onTablePersonalizePress: function (sConfigJSONPath, sTableId) {
-			var sRootPath = sap.ui.require.toUrl("com/vesi/zfioac4_valpec");
+			var sRootPath = sap.ui.require.toUrl("com/vesi/zfac4_takeover");
 			var oPersoData = this._fnGetTablePersoConfigData(sRootPath + sConfigJSONPath, sTableId);
 			this._fnOpenPersoDialog(oPersoData, sTableId);
 		},
@@ -139,7 +139,7 @@ sap.ui.define([
 			if (!this.oPersonalizationDialog) {
 				this.oPersonalizationDialog = Fragment.load({
 					id: oView.getId(),
-					name: "com.vesi.zfioac4_valpec.view.fragment.PersonalizationDialog",
+					name: "com.vesi.zfac4_takeover.view.fragment.PersonalizationDialog",
 					controller: this
 				}).then(function (oPersonalizationDialog) {
 					var oPersonalizationDialogMod = this._setStyleClassForPopup(oPersonalizationDialog);

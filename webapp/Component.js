@@ -1,11 +1,11 @@
 sap.ui.define([
 	"sap/ui/core/UIComponent",
 	"sap/ui/Device",
-	"com/vesi/zfioac4_valpec/model/models"
+	"com/vesi/zfac4_takeover/model/models"
 ], function (UIComponent, Device, models) {
 	"use strict";
 
-	return UIComponent.extend("com.vesi.zfioac4_valpec.Component", {
+	return UIComponent.extend("com.vesi.zfac4_takeover.Component", {
 
 		metadata: {
 			manifest: "json"

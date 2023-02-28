@@ -33,9 +33,9 @@
 ### Technical objects
 | Technical obj | Name |
 | ------------- | ---- |
-| UI5 App | zfioac4_valpec |
+| UI5 App | zfac4_takeover |
 | Component ID | com.vesi |
-| Git Repo | https://gitlab1.vinci-energies.net/vesi/codex/developments/c4hana/veff/zfioac4_valpec.git |
+| Git Repo | https://gitlab1.vinci-energies.net/vesi/codex/developments/c4hana/veff/zfac4_takeover.git |
 
 This document provides the information on the technical description for the Takeover Validation Cockpit application for the LOOMA project. It gives information about the GitLab URL, UI5 component name, OData services used, and some of the important features of the application.
 
@@ -257,7 +257,7 @@ onExportXLS: function (oEvent) {
 		aColSize = {
 			"Sheet0": [] //Sheet 1
 		},
-		sRootPath = sap.ui.require.toUrl("com/vesi/zfioac4_valpec"),
+		sRootPath = sap.ui.require.toUrl("com/vesi/zfac4_takeover"),
 		oColumnProperties = new JSONModel();
 
 	if (!oData.list || (oData.list && oData.list.length === 0)) {

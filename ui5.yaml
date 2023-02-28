@@ -1,6 +1,6 @@
 specVersion: '1.0'
 metadata:
-  name: zfioac4_valpec
+  name: zfac4_takeover
 type: application
 resources:
   configuration:

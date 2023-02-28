@@ -1,18 +1,18 @@
 sap.ui.define([
-	"com/vesi/zfioac4_valpec/controller/BaseController",
+	"com/vesi/zfac4_takeover/controller/BaseController",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/ui/model/json/JSONModel",
 	"sap/base/util/UriParameters",
 	"sap/ui/core/Fragment",
-	"com/vesi/zfioac4_valpec/model/formatter",
+	"com/vesi/zfac4_takeover/model/formatter",
 	"sap/m/MessageBox",
 	"sap/m/MessageToast",
 	"com/vesi/zaclib/controls/Excel"
 ], function (Controller, Filter, FilterOperator, JSONModel, UriParameters, Fragment, formatter, MessageBox, MessageToast, Excel) {
 	"use strict";
 
-	return Controller.extend("com.vesi.zfioac4_valpec.controller.Detail", {
+	return Controller.extend("com.vesi.zfac4_takeover.controller.Detail", {
 		formatter: formatter,
 		_oFormatDate: sap.ui.core.format.DateFormat.getDateInstance({
 			pattern: "dd/MM/yyyy"
@@ -23,7 +23,7 @@ sap.ui.define([
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
 		 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
-		 * @memberOf com.vesi.zfioac4_valpec.view.Detail
+		 * @memberOf com.vesi.zfac4_takeover.view.Detail
 		 */
 		onInit: function () {
 			this.fnGetRouter().getRoute("Detail").attachPatternMatched(this._onPatternMatched, this);
@@ -1356,7 +1356,7 @@ sap.ui.define([
 				idFrag = "LinkedObject",
 				idThisPopover = "_" + idFrag + "Popover",
 				oView = this.getView(),
-				sFragmentName = "com.vesi.zfioac4_valpec.view.fragment.Detail." + idFrag,
+				sFragmentName = "com.vesi.zfac4_takeover.view.fragment.Detail." + idFrag,
 				fnError = function (oError) {
 					this.fnHideBusyIndicator();
 					this.fnSetJSONModel({
@@ -1438,7 +1438,7 @@ sap.ui.define([
 			if (!this._PhotoDialog) {
 				this._PhotoDialog = Fragment.load({
 					id: oView.getId(),
-					name: "com.vesi.zfioac4_valpec.view.fragment.Detail.PhotoDialog",
+					name: "com.vesi.zfac4_takeover.view.fragment.Detail.PhotoDialog",
 					controller: this
 				}).then(function (oDialog) {
 					oView.addDependent(oDialog);
@@ -1480,7 +1480,7 @@ sap.ui.define([
 			if (!this._ModPopover) {
 				this._ModPopover = Fragment.load({
 					id: oView.getId(),
-					name: "com.vesi.zfioac4_valpec.view.fragment.Detail.ModifiedInfo",
+					name: "com.vesi.zfac4_takeover.view.fragment.Detail.ModifiedInfo",
 					controller: this
 				}).then(function (oPopover) {
 					oView.addDependent(oPopover);
@@ -1707,7 +1707,7 @@ sap.ui.define([
 			if (!this._ComPopover) {
 				this._ComPopover = Fragment.load({
 					id: oView.getId(),
-					name: "com.vesi.zfioac4_valpec.view.fragment.Detail.Comment",
+					name: "com.vesi.zfac4_takeover.view.fragment.Detail.Comment",
 					controller: this
 				}).then(function (oPopover) {
 					oView.addDependent(oPopover);
@@ -1741,7 +1741,7 @@ sap.ui.define([
 				idThisPopover = "_" + idFrag + "Popover",
 				oView = this.getView(),
 				oObject = oObjectView === "" ? {} : oEvent.getSource().getParent().getRowBindingContext().getObject(),
-				sFragmentName = "com.vesi.zfioac4_valpec.view.fragment.Detail." + idFrag,
+				sFragmentName = "com.vesi.zfac4_takeover.view.fragment.Detail." + idFrag,
 				oModel = {
 					Amdec1: [],
 					Amdec2: [],
@@ -1820,7 +1820,7 @@ sap.ui.define([
 				aColSize = {
 					"Sheet0": [] //Sheet 1
 				},
-				sRootPath = sap.ui.require.toUrl("com/vesi/zfioac4_valpec"),
+				sRootPath = sap.ui.require.toUrl("com/vesi/zfac4_takeover"),
 				oColumnProperties = new JSONModel();
 
 			if (!oData.list || (oData.list && oData.list.length === 0)) {
@@ -1921,7 +1921,7 @@ sap.ui.define([
 			if (!this._LegendPopover) {
 				this._LegendPopover = Fragment.load({
 					id: oView.getId(),
-					name: "com.vesi.zfioac4_valpec.view.fragment.Detail.Legend",
+					name: "com.vesi.zfac4_takeover.view.fragment.Detail.Legend",
 					controller: this
 				}).then(function (oPopover) {
 					oView.addDependent(oPopover);

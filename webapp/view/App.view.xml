@@ -1,6 +1,6 @@
 <mvc:View 
 	class="sapUiSizeCompact"
-	controllerName="com.vesi.zfac4_takeover.controller.App" 
+	controllerName="com.vesi.zfac4_valtoker.controller.App" 
 	displayBlock="true" 
 	xmlns="sap.m" 
 	xmlns:mvc="sap.ui.core.mvc">

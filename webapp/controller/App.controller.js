@@ -3,7 +3,7 @@ sap.ui.define([
 ], function (Controller) {
 	"use strict";
 
-	return Controller.extend("com.vesi.zfac4_takeover.controller.App", {
+	return Controller.extend("com.vesi.zfac4_valtoker.controller.App", {
 		onInit: function () {
 			var sLang = sap.ui.getCore().getConfiguration().getLanguage().toUpperCase(),
 				aImplementedLanguage = ["FR", "EN"];

@@ -11,7 +11,7 @@
 				icon="sap-icon://map"
 				text="{i18n>IconTabFilterAddress}">
 				<core:Fragment 
-					fragmentName="com.vesi.zfac4_takeover.view.fragment.Detail.Address" 
+					fragmentName="com.vesi.zfac4_valtoker.view.fragment.Detail.Address" 
 					type="XML"/>
 			</IconTabFilter>	
 			<IconTabFilter 
@@ -19,7 +19,7 @@
 				icon="sap-icon://contacts"
 				text="{i18n>IconTabFilterContact}">
 				<core:Fragment 
-					fragmentName="com.vesi.zfac4_takeover.view.fragment.Detail.Contact" 
+					fragmentName="com.vesi.zfac4_valtoker.view.fragment.Detail.Contact" 
 					type="XML"/>
 			</IconTabFilter>
 		</items>

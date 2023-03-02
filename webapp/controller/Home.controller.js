@@ -1,5 +1,5 @@
 sap.ui.define([
-	"com/vesi/zfac4_takeover/controller/BaseController",
+	"com/vesi/zfac4_valtoker/controller/BaseController",
 	"../model/formatter",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
@@ -7,7 +7,7 @@ sap.ui.define([
 ], function (Controller, Formatter, Filter, FilterOperator, Fragment) {
 	"use strict";
 
-	return Controller.extend("com.vesi.zfac4_takeover.controller.Home", {
+	return Controller.extend("com.vesi.zfac4_valtoker.controller.Home", {
 		formatter: Formatter,
 		//--------------------------------------------
 		// Standard method
@@ -15,7 +15,7 @@ sap.ui.define([
 		/**
 		 * Called when a controller is instantiated and its View controls (if available) are already created.
 		 * Can be used to modify the View before it is displayed, to bind event handlers and do other one-time initialization.
-		 * @memberOf com.vesi.zfac4_takeover.view.Home
+		 * @memberOf com.vesi.zfac4_valtoker.view.Home
 		 */
 		onInit: function () {
 			//Set model for formatter Type description
@@ -219,7 +219,7 @@ sap.ui.define([
 
 				this["_" + sCurrId] = Fragment.load({
 					id: oView.getId(),
-					name: "com.vesi.zfac4_takeover.view.fragment.Home.valueHelp." + sCurrId,
+					name: "com.vesi.zfac4_valtoker.view.fragment.Home.valueHelp." + sCurrId,
 					controller: this
 
 				}).then(function (oDialog) {

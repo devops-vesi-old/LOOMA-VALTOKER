@@ -5,7 +5,7 @@
 	xmlns:l="sap.ui.layout"
 	xmlns:mvc="sap.ui.core.mvc"
 	xmlns:semantic="sap.f.semantic"
-	controllerName="com.vesi.zfac4_takeover.controller.Detail">
+	controllerName="com.vesi.zfac4_valtoker.controller.Detail">
 	<semantic:SemanticPage class="customSemanticPage">
 		<!-- Title Heading-->
 		<semantic:titleHeading>
@@ -35,13 +35,13 @@
 		<!-- Header Expanded -->
 		<semantic:titleExpandedContent>
 			<core:Fragment 
-				fragmentName="com.vesi.zfac4_takeover.view.fragment.Detail.TitleExpandedContent" 
+				fragmentName="com.vesi.zfac4_valtoker.view.fragment.Detail.TitleExpandedContent" 
 				type="XML"/>
 		</semantic:titleExpandedContent>
 		<!-- Header Content -->
 		<semantic:headerContent>
 			<core:Fragment 
-				fragmentName="com.vesi.zfac4_takeover.view.fragment.Detail.FilterBar" 
+				fragmentName="com.vesi.zfac4_valtoker.view.fragment.Detail.FilterBar" 
 				type="XML"/>
 		</semantic:headerContent>
 		<semantic:content>
@@ -52,7 +52,7 @@
 					</l:layoutData>
 					<l:contentAreas>
 						<core:Fragment 
-							fragmentName="com.vesi.zfac4_takeover.view.fragment.Detail.TreeTable" 
+							fragmentName="com.vesi.zfac4_valtoker.view.fragment.Detail.TreeTable" 
 							type="XML"/>
 					</l:contentAreas>
 				</l:Splitter>
@@ -62,7 +62,7 @@
 					</l:layoutData>
 					<l:contentAreas>
 						<core:Fragment 
-							fragmentName="com.vesi.zfac4_takeover.view.fragment.Detail.EquipmentTable" 
+							fragmentName="com.vesi.zfac4_valtoker.view.fragment.Detail.EquipmentTable" 
 							type="XML"/>
 					</l:contentAreas>
 				</l:Splitter>

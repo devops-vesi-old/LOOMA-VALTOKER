@@ -1,7 +1,7 @@
 {
 	"_version": "1.12.0",
 	"sap.app": {
-		"id": "com.vesi.zfac4_takeover",
+		"id": "com.vesi.zfac4_valtoker",
 		"type": "application",
 		"i18n": "i18n/i18n.properties",
 		"applicationVersion": {
@@ -50,7 +50,7 @@
 	"sap.ui5": {
 		"flexEnabled": false,
 		"rootView": {
-			"viewName": "com.vesi.zfac4_takeover.view.App",
+			"viewName": "com.vesi.zfac4_valtoker.view.App",
 			"type": "XML",
 			"async": true,
 			"id": "app"
@@ -73,7 +73,7 @@
 			"i18n": {
 				"type": "sap.ui.model.resource.ResourceModel",
 				"settings": {
-					"bundleName": "com.vesi.zfac4_takeover.i18n.i18n"
+					"bundleName": "com.vesi.zfac4_valtoker.i18n.i18n"
 				}
 			},
 			"": {
@@ -111,7 +111,7 @@
 				"routerClass": "sap.m.routing.Router",
 				"viewType": "XML",
 				"async": true,
-				"viewPath": "com.vesi.zfac4_takeover.view",
+				"viewPath": "com.vesi.zfac4_valtoker.view",
 				"controlAggregation": "pages",
 				"controlId": "app",
 				"clearControlAggregation": false
@@ -143,7 +143,7 @@
 		}
 	},
 	"sap.platform.abap": {
-		"uri": "/sap/bc/ui5_ui5/sap/zfac4_takeover/webapp",
+		"uri": "/sap/bc/ui5_ui5/sap/zfac4_valtoker/webapp",
 		"_version": "1.1.0"
 	}
 }

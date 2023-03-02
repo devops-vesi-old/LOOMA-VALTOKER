@@ -9,7 +9,7 @@ variables:
   GIT_DEPTH: 0
   GITLAB_URL: https://gitlab1.vinci-energies.net
   GITLAB_REF_BRANCH: master
-  PROJECT_NAME: vesi-codex-developments-c4hana-veff-zfac4_takeover
+  PROJECT_NAME: vesi-codex-developments-c4hana-veff-zfac4_valtoker
   SONAR_URL: https://sonarqube.vinci-energies.net
   SONAR_COMMON_OPTS: >
     -Dsonar.projectName=$PROJECT_NAME

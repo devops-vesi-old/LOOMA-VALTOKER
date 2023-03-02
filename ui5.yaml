@@ -1,6 +1,6 @@
 specVersion: '1.0'
 metadata:
-  name: zfac4_takeover
+  name: zfac4_valtoker
 type: application
 resources:
   configuration:

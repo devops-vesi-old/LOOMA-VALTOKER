@@ -38,6 +38,12 @@ sap.ui.define([
 			this._initGlobalModels();
 			//Set icon tab bar density
 			this.byId("SiteIconTabBar").setHeaderMode("Inline");
+			const oSelectAllLocModel = new JSONModel({
+				aSelectedIndices: [],
+				aSelectedLocations: [],
+				bSelectAll: false
+			});
+			this.getView().setModel(oSelectAllLocModel, "oSelectAllLocationsModel");
 		},
 
 		//--------------------------------------------
@@ -1141,13 +1147,25 @@ sap.ui.define([
 			oModel.setDeferredGroups([sId]);
 			// Get rows
 			var oObjectTable = this.byId(sTableName);
-			// Get indices selected
-			var aIndexSelected = oObjectTable.getSelectedIndices();
+			const oSelectAllLocModel = this.getView().getModel("oSelectAllLocationsModel");
+			let bSelectAllLoc = oSelectAllLocModel.getProperty("/bSelectAll"),
+				aIndexSelected;
+			if (bSelectAllLoc && sTableName == "LocationHierarchyTreeTable") {
+				aIndexSelected = oSelectAllLocModel.getProperty("/aSelectedIndices");
+			} else {
+				// Get indices selected
+				aIndexSelected = oObjectTable.getSelectedIndices();
+			}
 
 			//Initialize the call by Indices selected
+			let oObjectSelected;
 			for (var iInd in aIndexSelected) {
-				var oObjectSelected = oObjectTable.getContextByIndex(aIndexSelected[iInd]).getObject();
-
+				if (bSelectAllLoc) {
+					const aSelectedLoc = oSelectAllLocModel.getProperty("/aSelectedLocations");
+					oObjectSelected = aSelectedLoc[iInd];
+				} else {
+					oObjectSelected = oObjectTable.getContextByIndex(aIndexSelected[iInd]).getObject();
+				}
 				var payload = {
 					Scope: "PEC",
 					EquipmentId: bIsEquipments ? oObjectSelected.EquipmentId : "",
@@ -1628,24 +1646,57 @@ sap.ui.define([
 		 * Event fire on Selection change on Location hierarchy Tree Table
 		 */
 		onSelectionChangeLocationTable: function (oEvent) {
-			var oDetailPageModel = this.fnGetModel("mDetailPage"),
-				aSelectedIndices = oEvent.getSource().getSelectedIndices(),
-				oTreeTable = this.byId("LocationHierarchyTreeTable");
+			const bSelectAll = oEvent.getParameter("selectAll");
+			let aNestedLocations = [],
+				aLocations = [],
+				aSelectedIndices = [];
+			if (bSelectAll) {
+				const aSiteLocation = this.getView().getModel("mLocationHierarchy").getData().nodeRoot.children;
+				function getSelectedLocationData (pSiteLocation) {
+					pSiteLocation.forEach(location => {
+						if (location.children.length > 0 && location.children) {
+							aNestedLocations.push(location.children);
+							getSelectedLocationData(location.children);
+						}
+					})
+				}
+				getSelectedLocationData(aSiteLocation);
+				aSiteLocation.forEach(location => {
+					aNestedLocations.push(location);
+				});
+				aNestedLocations.forEach(location => {
+					if (location.length >= 1) {
+						location.forEach(subLocation => {
+							aLocations.push(subLocation);
+						});
+					} else {
+						aLocations.push(location);
+					}
+					});
+				aLocations.map((location, index) => aSelectedIndices.push(index));
+				const oSelectAllLocModel = this.getView().getModel("oSelectAllLocationsModel");
+				oSelectAllLocModel.setProperty("/aSelectedLocations", aLocations);
+				oSelectAllLocModel.setProperty("/aSelectedIndices", aSelectedIndices);
+				oSelectAllLocModel.setProperty("/bSelectAll", bSelectAll);
+			} else {
+				aSelectedIndices = oEvent.getSource().getSelectedIndices();
+			}
+			const oDetailPageModel = this.fnGetModel("mDetailPage"),
+			oTreeTable = this.byId("LocationHierarchyTreeTable");
 			if (aSelectedIndices.length > 0) {
 				oDetailPageModel.getData().bLocationSelected = true;
 				oDetailPageModel.getData().bLocationSelectedDeletable = true;
 				for (var iSel in aSelectedIndices) {
-					var oObject = oTreeTable.getContextByIndex(aSelectedIndices[iSel]).getObject();
-					if (!oObject.Deletable) {
-						oDetailPageModel.getData().bLocationSelectedDeletable = false;
-						break;
-					}
+				var oObject = oTreeTable.getContextByIndex(aSelectedIndices[iSel]).getObject();
+				if (!oObject.Deletable) {
+					oDetailPageModel.getData().bLocationSelectedDeletable = false;
+					break;
 				}
-			} else {
-				oDetailPageModel.getData().bLocationSelected = false;
-				oDetailPageModel.getData().bLocationSelectedDeletable = false;
 			}
-
+			} else {
+			oDetailPageModel.getData().bLocationSelected = false;
+			oDetailPageModel.getData().bLocationSelectedDeletable = false;
+			}
 			oDetailPageModel.refresh(true);
 		},
 

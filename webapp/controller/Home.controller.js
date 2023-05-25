@@ -3,8 +3,9 @@ sap.ui.define([
 	"../model/formatter",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"sap/ui/core/Fragment"
-], function (Controller, Formatter, Filter, FilterOperator, Fragment) {
+	"sap/ui/core/Fragment",
+	"sap/m/MessageBox",
+], function (Controller, Formatter, Filter, FilterOperator, Fragment, MessageBox) {
 	"use strict";
 
 	return Controller.extend("com.vesi.zfac4_valtoker.controller.Home", {

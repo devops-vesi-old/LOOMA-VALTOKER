@@ -8,7 +8,8 @@
 		selectionMode="None"
 		rowActionCount="1"
 		visibleRowCountMode="Auto"
-		rows="{mSite>/list}">
+		rows="{mSite>/list}"
+		rowSelectionChange="onSitesTableRowSelectionChange">
 		<ui:extension>
 			<Toolbar class="sapMTBHeader-CTX">
 				<Button 

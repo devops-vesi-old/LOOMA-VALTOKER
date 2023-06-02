@@ -11,6 +11,8 @@ sap.ui.define([
 	"com/vesi/zaclib/controls/Excel"
 ], function (Controller, Filter, FilterOperator, JSONModel, UriParameters, Fragment, formatter, MessageBox, MessageToast, Excel) {
 	"use strict";
+	
+	const FRAGMENT_PATH = "com.vesi.zfac4_valtoker.view.fragment.Detail.";
 
 	return Controller.extend("com.vesi.zfac4_valtoker.controller.Detail", {
 		formatter: formatter,
@@ -781,6 +783,7 @@ sap.ui.define([
 				oLine.AmdecReliabilityDesc = oLine.AmdecReliabilityId === "" ? "" : oDDICValue.AmdecReliabilityId[oLine.AmdecReliabilityId].ValueDesc;
 				oLine.AmdecStateDesc = oLine.AmdecStateId === "" ? "" : oDDICValue.AmdecStateId[oLine.AmdecStateId].ValueDesc;
 				oLine.UsageDesc = oLine.UsageId === "" ? "" : oDDICValue.UsageId[oLine.UsageId].ValueDesc;
+				oLine.Anomaly = oLine.AnomalyId === "" ? "" : Object.values(oLine.Anomaly)[0].uri;
 
 				for (var sPorperty in oLine) {
 					if (oDDICValue[sPorperty]) { //Manage only properties with value list (from DDIC)
@@ -1368,7 +1371,7 @@ sap.ui.define([
 
 			return aOtherProperties;
 		},
-
+		
 		_getObjectLinkedDatas: function (bSubEquipment, oEquipment, oEvent) {
 			var oObjectView = oEvent.getSource(),
 				idFrag = "LinkedObject",
@@ -1647,6 +1650,7 @@ sap.ui.define([
 		 */
 		onSelectionChangeLocationTable: function (oEvent) {
 			const bSelectAll = oEvent.getParameter("selectAll");
+			const oSelectAllLocModel = this.getView().getModel("oSelectAllLocationsModel");
 			let aNestedLocations = [],
 				aLocations = [],
 				aSelectedIndices = [];
@@ -1674,12 +1678,12 @@ sap.ui.define([
 					}
 					});
 				aLocations.map((location, index) => aSelectedIndices.push(index));
-				const oSelectAllLocModel = this.getView().getModel("oSelectAllLocationsModel");
 				oSelectAllLocModel.setProperty("/aSelectedLocations", aLocations);
 				oSelectAllLocModel.setProperty("/aSelectedIndices", aSelectedIndices);
 				oSelectAllLocModel.setProperty("/bSelectAll", bSelectAll);
 			} else {
 				aSelectedIndices = oEvent.getSource().getSelectedIndices();
+				oSelectAllLocModel.setProperty("/bSelectAll", bSelectAll);
 			}
 			const oDetailPageModel = this.fnGetModel("mDetailPage"),
 			oTreeTable = this.byId("LocationHierarchyTreeTable");

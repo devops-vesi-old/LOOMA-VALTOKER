@@ -2,6 +2,20 @@ specVersion: "2.6"
 metadata:
   name: com.vesi.zfac4_valtoker
 type: application
+framework:
+  name: SAPUI5
+  version: 1.108.15
+  libraries:
+    - name: sap.ui.layout
+    - name: sap.ui.core
+    - name: sap.m
+    - name: sap.ui.table
+    - name: sap.f
+    - name: sap.ui.comp
+    - name: sap.ui.generic.app
+    - name: sap.ushell
+    - name: themelib_sap_bluecrystal
+    - name: themelib_sap_fiori_3
 server:
   customMiddleware:
     - name: fiori-tools-proxy
@@ -18,12 +32,6 @@ server:
             url: http://dvp:443
             client: "550"
             pathPrefix: /sap/bc/ui5_ui5/sap/zaclib
-        ui5:
-          path:
-            - /resources
-            - /test-resources
-          url: https://ui5.sap.com
-          version: 1.108.15
     - name: fiori-tools-appreload
       afterMiddleware: compression
       configuration:

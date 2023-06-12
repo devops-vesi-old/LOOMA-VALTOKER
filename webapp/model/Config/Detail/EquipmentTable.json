@@ -1,90 +1,120 @@
-[{
-	"columnKey": "EquipmentIdCol",
-	"text": "EquipmentTblColHdrEquipmentId",
-	"visible": true,
-	"index": 0
-}, {
-	"columnKey": "StautsFSMCol",
-	"text": "LocationHierarchyTblColHdrStatusFSM",
-	"visible": true,
-	"index": 1
-}, {
-	"columnKey": "EquipmentNameCol",
-	"text": "EquipmentTblColHdrEquipmentName",
-	"visible": true,
-	"index": 2
-}, {
-	"columnKey": "FamilyCol",
-	"text": "EquipmentTblColHdrFamilyDesc",
-	"visible": true,
-	"index": 3
-}, {
-	"columnKey": "CompleteLocationNameCol",
-	"text": "EquipmentTblColHdrLocationName",
-	"visible": true,
-	"index": 4
-}, {
-	"columnKey": "PhotoIdCol",
-	"text": "EquipmentTblColHdrPhotoId",
-	"visible": true,
-	"index": 5
-}, {
-	"columnKey": "CommentCol",
-	"text": "EquipmentTblColHdrComment",
-	"visible": true,
-	"index": 6
-}, {
-	"columnKey": "UserStatusDescCol",
-	"text": "EquipmentTblColHdrUserStatus",
-	"visible": true,
-	"index": 7
-}, {
-	"columnKey": "AmdecCounter",
-	"text": "EquipmentTblColHdrAmdecCounter",
-	"visible": true,
-	"index": 8
-}, {
-	"columnKey": "FamilyImportantCounter",
-	"text": "EquipmentTblColHdrFamilyImportantCounter",
-	"visible": true,
-	"index": 9
-}, {
-	"columnKey": "OtherProperties",
-	"text": "EquipmentTblColHdrOtherProperties",
-	"visible": true,
-	"index": 10
-}, {
-	"columnKey": "ModificationCol",
-	"text": "EquipmentTblColHdrModification",
-	"visible": true,
-	"index": 11
-}, {
-	"columnKey": "ActionCol",
-	"text": "EquipmentTblColHdrAction",
-	"visible": true,
-	"index": 12
-}, {
-	"columnKey": "QuantityCol",
-	"text": "EquipmentTblColHdrQuantity",
-	"visible": false
-}, {
-	"columnKey": "LinkedObjectCol",
-	"text": "EquipmentTblColHdrLinkedObject",
-	"visible": false
-}, {
-	"columnKey": "NameplateIdCol",
-	"text": "EquipmentTblColHdrNameplateId",
-	"visible": false
-}, {	
-	"columnKey": "LastChangedByIdCol",
-	"text": "EquipmentTblColHdrLastChangedById",
-	"visible": false
-}, {
-	"columnKey": "LastChangedByNameCol",
-	"text": "EquipmentTblColHdrLastChangedByName",
-	"visible": false
-}, {
-	"columnKey": "LastChangedOnCol",
-	"text": "EquipmentTblColHdrLastChangedOn",
-	"visible": false
-}]
+[
+	{
+		"columnKey": "EquipmentIdCol",
+		"text": "EquipmentTblColHdrEquipmentId",
+		"visible": true,
+		"index": 0
+	},
+	{
+		"columnKey": "StautsFSMCol",
+		"text": "LocationHierarchyTblColHdrStatusFSM",
+		"visible": true,
+		"index": 1
+	},
+	{
+		"columnKey": "EquipmentNameCol",
+		"text": "EquipmentTblColHdrEquipmentName",
+		"visible": true,
+		"index": 2
+	},
+	{
+		"columnKey": "FamilyCol",
+		"text": "EquipmentTblColHdrFamilyDesc",
+		"visible": true,
+		"index": 3
+	},
+	{
+		"columnKey": "CompleteLocationNameCol",
+		"text": "EquipmentTblColHdrLocationName",
+		"visible": true,
+		"index": 4
+	},
+	{
+		"columnKey": "PhotoIdCol",
+		"text": "EquipmentTblColHdrPhotoId",
+		"visible": true,
+		"index": 5
+	},
+	{
+		"columnKey": "CommentCol",
+		"text": "EquipmentTblColHdrComment",
+		"visible": true,
+		"index": 6
+	},
+	{
+		"columnKey": "UserStatusDescCol",
+		"text": "EquipmentTblColHdrUserStatus",
+		"visible": true,
+		"index": 7
+	},
+	{
+		"columnKey": "AmdecCounter",
+		"text": "EquipmentTblColHdrAmdecCounter",
+		"visible": true,
+		"index": 8
+	},
+	{
+		"columnKey": "FamilyImportantCounter",
+		"text": "EquipmentTblColHdrFamilyImportantCounter",
+		"visible": true,
+		"index": 9
+	},
+	{
+		"columnKey": "OtherProperties",
+		"text": "EquipmentTblColHdrOtherProperties",
+		"visible": true,
+		"index": 10
+	},
+	{
+		"columnKey": "ModificationCol",
+		"text": "EquipmentTblColHdrModification",
+		"visible": true,
+		"index": 11
+	},
+	{
+		"columnKey": "ActionCol",
+		"text": "EquipmentTblColHdrAction",
+		"visible": true,
+		"index": 12
+	},
+	{
+		"columnKey": "QuantityCol",
+		"text": "EquipmentTblColHdrQuantity",
+		"visible": false
+	},
+	{
+		"columnKey": "LinkedObjectCol",
+		"text": "EquipmentTblColHdrLinkedObject",
+		"visible": false
+	},
+	{
+		"columnKey": "NameplateIdCol",
+		"text": "EquipmentTblColHdrNameplateId",
+		"visible": false
+	},
+	{
+		"columnKey": "LastChangedByIdCol",
+		"text": "EquipmentTblColHdrLastChangedById",
+		"visible": false
+	},
+	{
+		"columnKey": "LastChangedByNameCol",
+		"text": "EquipmentTblColHdrLastChangedByName",
+		"visible": false
+	},
+	{
+		"columnKey": "LastChangedOnCol",
+		"text": "EquipmentTblColHdrLastChangedOn",
+		"visible": false
+	},
+	{
+		"columnKey": "AnomalyCol",
+		"text": "EquipmentTblColHdrAnomaly",
+		"visible": true
+	},
+	{
+		"columnKey": "AnomalyPictureCol",
+		"text": "EquipmentTblColHdrAnomalyPicture",
+		"visible": false
+	}
+]

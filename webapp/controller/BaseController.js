@@ -308,26 +308,26 @@ sap.ui.define([
 				var oFilter = aFilterBarFilters[idx];
 				var aFilters = [];
 				switch (oFilter.getGroupName()) {
-				case ("MultiInput"):
-					var aTokens = oFilter.getControl().getTokens();
-					for (var iTok in aTokens) {
-						var oToken = aTokens[iTok];
-						aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oToken.getKey()));
-					}
-					break;
+					case ("MultiInput"):
+						var aTokens = oFilter.getControl().getTokens();
+						for (var iTok in aTokens) {
+							var oToken = aTokens[iTok];
+							aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oToken.getKey()));
+						}
+						break;
 
-				case ("ComboBoxBoolean"):
-					if (oFilter.getControl().getSelectedKey() && oFilter.getControl().getSelectedKey() !== "0") {
-						aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oFilter.getControl().getSelectedKey() === "true"));
-					}
-					break;
-				case ("MultiComboBox"):
-					var aSelectedKeys = oFilter.getControl().getSelectedKeys();
-					for (var iSel in aSelectedKeys) {
-						var oSelectedKey = aSelectedKeys[iSel];
-						aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oSelectedKey));
-					}
-					break;
+					case ("ComboBoxBoolean"):
+						if (oFilter.getControl().getSelectedKey() && oFilter.getControl().getSelectedKey() !== "0") {
+							aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oFilter.getControl().getSelectedKey() === "true"));
+						}
+						break;
+					case ("MultiComboBox"):
+						var aSelectedKeys = oFilter.getControl().getSelectedKeys();
+						for (var iSel in aSelectedKeys) {
+							var oSelectedKey = aSelectedKeys[iSel];
+							aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oSelectedKey));
+						}
+						break;
 				}
 				if (aFilters.length > 0) {
 					aFiltersAll.push(new Filter(aFilters, false));
@@ -338,6 +338,15 @@ sap.ui.define([
 				return aFiltersAll;
 			}
 			return false;
+		},
+		_setStyleClassForPopup: function (oPopup) {
+			var oDeviceData = this.getOwnerComponent().getModel("device").getData();
+			if (oDeviceData.system.desktop) {
+				oPopup.addStyleClass("sapUiSizeCompact");
+			} else {
+				oPopup.addStyleClass("sapUiSizeCozy");
+			}
+			return oPopup;
 		}
 	});
 });

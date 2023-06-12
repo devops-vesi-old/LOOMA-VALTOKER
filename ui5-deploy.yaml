@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
+specVersion: "2.6"
+metadata:
+  name: com.vesi.zfac4_valtoker
+type: application
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        target:
+          destination: Codex_DGW
+          url: http://dgw:1080
+        app:
+          name: ZFAC4_VALTOKER
+          package: ZDEV_C4_FIORI_TAKEOVER
+          transport: DGWK911228
+        exclude:
+          - /test/

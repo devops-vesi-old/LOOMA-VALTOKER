@@ -8,10 +8,17 @@ sap.ui.define([
 	"com/vesi/zfac4_valtoker/model/formatter",
 	"sap/m/MessageBox",
 	"sap/m/MessageToast",
-	"com/vesi/zaclib/controls/Excel"
-], function (Controller, Filter, FilterOperator, JSONModel, UriParameters, Fragment, formatter, MessageBox, MessageToast, Excel) {
+	"com/vesi/zaclib/controls/Excel",
+	"sap/m/Panel",
+	"sap/m/OverflowToolbar",
+	"sap/m/Title",
+	"sap/m/VBox",
+	"sap/m/HBox",
+	"sap/m/Text"
+], function (Controller, Filter, FilterOperator, JSONModel, UriParameters, Fragment, formatter, MessageBox, MessageToast, Excel, Panel,
+	OverflowToolbar, Title, VBox, HBox, Text) {
 	"use strict";
-	
+
 	const FRAGMENT_PATH = "com.vesi.zfac4_valtoker.view.fragment.Detail.";
 
 	return Controller.extend("com.vesi.zfac4_valtoker.controller.Detail", {
@@ -46,6 +53,10 @@ sap.ui.define([
 				bSelectAll: false
 			});
 			this.getView().setModel(oSelectAllLocModel, "oSelectAllLocationsModel");
+			const oAnomalyModel = new JSONModel({
+				noAnomaly: true
+			});
+			this.getView().setModel(oAnomalyModel, "oEquipmentAnomalyModel");
 		},
 
 		//--------------------------------------------
@@ -232,18 +243,18 @@ sap.ui.define([
 					for (var idx in aData) {
 						var oLine = aData[idx];
 						switch (oLine.CharactId) {
-						case "YLO_SITE_TYPE":
-							var sType = "SITE";
-							break;
-						case "YLO_TYPE_BATIMENT":
-							sType = "BUILDING";
-							break;
-						case "YLO_TYPE_ETAGE":
-							sType = "FLOOR";
-							break;
-						case "YLO_TYPE_LOCAL":
-							sType = "ROOM";
-							break;
+							case "YLO_SITE_TYPE":
+								var sType = "SITE";
+								break;
+							case "YLO_TYPE_BATIMENT":
+								sType = "BUILDING";
+								break;
+							case "YLO_TYPE_ETAGE":
+								sType = "FLOOR";
+								break;
+							case "YLO_TYPE_LOCAL":
+								sType = "ROOM";
+								break;
 						}
 						if (!oLocationType[sType]) {
 							oLocationType[sType] = {};
@@ -686,18 +697,18 @@ sap.ui.define([
 				sLocationFilter = "LocationId";
 			if (!this.fnGetModel("mDetailPage").getData().bSwitchDirect) {
 				switch (sLocationType) {
-				case "SITE":
-					sLocationFilter = "SiteId";
-					break;
-				case "BUILDING":
-					sLocationFilter = "BuildingId";
-					break;
-				case "FLOOR":
-					sLocationFilter = "FloorId";
-					break;
-				case "ROOM":
-					sLocationFilter = "RoomId";
-					break;
+					case "SITE":
+						sLocationFilter = "SiteId";
+						break;
+					case "BUILDING":
+						sLocationFilter = "BuildingId";
+						break;
+					case "FLOOR":
+						sLocationFilter = "FloorId";
+						break;
+					case "ROOM":
+						sLocationFilter = "RoomId";
+						break;
 				}
 			}
 			aFilters.push(new Filter(sLocationFilter, FilterOperator.EQ, sLocationId));
@@ -713,9 +724,100 @@ sap.ui.define([
 					$inlinecount: "allpages"
 				},
 				success: function (oData, response) {
-					var oEquipment = this._buildEquipmentModel(oData);
-					this.fnHideBusyIndicator();
-					this.fnSetJSONModel(oEquipment, "mEquipment");
+					const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
+					oAnomalyModel.setProperty("/aEquipmentDataModel", oData);
+					oData.results.forEach(equipment => {
+						this.getOwnerComponent().getModel().read(`/EquipmentSet('${equipment.EquipmentId}')`, {
+							urlParameters: {
+								$expand: "Anomaly"
+							},
+							success: function (oAnomalyData, response) {
+								let aAnomaly = oAnomalyData.Anomaly.results,
+									oEquipmentData,
+									aAnomalyForEquipment = [];
+								const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
+								let oTempEquipmentData = oAnomalyModel.getProperty("/aEquipmentDataModel");
+								let noAnomaly = oAnomalyModel.getProperty("/noAnomaly");
+								if (aAnomaly.length > 0) {
+									oAnomalyModel.setProperty("/noAnomaly", false);
+									for (let i = 0; i < oTempEquipmentData.results.length; i++) {
+										if (oTempEquipmentData.results[i].EquipmentId == oAnomalyData.EquipmentId) {
+											if (i != 0) {
+												if (oTempEquipmentData.results[i].Anomaly.length > 1 || oTempEquipmentData.results[i].Anomaly[0].AnomalyId !== "") {
+													oTempEquipmentData.results[i].Anomaly.forEach(anomaly => {
+														aAnomalyForEquipment.push(anomaly);
+													})
+												}
+											}
+											aAnomalyForEquipment.push(oAnomalyData.Anomaly.results);
+											if (i == 0) {
+												oTempEquipmentData.results[i].Anomaly = aAnomalyForEquipment;
+												oTempEquipmentData.results[i].hasAnomaly = true;
+											} else {
+												oTempEquipmentData.results[i].Anomaly.concat(aAnomalyForEquipment);
+											}
+											aAnomalyForEquipment = [];
+										}
+									}
+									oAnomalyModel.setProperty("/aEquipmentDataModel", oTempEquipmentData);
+									aAnomaly.forEach(anomaly => {
+										let aFilters = [];
+										aFilters.push(new Filter("ObjectId", FilterOperator.EQ, anomaly.AnomalyId));
+										this.getOwnerComponent().getModel().read("/AnomalyPhotosSet", {
+											filters: aFilters,
+											success: function (oAnomalyPhotoData) {
+												const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
+												let oTempEquipmentData = oAnomalyModel.getProperty("/aEquipmentDataModel");
+												if (oAnomalyPhotoData.results.length > 1) {
+													for (let i = 0; i < oTempEquipmentData.results.length; i++) {
+														if (oTempEquipmentData.results[i].Anomaly.AnomalyId == oAnomalyPhotoData.results[0].ObjectId) {
+															oTempEquipmentData.results[i].hasAnomalyPhoto = true;
+														}
+													}
+												} else {
+													for (let i = 0; i < oTempEquipmentData.results.length; i++) {
+														oTempEquipmentData.results[i].hasAnomalyPhoto = false;
+													}
+												}
+												oAnomalyModel.setProperty("/aEquipmentDataModel", oTempEquipmentData);
+												oEquipmentData = oAnomalyModel.getProperty("/aEquipmentDataModel");
+												let oEquipment = this._buildEquipmentModel(oEquipmentData);
+												this.fnHideBusyIndicator();
+												this.fnSetJSONModel(oEquipment, "mEquipment");
+											}.bind(this),
+											error: function (oError) {
+												MessageBox.error(oError);
+											}.bind(this)
+										});
+										
+									})
+								} else {
+									for (let i = 0; i < oTempEquipmentData.results.length; i++) {
+										try {
+												if (oTempEquipmentData.results[i].Anomaly[0][0].AnomalyId == undefined) {
+													oTempEquipmentData.results[i].hasAnomaly = false;
+												}
+										} catch (error) {
+											if (error) {
+												oTempEquipmentData.results[i].hasAnomaly = false;
+											}
+										}
+									}
+									if (noAnomaly) {
+										oAnomalyModel.setProperty("/aEquipmentDataModel", oTempEquipmentData);
+										oEquipmentData = oAnomalyModel.getProperty("/aEquipmentDataModel");
+										let oEquipment = this._buildEquipmentModel(oEquipmentData);
+										this.fnHideBusyIndicator();
+										this.fnSetJSONModel(oEquipment, "mEquipment");
+									}
+								}
+							}.bind(this),
+							error: function (oError) {
+								MessageBox.error(oError);
+							}.bind(this)
+						});
+
+					})
 				}.bind(this),
 				error: function (oError) {
 					var oEquipment = {
@@ -734,11 +836,11 @@ sap.ui.define([
 		_buildEquipmentModel: function (oData) {
 			//Reset Selection
 			var aBooleanField = [
-					"PecDeepAnalysisNeeded",
-					"PecQuote",
-					"PecTrainingReq",
-					"Critical"
-				],
+				"PecDeepAnalysisNeeded",
+				"PecQuote",
+				"PecTrainingReq",
+				"Critical"
+			],
 				aDateField = [
 					"WarrantyEndDate"
 				],
@@ -783,7 +885,9 @@ sap.ui.define([
 				oLine.AmdecReliabilityDesc = oLine.AmdecReliabilityId === "" ? "" : oDDICValue.AmdecReliabilityId[oLine.AmdecReliabilityId].ValueDesc;
 				oLine.AmdecStateDesc = oLine.AmdecStateId === "" ? "" : oDDICValue.AmdecStateId[oLine.AmdecStateId].ValueDesc;
 				oLine.UsageDesc = oLine.UsageId === "" ? "" : oDDICValue.UsageId[oLine.UsageId].ValueDesc;
-				oLine.Anomaly = oLine.AnomalyId === "" ? "" : Object.values(oLine.Anomaly)[0].uri;
+				oLine.Anomaly = oLine.Anomaly.length > 0 ? oLine.Anomaly[0] : "";
+				oLine.hasAnomaly = oLine.hasAnomaly;
+				oLine.hasAnomalyPhoto = oLine.hasAnomalyPhoto;
 
 				for (var sPorperty in oLine) {
 					if (oDDICValue[sPorperty]) { //Manage only properties with value list (from DDIC)
@@ -955,33 +1059,33 @@ sap.ui.define([
 			var oCharacteristics = oInfo.Characteristic;
 			oCharact.ValueToDisplay = "";
 			switch (oCharact.CharactDataType) {
-			case "CHAR":
-				oCharact.ValueToDisplay = oCharact.CharactValueDescription === "" ? oCharact.CharactValueChar : oCharact.CharactValueDescription;
-				break;
-			case "NUM":
-				oCharact.ValueToDisplay = parseFloat(oCharact.CharactValueNumDecFrom).toFixed(oCharacteristics[oCharact.CharactId].CharactDecimal);
-				if (oCharacteristics[oCharact.CharactId].CharactInterval) {
-					if (parseFloat(oCharact.CharactValueNumDecTo > 0)) {
-						var valTo = parseFloat(oCharact.CharactValueNumDecTo).toFixed(oCharacteristics[oCharact.CharactId].CharactDecimal);
-						oCharact.ValueToDisplay += " - " + valTo;
+				case "CHAR":
+					oCharact.ValueToDisplay = oCharact.CharactValueDescription === "" ? oCharact.CharactValueChar : oCharact.CharactValueDescription;
+					break;
+				case "NUM":
+					oCharact.ValueToDisplay = parseFloat(oCharact.CharactValueNumDecFrom).toFixed(oCharacteristics[oCharact.CharactId].CharactDecimal);
+					if (oCharacteristics[oCharact.CharactId].CharactInterval) {
+						if (parseFloat(oCharact.CharactValueNumDecTo > 0)) {
+							var valTo = parseFloat(oCharact.CharactValueNumDecTo).toFixed(oCharacteristics[oCharact.CharactId].CharactDecimal);
+							oCharact.ValueToDisplay += " - " + valTo;
+						}
 					}
-				}
-				if (oCharact.CharactUnit !== "") {
-					oCharact.ValueToDisplay += " " + oCharact.CharactUnit;
-				}
-				break;
-			case "DATE":
-				oCharact.ValueToDisplay = this._oFormatDate.format(new Date(oCharact.CharactValueDateFrom));
-				if (oCharacteristics[oCharact.CharactId].CharactInterval) {
-					if (oCharact.CharactValueDateTo) {
-						valTo = this._oFormatDate.format(new Date(oCharact.CharactValueDateTo));
-						oCharact.ValueToDisplay += " - " + valTo;
+					if (oCharact.CharactUnit !== "") {
+						oCharact.ValueToDisplay += " " + oCharact.CharactUnit;
 					}
-				}
-				if (oCharact.CharactUnit !== "") {
-					oCharact.ValueToDisplay += " " + oCharact.CharactUnit;
-				}
-				break;
+					break;
+				case "DATE":
+					oCharact.ValueToDisplay = this._oFormatDate.format(new Date(oCharact.CharactValueDateFrom));
+					if (oCharacteristics[oCharact.CharactId].CharactInterval) {
+						if (oCharact.CharactValueDateTo) {
+							valTo = this._oFormatDate.format(new Date(oCharact.CharactValueDateTo));
+							oCharact.ValueToDisplay += " - " + valTo;
+						}
+					}
+					if (oCharact.CharactUnit !== "") {
+						oCharact.ValueToDisplay += " " + oCharact.CharactUnit;
+					}
+					break;
 			}
 		},
 
@@ -990,14 +1094,14 @@ sap.ui.define([
 		 */
 		_fnSetAmdecCounter: function (oLine, sYes, sNo) {
 			var aAmdecProp = [
-					"AmdecStateId",
-					"AmdecDisrepairId",
-					"AmdecAccessibilityId",
-					"AmdecReliabilityId",
-					"AmdecCriticityId",
-					"AmdecDetectabilityId",
-					"AmdecFunctionningId"
-				],
+				"AmdecStateId",
+				"AmdecDisrepairId",
+				"AmdecAccessibilityId",
+				"AmdecReliabilityId",
+				"AmdecCriticityId",
+				"AmdecDetectabilityId",
+				"AmdecFunctionningId"
+			],
 				iTot = 0,
 				iCount = 0;
 
@@ -1205,14 +1309,14 @@ sap.ui.define([
 		_fnSetEquipmentUserStatusId: function (oEvent) {
 
 			switch (oEvent.getSource().getType()) {
-			case "Accept": // Validated Status to apply
-				return "E0005";
+				case "Accept": // Validated Status to apply
+					return "E0005";
 
-			case "Emphasized": // Return to take over to apply
-				return "E0008";
+				case "Emphasized": // Return to take over to apply
+					return "E0008";
 
-			case "Reject": // Deleted Status to apply
-				return "E0006";
+				case "Reject": // Deleted Status to apply
+					return "E0006";
 			}
 
 			return "";
@@ -1224,16 +1328,16 @@ sap.ui.define([
 		_fnSetLocationUserStatusId: function (oEvent) {
 
 			switch (oEvent.getSource().getType()) {
-			case "Accept": // Validated Status to apply
-				return "E0003";
+				case "Accept": // Validated Status to apply
+					return "E0003";
 
-			case "Reject": // Deleted Status to apply
-				return "E0004";
+				case "Reject": // Deleted Status to apply
+					return "E0004";
 
-			case "Emphasized": // Take over in progress or Return to takeover Status to apply 
-				if (oEvent.getSource().getIcon() === "sap-icon://complete") {
-					return "E0008"; // Take over in progress
-				}
+				case "Emphasized": // Take over in progress or Return to takeover Status to apply 
+					if (oEvent.getSource().getIcon() === "sap-icon://complete") {
+						return "E0008"; // Take over in progress
+					}
 			}
 
 			return "";
@@ -1244,9 +1348,9 @@ sap.ui.define([
 		 */
 		_setExcelColumns: function (oExcel, aColSize, oColumnProperties) {
 			var iHeaderStyle = oExcel.generateNewStyle({
-					font: "Calibri 12 B",
-					fill: "#F2F2F2"
-				}),
+				font: "Calibri 12 B",
+				fill: "#F2F2F2"
+			}),
 				iSheetProperties = 0,
 				iRow = 0;
 
@@ -1255,7 +1359,7 @@ sap.ui.define([
 				var oCol = oColumnProperties[idx];
 				oExcel.addCell(iSheetProperties, oCol.colIndex, iRow, this.formatter.setPropertyDescription.call(this, oCol.i18n), iHeaderStyle,
 					aColSize["Sheet" +
-						iSheetProperties]);
+					iSheetProperties]);
 			}
 		},
 
@@ -1266,7 +1370,7 @@ sap.ui.define([
 			var dDate = new Date(),
 				iMonth = parseInt(dDate.getMonth(), 10) + 1,
 				sFileName = dDate.getFullYear() + "-" + iMonth + "-" + dDate.getDate() + "_" + dDate.getHours() +
-				":" + dDate.getMinutes() + ":" + dDate.getSeconds() + ".xlsx";
+					":" + dDate.getMinutes() + ":" + dDate.getSeconds() + ".xlsx";
 
 			oExcel.generate(sFileName);
 		},
@@ -1276,8 +1380,8 @@ sap.ui.define([
 		 */
 		_setExcelRows: function (oExcel, aData, aColSize, oColumnProperties) {
 			var iDefaultStyle = oExcel.generateNewStyle({
-					align: "L T W" //Left Top Wrap
-				}),
+				align: "L T W" //Left Top Wrap
+			}),
 				iGreenStyle = oExcel.generateNewStyle({
 					font: "Calibri 12 " + "#00B050" + " B",
 					align: "L T W" //Left Top Wrap
@@ -1349,16 +1453,16 @@ sap.ui.define([
 		 */
 		_otherProperties: function (oObject) {
 			var aFieldToCheck = ["BrandId",
-					"Critical",
-					"InstallYear",
-					"Manufref",
-					"PecDeepAnalysisNeededDesc",
-					"PecQuoteDesc",
-					"PecTrainingReqDesc",
-					"Qrcode",
-					"SerialNumber",
-					"WarrantyEndDateText"
-				],
+				"Critical",
+				"InstallYear",
+				"Manufref",
+				"PecDeepAnalysisNeededDesc",
+				"PecQuoteDesc",
+				"PecTrainingReqDesc",
+				"Qrcode",
+				"SerialNumber",
+				"WarrantyEndDateText"
+			],
 				aOtherProperties = [];
 
 			for (var iProp in aFieldToCheck) {
@@ -1371,7 +1475,148 @@ sap.ui.define([
 
 			return aOtherProperties;
 		},
-		
+
+		_loadFragment: function (sDialogName) {
+			var oView = this.getView();
+			return Fragment.load({
+				id: oView.getId(),
+				name: FRAGMENT_PATH + sDialogName,
+				controller: this
+			}).then(function (oDialog) {
+				oView.addDependent(oDialog);
+				this._setStyleClassForPopup(oDialog);
+				return oDialog;
+			}.bind(this));
+		},
+		/*
+		 * Fill anomaly popover
+		 */
+		onOpenAnomalyFragment: function (oEvent) {
+			let idThisPopover = "AnomalyPopover",
+				oObjectView = oEvent.getSource(),
+				oObject = oObjectView === "" ? {} : oEvent.getSource().getParent().getRowBindingContext().getObject(),
+				oView = this.getView(),
+				sFragmentName = "com.vesi.zfac4_valtoker.view.fragment.Detail.Anomaly",
+				aFieldToCheck = [
+					"AnomalyId",
+					"AnomalyName",
+					"Risk",
+					"Recommendation",
+					"Priority",
+					"LongText",
+					"Quotation",
+					"QuotationType"
+				],
+				oToolbar,
+				oLabelText,
+				oValueText,
+				oPanel;
+			if (!this[idThisPopover]) {
+				this[idThisPopover] = Fragment.load({
+					id: oView.getId(),
+					name: sFragmentName,
+					controller: this
+				}).then(function (oPopover) {
+					return oPopover;
+				});
+			}
+			this[idThisPopover].then(function (oPopover) {
+				oPopover.openBy(oObjectView);
+				this.getView().byId("VBoxAnomalyFragment").destroyItems();
+				for (let i = 0; i < oObject.Anomaly.length; i++) {
+					oPanel = new Panel({
+						width: "100%"
+					});
+					oToolbar = new OverflowToolbar();
+					let oTitle = new Title({
+						text: `${this.fnGetResourceBundle('TitleAnomaly')} - ${oObject.Anomaly[i].AnomalyId}`
+					});
+					for (let iProp in aFieldToCheck) {
+						let sProp = aFieldToCheck[iProp];
+						oLabelText = new Text({
+							text: this.fnGetResourceBundle("LabelProperty" + sProp),
+						});
+						oValueText = new Text({
+							text: `: ${oObject.Anomaly[i][sProp]}`
+						});
+						let oVBox = new VBox();
+						let oMainVBox = new VBox({
+							alignItems: "Start"
+						});
+						let oContentHBox = new HBox();
+						let oLabelHBox = new HBox({
+							width: "13rem"
+						});
+						oLabelHBox.addItem(oLabelText);
+						oContentHBox.addItem(oLabelHBox);
+						oContentHBox.addItem(oValueText);
+						oMainVBox.addItem(oContentHBox);
+						oVBox.addItem(oMainVBox);
+						oPanel.addContent(oVBox);
+					}
+					oToolbar.insertContent(oTitle);
+					oPanel.setHeaderToolbar(oToolbar);
+					this.getView().byId("VBoxAnomalyFragment").addItem(oPanel);
+				}
+
+			}.bind(this));
+		},
+		onAnomalyPhotoIconPress: function (oEvent) {
+			let aAnomalies = oEvent.getSource().getParent().getRowBindingContext().getObject().Anomaly,
+				aAnomalyPhotoAttachmentIds = [], aURL = [], sCarouselId = "";
+			const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
+			aAnomalies.forEach(anomaly => {
+				let aFilters = [];
+				aFilters.push(new Filter("ObjectId", FilterOperator.EQ, anomaly.AnomalyId));
+				this.getOwnerComponent().getModel().read("/AnomalyPhotosSet", {
+					filters: aFilters,
+					success: function (oData) {
+						if (oData.results.length > 1) {
+							aAnomalyPhotoAttachmentIds.push(oData.results);
+							aAnomalyPhotoAttachmentIds.forEach(attachmentId => {
+								let sURL = `/sap/opu/odata/sap/ZSRC4_PEC_SRV/AnomalyPhotoSet('${attachmentId.AttachmentID}')/$value`;
+								jQuery.ajax({
+									url: sURL,
+									cache: false,
+									xhr: function () {
+										var xhr = new XMLHttpRequest();
+										xhr.responseType = 'blob'
+										return xhr;
+									},
+									success: function (data) {
+										jQuery.sap.addUrlWhitelist("blob");
+										aURL.push({
+											url: URL.createObjectURL(data)
+										});
+										oAnomalyModel.setProperty("/aURL", aURL);
+									}.bind(this),
+									error: function (oErr) {
+										MessageBox.error(oErr);
+									}.bind(this)
+								});
+							})
+						}
+						this.fnHideBusyIndicator();
+					}.bind(this),
+					error: function (oError) {
+						MessageBox.error(oError);
+					}.bind(this)
+				});
+			})
+			// create dialog lazily
+			if (!this.byId("idAnomalyPicturesCarouselDialog")) {
+				// load asynchronous XML fragment
+				let oPromise = this._loadFragment("AnomalyPicturesCarousel");
+				oPromise.then(function (oDialog) {
+					oDialog.open();
+				}.bind(this));
+			} else {
+				this.byId("idAnomalyPicturesCarouselDialog").open();
+			}
+		},
+		onAnomalyPictureDialogCancel: function () {
+			this.byId("idAnomalyPicturesCarouselDialog").close();
+		},
 		_getObjectLinkedDatas: function (bSubEquipment, oEquipment, oEvent) {
 			var oObjectView = oEvent.getSource(),
 				idFrag = "LinkedObject",
@@ -1430,18 +1675,18 @@ sap.ui.define([
 			};
 
 			switch (bSubEquipment) {
-			case true:
-				var sRequest = "/EquipmentSet",
-					aFilters = [];
-				aFilters.push(new Filter("SuperiorEquiId", FilterOperator.EQ, oEquipment.EquipmentId));
-				oParam.filters = aFilters;
-				break;
+				case true:
+					var sRequest = "/EquipmentSet",
+						aFilters = [];
+					aFilters.push(new Filter("SuperiorEquiId", FilterOperator.EQ, oEquipment.EquipmentId));
+					oParam.filters = aFilters;
+					break;
 
-			case false:
-				sRequest = this.getOwnerComponent().getModel().createKey("/EquipmentSet", {
-					EquipmentId: oEquipment.SuperiorEquiId
-				});
-				break;
+				case false:
+					sRequest = this.getOwnerComponent().getModel().createKey("/EquipmentSet", {
+						EquipmentId: oEquipment.SuperiorEquiId
+					});
+					break;
 			}
 
 			this.fnShowBusyIndicator(null, 0);
@@ -1656,7 +1901,8 @@ sap.ui.define([
 				aSelectedIndices = [];
 			if (bSelectAll) {
 				const aSiteLocation = this.getView().getModel("mLocationHierarchy").getData().nodeRoot.children;
-				function getSelectedLocationData (pSiteLocation) {
+
+				function getSelectedLocationData(pSiteLocation) {
 					pSiteLocation.forEach(location => {
 						if (location.children.length > 0 && location.children) {
 							aNestedLocations.push(location.children);
@@ -1676,7 +1922,7 @@ sap.ui.define([
 					} else {
 						aLocations.push(location);
 					}
-					});
+				});
 				aLocations.map((location, index) => aSelectedIndices.push(index));
 				oSelectAllLocModel.setProperty("/aSelectedLocations", aLocations);
 				oSelectAllLocModel.setProperty("/aSelectedIndices", aSelectedIndices);
@@ -1686,20 +1932,20 @@ sap.ui.define([
 				oSelectAllLocModel.setProperty("/bSelectAll", bSelectAll);
 			}
 			const oDetailPageModel = this.fnGetModel("mDetailPage"),
-			oTreeTable = this.byId("LocationHierarchyTreeTable");
+				oTreeTable = this.byId("LocationHierarchyTreeTable");
 			if (aSelectedIndices.length > 0) {
 				oDetailPageModel.getData().bLocationSelected = true;
 				oDetailPageModel.getData().bLocationSelectedDeletable = true;
 				for (var iSel in aSelectedIndices) {
-				var oObject = oTreeTable.getContextByIndex(aSelectedIndices[iSel]).getObject();
-				if (!oObject.Deletable) {
-					oDetailPageModel.getData().bLocationSelectedDeletable = false;
-					break;
+					var oObject = oTreeTable.getContextByIndex(aSelectedIndices[iSel]).getObject();
+					if (!oObject.Deletable) {
+						oDetailPageModel.getData().bLocationSelectedDeletable = false;
+						break;
+					}
 				}
-			}
 			} else {
-			oDetailPageModel.getData().bLocationSelected = false;
-			oDetailPageModel.getData().bLocationSelectedDeletable = false;
+				oDetailPageModel.getData().bLocationSelected = false;
+				oDetailPageModel.getData().bLocationSelectedDeletable = false;
 			}
 			oDetailPageModel.refresh(true);
 		},
@@ -1779,18 +2025,18 @@ sap.ui.define([
 		 */
 		onDisplayDetailEquipment: function (oEvent) {
 			var oAmdec = {
-					Amdec1: [
-						"AmdecStateId",
-						"AmdecDisrepairId",
-						"AmdecAccessibilityId",
-						"AmdecFunctionningId"
-					],
-					Amdec2: [
-						"AmdecCriticityId",
-						"AmdecDetectabilityId",
-						"AmdecReliabilityId"
-					]
-				},
+				Amdec1: [
+					"AmdecStateId",
+					"AmdecDisrepairId",
+					"AmdecAccessibilityId",
+					"AmdecFunctionningId"
+				],
+				Amdec2: [
+					"AmdecCriticityId",
+					"AmdecDetectabilityId",
+					"AmdecReliabilityId"
+				]
+			},
 				oObjectView = oEvent.getSource(),
 				idFrag = oObjectView.getId().split("Object").pop().split("-").shift(),
 				idThisPopover = "_" + idFrag + "Popover",
@@ -1866,11 +2112,11 @@ sap.ui.define([
 			}
 
 			var oExcel = new Excel("Calibri 12", [{
-					name: "Tab",
-					bFreezePane: true,
-					iCol: 0,
-					iRow: 2
-				}]),
+				name: "Tab",
+				bFreezePane: true,
+				iCol: 0,
+				iRow: 2
+			}]),
 				oData = this.fnGetModel("mEquipment").getData(),
 				aColSize = {
 					"Sheet0": [] //Sheet 1
@@ -1932,8 +2178,8 @@ sap.ui.define([
 										SiteId: this._SiteId
 									}, // function import parameters
 									success: function (oData, response) {
-											sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessSynchronizeMessage"));
-										}.bind(this) // callback function for success
+										sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessSynchronizeMessage"));
+									}.bind(this) // callback function for success
 								}); // callback function for error
 							this._oSynchroniseDialog.close();
 						}.bind(this)

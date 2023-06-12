@@ -343,6 +343,35 @@
 						press="onNameplateDownload"/>	
 				</t:template>
 			</t:Column>
+			<t:Column 
+				id="AnomalyCol"
+				hAlign="Center" 
+				width="7%">
+				<Label text="{i18n>EquipmentTblColHdrAnomaly}" wrapping="true"/>
+				<t:template>
+					<ObjectStatus 
+						id="ObjectAnomaly"
+						icon="sap-icon://quality-issue"
+						active="true"
+						press="onOpenAnomalyFragment"
+						state="Warning"
+						visible="{mEquipment>hasAnomaly}"
+						/>
+				</t:template>
+			</t:Column>
+			<t:Column 
+				id="AnomalyPictureCol"
+				hAlign="Center" 
+				width="7%"
+				visible="false">
+				<Label text="{i18n>EquipmentTblColHdrAnomalyPicture}" wrapping="true"/>
+				<t:template>
+					<Button icon="sap-icon://camera"
+							press="onAnomalyPhotoIconPress"
+							visible="{mEquipment>hasAnomalyPhoto}"
+					/>
+				</t:template>
+			</t:Column>
 		</t:columns>
 		<t:rowSettingsTemplate>
 			<t:RowSettings 

@@ -1,0 +1,28 @@
+<core:FragmentDefinition 
+	xmlns="sap.m" 
+	xmlns:core="sap.ui.core"
+	xmlns:u="sap.ui.unified"
+	xmlns:f="sap.ui.layout.form">
+	<Dialog 
+		id="idAnomalyPicturesCarouselDialog"
+		class="sapUiPopupWithPadding sapUiSizeCompact"
+		title="{i18n>AnomalyPicturesCarouselFragmentDialogTitle}"
+		contentWidth="55%"
+		contentHeight="75%"
+		resizable="true"
+		draggable="true">
+		<Carousel class="sapUiContentPadding" loop="true" height="50%" pages="{oEquipmentAnomalyModel>/aURL}">
+			<pages>
+				<Image
+					src="{oEquipmentAnomalyModel>url}" 
+				/>
+			</pages>
+		</Carousel>
+		<endButton>
+	    	<Button 
+	    		text="{i18n>close}"
+	    		tooltip="{i18n>close}"
+	    		press="onAnomalyPictureDialogCancel"/>
+	    </endButton>
+	</Dialog>
+</core:FragmentDefinition>

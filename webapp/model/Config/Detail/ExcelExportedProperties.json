@@ -148,6 +148,10 @@
 		"propertyId": "IsAmdecCompleteDesc",
 		"i18n": "IsAmdecCompleteDesc",
 		"colIndex": 29
+	},
+	"Anomaly": {
+		"propertyId": "AnomalyId",
+		"i18n": "AnomalyId",
+		"colIndex": 30
 	}
-
 }

@@ -345,8 +345,43 @@ sap.ui.define([],
 				}
 				// Hide
 				return false;
-			}
+			},
 
+			/*
+			 * Method to set custom value for Anomalies Popover
+			 */
+			fnSetCustomAnomaliesPopoverValue: function (pDescription, pValue, oContext) {
+				let sAnomalieValueToBeReturned;
+				if (pDescription == "Priority") {
+					switch (pValue) {
+						case "1":
+							sAnomalieValueToBeReturned = oContext.fnGetResourceBundle("AnomalyPriorityHigh");
+						  	break;
+						case "2":
+							sAnomalieValueToBeReturned = oContext.fnGetResourceBundle("AnomalyPriorityMedium");
+							break;
+						case "3":
+							sAnomalieValueToBeReturned = oContext.fnGetResourceBundle("AnomalyPriorityLow");
+							break;
+						default:
+							sAnomalieValueToBeReturned = pValue;
+					  }
+				} else if (pDescription == "Quotation") {
+					switch (pValue) {
+						case false:
+							sAnomalieValueToBeReturned = oContext.fnGetResourceBundle("no");
+						  	break;
+						case true:
+							sAnomalieValueToBeReturned = oContext.fnGetResourceBundle("yes");
+							break;
+						default:
+							sAnomalieValueToBeReturned = pValue;
+					  }
+				} else {
+					sAnomalieValueToBeReturned = pValue;
+				}
+				return `: ${sAnomalieValueToBeReturned}`;
+			}
 		};
 
 	});

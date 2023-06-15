@@ -742,41 +742,51 @@ sap.ui.define([
 									oAnomalyModel.setProperty("/noAnomaly", false);
 									for (let i = 0; i < oTempEquipmentData.results.length; i++) {
 										if (oTempEquipmentData.results[i].EquipmentId == oAnomalyData.EquipmentId) {
-											if (i != 0) {
-												if (oTempEquipmentData.results[i].Anomaly.length > 1 || oTempEquipmentData.results[i].Anomaly[0].AnomalyId !== "") {
-													oTempEquipmentData.results[i].Anomaly.forEach(anomaly => {
-														aAnomalyForEquipment.push(anomaly);
-													})
+											for (let j = 0; j < oAnomalyData.Anomaly.results.length; j++) {
+												if (j != 0) {
+													try {
+														if (oTempEquipmentData.results[i].Anomaly.length > 1 || oTempEquipmentData.results[i].Anomaly[0].AnomalyId !== "") {
+															oTempEquipmentData.results[i].Anomaly.forEach(anomaly => {
+																aAnomalyForEquipment.push(anomaly);
+															})
+														}
+													} catch (error) {
+														if (error) {
+															oTempEquipmentData.results[i].hasAnomaly = false;
+															continue;
+														}
+													}
 												}
+												aAnomalyForEquipment.push(oAnomalyData.Anomaly.results);
+												if (j == 0) {
+													oTempEquipmentData.results[i].Anomaly = aAnomalyForEquipment;
+													oTempEquipmentData.results[i].hasAnomaly = true;
+												} else {
+													oTempEquipmentData.results[i].Anomaly.concat(aAnomalyForEquipment);
+													oTempEquipmentData.results[i].hasAnomaly = true;
+												}
+												aAnomalyForEquipment = [];
 											}
-											aAnomalyForEquipment.push(oAnomalyData.Anomaly.results);
-											if (i == 0) {
-												oTempEquipmentData.results[i].Anomaly = aAnomalyForEquipment;
-												oTempEquipmentData.results[i].hasAnomaly = true;
-											} else {
-												oTempEquipmentData.results[i].Anomaly.concat(aAnomalyForEquipment);
-											}
-											aAnomalyForEquipment = [];
 										}
 									}
 									oAnomalyModel.setProperty("/aEquipmentDataModel", oTempEquipmentData);
 									aAnomaly.forEach(anomaly => {
 										let aFilters = [];
-										aFilters.push(new Filter("ObjectId", FilterOperator.EQ, anomaly.AnomalyId));
+										aFilters.push(new Filter("ObjectId", FilterOperator.EQ, `0000${anomaly.AnomalyId}`));
 										this.getOwnerComponent().getModel().read("/AnomalyPhotosSet", {
 											filters: aFilters,
 											success: function (oAnomalyPhotoData) {
 												const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
 												let oTempEquipmentData = oAnomalyModel.getProperty("/aEquipmentDataModel");
-												if (oAnomalyPhotoData.results.length > 1) {
+												if (oAnomalyPhotoData.results.length >= 1) {
 													for (let i = 0; i < oTempEquipmentData.results.length; i++) {
-														if (oTempEquipmentData.results[i].Anomaly.AnomalyId == oAnomalyPhotoData.results[0].ObjectId) {
-															oTempEquipmentData.results[i].hasAnomalyPhoto = true;
+														try {
+															if (`0000${oTempEquipmentData.results[i].Anomaly[0][0].AnomalyId}` == oAnomalyPhotoData.results[0].ObjectId) {
+																oTempEquipmentData.results[i].hasAnomalyPhoto = true;
+															}
+														} catch (error) {
+															oTempEquipmentData.results[i].hasAnomalyPhoto = false;
 														}
-													}
-												} else {
-													for (let i = 0; i < oTempEquipmentData.results.length; i++) {
-														oTempEquipmentData.results[i].hasAnomalyPhoto = false;
 													}
 												}
 												oAnomalyModel.setProperty("/aEquipmentDataModel", oTempEquipmentData);
@@ -789,20 +799,9 @@ sap.ui.define([
 												MessageBox.error(oError);
 											}.bind(this)
 										});
-										
+
 									})
 								} else {
-									for (let i = 0; i < oTempEquipmentData.results.length; i++) {
-										try {
-												if (oTempEquipmentData.results[i].Anomaly[0][0].AnomalyId == undefined) {
-													oTempEquipmentData.results[i].hasAnomaly = false;
-												}
-										} catch (error) {
-											if (error) {
-												oTempEquipmentData.results[i].hasAnomaly = false;
-											}
-										}
-									}
 									if (noAnomaly) {
 										oAnomalyModel.setProperty("/aEquipmentDataModel", oTempEquipmentData);
 										oEquipmentData = oAnomalyModel.getProperty("/aEquipmentDataModel");
@@ -885,9 +884,9 @@ sap.ui.define([
 				oLine.AmdecReliabilityDesc = oLine.AmdecReliabilityId === "" ? "" : oDDICValue.AmdecReliabilityId[oLine.AmdecReliabilityId].ValueDesc;
 				oLine.AmdecStateDesc = oLine.AmdecStateId === "" ? "" : oDDICValue.AmdecStateId[oLine.AmdecStateId].ValueDesc;
 				oLine.UsageDesc = oLine.UsageId === "" ? "" : oDDICValue.UsageId[oLine.UsageId].ValueDesc;
-				oLine.Anomaly = oLine.Anomaly.length > 0 ? oLine.Anomaly[0] : "";
-				oLine.hasAnomaly = oLine.hasAnomaly;
-				oLine.hasAnomalyPhoto = oLine.hasAnomalyPhoto;
+				oLine.Anomaly = oLine.Anomaly.length > 0 ? oLine.Anomaly : "";
+				oLine.hasAnomaly = oLine.hasAnomaly === true ? true : false;
+				oLine.hasAnomalyPhoto = oLine.hasAnomalyPhoto === true ? true : false;
 
 				for (var sPorperty in oLine) {
 					if (oDDICValue[sPorperty]) { //Manage only properties with value list (from DDIC)
@@ -1523,13 +1522,13 @@ sap.ui.define([
 			this[idThisPopover].then(function (oPopover) {
 				oPopover.openBy(oObjectView);
 				this.getView().byId("VBoxAnomalyFragment").destroyItems();
-				for (let i = 0; i < oObject.Anomaly.length; i++) {
+				for (let i = 0; i < oObject.Anomaly[0].length; i++) {
 					oPanel = new Panel({
 						width: "100%"
 					});
 					oToolbar = new OverflowToolbar();
 					let oTitle = new Title({
-						text: `${this.fnGetResourceBundle('TitleAnomaly')} - ${oObject.Anomaly[i].AnomalyId}`
+						text: `${this.fnGetResourceBundle('TitleAnomaly')} - ${oObject.Anomaly[0][i].AnomalyId}`
 					});
 					for (let iProp in aFieldToCheck) {
 						let sProp = aFieldToCheck[iProp];
@@ -1537,7 +1536,7 @@ sap.ui.define([
 							text: this.fnGetResourceBundle("LabelProperty" + sProp),
 						});
 						oValueText = new Text({
-							text: `: ${oObject.Anomaly[i][sProp]}`
+							text: formatter.fnSetCustomAnomaliesPopoverValue(sProp, oObject.Anomaly[0][i][sProp], this)
 						});
 						let oVBox = new VBox();
 						let oMainVBox = new VBox({
@@ -1563,17 +1562,17 @@ sap.ui.define([
 		},
 		onAnomalyPhotoIconPress: function (oEvent) {
 			let aAnomalies = oEvent.getSource().getParent().getRowBindingContext().getObject().Anomaly,
-				aAnomalyPhotoAttachmentIds = [], aURL = [], sCarouselId = "";
+				aAnomalyPhotoAttachmentIds = [], aURL = [];
 			const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
-			aAnomalies.forEach(anomaly => {
+			aAnomalies[0].forEach(anomaly => {
 				let aFilters = [];
-				aFilters.push(new Filter("ObjectId", FilterOperator.EQ, anomaly.AnomalyId));
+				aFilters.push(new Filter("ObjectId", FilterOperator.EQ, `0000${anomaly.AnomalyId}`));
 				this.getOwnerComponent().getModel().read("/AnomalyPhotosSet", {
 					filters: aFilters,
 					success: function (oData) {
-						if (oData.results.length > 1) {
+						if (oData.results.length >= 1) {
 							aAnomalyPhotoAttachmentIds.push(oData.results);
-							aAnomalyPhotoAttachmentIds.forEach(attachmentId => {
+							aAnomalyPhotoAttachmentIds[0].forEach(attachmentId => {
 								let sURL = `/sap/opu/odata/sap/ZSRC4_PEC_SRV/AnomalyPhotoSet('${attachmentId.AttachmentID}')/$value`;
 								jQuery.ajax({
 									url: sURL,
@@ -1589,9 +1588,11 @@ sap.ui.define([
 											url: URL.createObjectURL(data)
 										});
 										oAnomalyModel.setProperty("/aURL", aURL);
+										this.fnHideBusyIndicator();
 									}.bind(this),
 									error: function (oErr) {
 										MessageBox.error(oErr);
+										this.fnHideBusyIndicator();
 									}.bind(this)
 								});
 							})
@@ -1599,6 +1600,7 @@ sap.ui.define([
 						this.fnHideBusyIndicator();
 					}.bind(this),
 					error: function (oError) {
+						this.fnHideBusyIndicator();
 						MessageBox.error(oError);
 					}.bind(this)
 				});
@@ -1609,9 +1611,11 @@ sap.ui.define([
 				let oPromise = this._loadFragment("AnomalyPicturesCarousel");
 				oPromise.then(function (oDialog) {
 					oDialog.open();
+					this.fnShowBusyIndicator(null, 0);
 				}.bind(this));
 			} else {
 				this.byId("idAnomalyPicturesCarouselDialog").open();
+				this.fnShowBusyIndicator(null, 0);
 			}
 		},
 		onAnomalyPictureDialogCancel: function () {

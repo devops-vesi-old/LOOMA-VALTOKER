@@ -724,99 +724,9 @@ sap.ui.define([
 					$inlinecount: "allpages"
 				},
 				success: function (oData, response) {
-					const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
-					oAnomalyModel.setProperty("/aEquipmentDataModel", oData);
-					oData.results.forEach(equipment => {
-						this.getOwnerComponent().getModel().read(`/EquipmentSet('${equipment.EquipmentId}')`, {
-							urlParameters: {
-								$expand: "Anomaly"
-							},
-							success: function (oAnomalyData, response) {
-								let aAnomaly = oAnomalyData.Anomaly.results,
-									oEquipmentData,
-									aAnomalyForEquipment = [];
-								const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
-								let oTempEquipmentData = oAnomalyModel.getProperty("/aEquipmentDataModel");
-								let noAnomaly = oAnomalyModel.getProperty("/noAnomaly");
-								if (aAnomaly.length > 0) {
-									oAnomalyModel.setProperty("/noAnomaly", false);
-									for (let i = 0; i < oTempEquipmentData.results.length; i++) {
-										if (oTempEquipmentData.results[i].EquipmentId == oAnomalyData.EquipmentId) {
-											for (let j = 0; j < oAnomalyData.Anomaly.results.length; j++) {
-												if (j != 0) {
-													try {
-														if (oTempEquipmentData.results[i].Anomaly.length > 1 || oTempEquipmentData.results[i].Anomaly[0].AnomalyId !== "") {
-															oTempEquipmentData.results[i].Anomaly.forEach(anomaly => {
-																aAnomalyForEquipment.push(anomaly);
-															})
-														}
-													} catch (error) {
-														if (error) {
-															oTempEquipmentData.results[i].hasAnomaly = false;
-															continue;
-														}
-													}
-												}
-												aAnomalyForEquipment.push(oAnomalyData.Anomaly.results);
-												if (j == 0) {
-													oTempEquipmentData.results[i].Anomaly = aAnomalyForEquipment;
-													oTempEquipmentData.results[i].hasAnomaly = true;
-												} else {
-													oTempEquipmentData.results[i].Anomaly.concat(aAnomalyForEquipment);
-													oTempEquipmentData.results[i].hasAnomaly = true;
-												}
-												aAnomalyForEquipment = [];
-											}
-										}
-									}
-									oAnomalyModel.setProperty("/aEquipmentDataModel", oTempEquipmentData);
-									aAnomaly.forEach(anomaly => {
-										let aFilters = [];
-										aFilters.push(new Filter("ObjectId", FilterOperator.EQ, `0000${anomaly.AnomalyId}`));
-										this.getOwnerComponent().getModel().read("/AnomalyPhotosSet", {
-											filters: aFilters,
-											success: function (oAnomalyPhotoData) {
-												const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
-												let oTempEquipmentData = oAnomalyModel.getProperty("/aEquipmentDataModel");
-												if (oAnomalyPhotoData.results.length >= 1) {
-													for (let i = 0; i < oTempEquipmentData.results.length; i++) {
-														try {
-															if (`0000${oTempEquipmentData.results[i].Anomaly[0][0].AnomalyId}` == oAnomalyPhotoData.results[0].ObjectId) {
-																oTempEquipmentData.results[i].hasAnomalyPhoto = true;
-															}
-														} catch (error) {
-															oTempEquipmentData.results[i].hasAnomalyPhoto = false;
-														}
-													}
-												}
-												oAnomalyModel.setProperty("/aEquipmentDataModel", oTempEquipmentData);
-												oEquipmentData = oAnomalyModel.getProperty("/aEquipmentDataModel");
-												let oEquipment = this._buildEquipmentModel(oEquipmentData);
-												this.fnHideBusyIndicator();
-												this.fnSetJSONModel(oEquipment, "mEquipment");
-											}.bind(this),
-											error: function (oError) {
-												MessageBox.error(oError);
-											}.bind(this)
-										});
-
-									})
-								} else {
-									if (noAnomaly) {
-										oAnomalyModel.setProperty("/aEquipmentDataModel", oTempEquipmentData);
-										oEquipmentData = oAnomalyModel.getProperty("/aEquipmentDataModel");
-										let oEquipment = this._buildEquipmentModel(oEquipmentData);
-										this.fnHideBusyIndicator();
-										this.fnSetJSONModel(oEquipment, "mEquipment");
-									}
-								}
-							}.bind(this),
-							error: function (oError) {
-								MessageBox.error(oError);
-							}.bind(this)
-						});
-
-					})
+					let oEquipment = this._buildEquipmentModel(oData);
+					this.fnHideBusyIndicator();
+					this.fnSetJSONModel(oEquipment, "mEquipment");
 				}.bind(this),
 				error: function (oError) {
 					var oEquipment = {
@@ -885,8 +795,7 @@ sap.ui.define([
 				oLine.AmdecStateDesc = oLine.AmdecStateId === "" ? "" : oDDICValue.AmdecStateId[oLine.AmdecStateId].ValueDesc;
 				oLine.UsageDesc = oLine.UsageId === "" ? "" : oDDICValue.UsageId[oLine.UsageId].ValueDesc;
 				oLine.Anomaly = oLine.Anomaly.length > 0 ? oLine.Anomaly : "";
-				oLine.hasAnomaly = oLine.hasAnomaly === true ? true : false;
-				oLine.hasAnomalyPhoto = oLine.hasAnomalyPhoto === true ? true : false;
+				oLine.HasAnomaly = oLine.HasAnomaly === true ? true : false;
 
 				for (var sPorperty in oLine) {
 					if (oDDICValue[sPorperty]) { //Manage only properties with value list (from DDIC)
@@ -1509,7 +1418,8 @@ sap.ui.define([
 				oToolbar,
 				oLabelText,
 				oValueText,
-				oPanel;
+				oPanel,
+				aAnomalies;
 			if (!this[idThisPopover]) {
 				this[idThisPopover] = Fragment.load({
 					id: oView.getId(),
@@ -1520,91 +1430,143 @@ sap.ui.define([
 				});
 			}
 			this[idThisPopover].then(function (oPopover) {
-				oPopover.openBy(oObjectView);
 				this.getView().byId("VBoxAnomalyFragment").destroyItems();
-				for (let i = 0; i < oObject.Anomaly[0].length; i++) {
-					oPanel = new Panel({
-						width: "100%"
-					});
-					oToolbar = new OverflowToolbar();
-					let oTitle = new Title({
-						text: `${this.fnGetResourceBundle('TitleAnomaly')} - ${oObject.Anomaly[0][i].AnomalyId}`
-					});
-					for (let iProp in aFieldToCheck) {
-						let sProp = aFieldToCheck[iProp];
-						oLabelText = new Text({
-							text: this.fnGetResourceBundle("LabelProperty" + sProp),
-						});
-						oValueText = new Text({
-							text: formatter.fnSetCustomAnomaliesPopoverValue(sProp, oObject.Anomaly[0][i][sProp], this)
-						});
-						let oVBox = new VBox();
-						let oMainVBox = new VBox({
-							alignItems: "Start"
-						});
-						let oContentHBox = new HBox();
-						let oLabelHBox = new HBox({
-							width: "13rem"
-						});
-						oLabelHBox.addItem(oLabelText);
-						oContentHBox.addItem(oLabelHBox);
-						oContentHBox.addItem(oValueText);
-						oMainVBox.addItem(oContentHBox);
-						oVBox.addItem(oMainVBox);
-						oPanel.addContent(oVBox);
-					}
-					oToolbar.insertContent(oTitle);
-					oPanel.setHeaderToolbar(oToolbar);
-					this.getView().byId("VBoxAnomalyFragment").addItem(oPanel);
-				}
-
+				this.fnShowBusyIndicator(null, 0);
+				this.getOwnerComponent().getModel().read(`/EquipmentSet('${oObject.EquipmentId}')`, {
+					urlParameters: {
+						$expand: "Anomaly"
+					},
+					success: function (oAnomalyData, response) {
+						aAnomalies = oAnomalyData.Anomaly.results;
+						for (let i = 0; i < aAnomalies.length; i++) {
+							oPanel = new Panel({
+								width: "100%"
+							});
+							oToolbar = new OverflowToolbar();
+							let oTitle = new Title({
+								text: `${this.fnGetResourceBundle('TitleAnomaly')} - ${aAnomalies[i].AnomalyId}`
+							});
+							for (let iProp in aFieldToCheck) {
+								let sProp = aFieldToCheck[iProp];
+								oLabelText = new Text({
+									text: this.fnGetResourceBundle("LabelProperty" + sProp),
+								});
+								oValueText = new Text({
+									text: formatter.fnSetCustomAnomaliesPopoverValue(sProp, aAnomalies[i][sProp], this, aAnomalies[i])
+								});
+								let oVBox = new VBox();
+								let oMainVBox = new VBox({
+									alignItems: "Start"
+								});
+								let oContentHBox = new HBox();
+								let oLabelHBox = new HBox({
+									width: "13rem"
+								});
+								oLabelHBox.addItem(oLabelText);
+								oContentHBox.addItem(oLabelHBox);
+								oContentHBox.addItem(oValueText);
+								oMainVBox.addItem(oContentHBox);
+								oVBox.addItem(oMainVBox);
+								oPanel.addContent(oVBox);
+							}
+							oToolbar.insertContent(oTitle);
+							oPanel.setHeaderToolbar(oToolbar);
+							this.getView().byId("VBoxAnomalyFragment").addItem(oPanel);
+							this.fnHideBusyIndicator();
+							oPopover.openBy(oObjectView);
+						}
+					}.bind(this),
+					error: function (oError) {
+						MessageBox.error(oError);
+						this.fnHideBusyIndicator();
+					}.bind(this)
+				});
 			}.bind(this));
 		},
 		onAnomalyPhotoIconPress: function (oEvent) {
-			let aAnomalies = oEvent.getSource().getParent().getRowBindingContext().getObject().Anomaly,
-				aAnomalyPhotoAttachmentIds = [], aURL = [];
+			let oObjectView = oEvent.getSource(),
+				oObject = oObjectView === "" ? {} : oEvent.getSource().getParent().getRowBindingContext().getObject(),
+				aAnomalyPhotoAttachmentIds = [],
+				aURL = [],
+				aTempURL = [],
+				pictureCounter = 0;
 			const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
-			aAnomalies[0].forEach(anomaly => {
-				let aFilters = [];
-				aFilters.push(new Filter("ObjectId", FilterOperator.EQ, `0000${anomaly.AnomalyId}`));
-				this.getOwnerComponent().getModel().read("/AnomalyPhotosSet", {
-					filters: aFilters,
-					success: function (oData) {
-						if (oData.results.length >= 1) {
-							aAnomalyPhotoAttachmentIds.push(oData.results);
-							aAnomalyPhotoAttachmentIds[0].forEach(attachmentId => {
-								let sURL = `/sap/opu/odata/sap/ZSRC4_PEC_SRV/AnomalyPhotoSet('${attachmentId.AttachmentID}')/$value`;
-								jQuery.ajax({
-									url: sURL,
-									cache: false,
-									xhr: function () {
-										var xhr = new XMLHttpRequest();
-										xhr.responseType = 'blob'
-										return xhr;
-									},
-									success: function (data) {
-										jQuery.sap.addUrlWhitelist("blob");
-										aURL.push({
-											url: URL.createObjectURL(data)
-										});
-										oAnomalyModel.setProperty("/aURL", aURL);
-										this.fnHideBusyIndicator();
-									}.bind(this),
-									error: function (oErr) {
-										MessageBox.error(oErr);
-										this.fnHideBusyIndicator();
-									}.bind(this)
-								});
-							})
-						}
-						this.fnHideBusyIndicator();
+				oAnomalyModel.setProperty("/aURL", aURL);
+				this.getOwnerComponent().getModel().read(`/EquipmentSet('${oObject.EquipmentId}')`, {
+					urlParameters: {
+						$expand: "Anomaly"
+					},
+					success: function (oAnomalyData, response) {
+						let aAnomalies = oAnomalyData.Anomaly.results;
+						aAnomalies.forEach(anomaly => {
+							let aFilters = [];
+							aFilters.push(new Filter("ObjectId", FilterOperator.EQ, `0000${anomaly.AnomalyId}`));
+							this.getOwnerComponent().getModel().read("/AnomalyPhotosSet", {
+								filters: aFilters,
+								success: function (oData) {
+									const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
+									oAnomalyModel.setProperty("/aAnomalyPhotoAttachments", []);
+									let aCurrentAnomalyPhotoAttachments = oAnomalyModel.getProperty("/aAnomalyPhotoAttachments");
+									if (oData.results.length >= 1) {
+										pictureCounter = pictureCounter + 1;
+										if (aCurrentAnomalyPhotoAttachments.length > 1) {
+											aCurrentAnomalyPhotoAttachments.concat(oData.results);
+										} else {
+											oAnomalyModel.setProperty("/aAnomalyPhotoAttachments", oData.results);
+										}
+										let aAnomalyPhotoAttachmentIds = oAnomalyModel.getProperty("/aAnomalyPhotoAttachments");
+										aAnomalyPhotoAttachmentIds.forEach(attachmentId => {
+												let sURL = `/sap/opu/odata/sap/ZSRC4_PEC_SRV/AnomalyPhotoSet('${attachmentId.AttachmentID}')/$value`;
+												jQuery.ajax({
+													url: sURL,
+													cache: false,
+													xhr: function () {
+														var xhr = new XMLHttpRequest();
+														xhr.responseType = 'blob'
+														return xhr;
+													},
+													success: function (data) {
+														jQuery.sap.addUrlWhitelist("blob");
+														aTempURL = [];
+														aTempURL.push({
+															url: URL.createObjectURL(data)
+														});
+														let aCurrentURL = oAnomalyModel.getProperty("/aURL");
+														if (aCurrentURL.length > 0) {
+															aURL = aTempURL.concat(aCurrentURL);
+															oAnomalyModel.setProperty("/aURL", aURL);
+														} else {
+															oAnomalyModel.setProperty("/aURL", aTempURL);
+														}
+														this.fnHideBusyIndicator();
+													}.bind(this),
+													error: function (oErr) {
+														MessageBox.error(oErr);
+														this.fnHideBusyIndicator();
+													}.bind(this)
+												});
+
+										})
+									} else {
+										if (pictureCounter == 0) {
+											this.onAnomalyPictureDialogCancel();
+											MessageBox.information("L'anomalie n'a pas de photo.");
+										}
+									}
+									this.fnHideBusyIndicator();
+								}.bind(this),
+								error: function (oError) {
+									this.fnHideBusyIndicator();
+									MessageBox.error(oError);
+								}.bind(this)
+							});
+						})
 					}.bind(this),
 					error: function (oError) {
-						this.fnHideBusyIndicator();
 						MessageBox.error(oError);
+						this.fnHideBusyIndicator();
 					}.bind(this)
 				});
-			})
 			// create dialog lazily
 			if (!this.byId("idAnomalyPicturesCarouselDialog")) {
 				// load asynchronous XML fragment

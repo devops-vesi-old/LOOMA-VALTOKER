@@ -72,10 +72,16 @@
 		"index": 11
 	},
 	{
+		"columnKey": "AnomalyCol",
+		"text": "EquipmentTblColHdrAnomaly",
+		"visible": true,
+		"index": 12
+	},
+	{
 		"columnKey": "ActionCol",
 		"text": "EquipmentTblColHdrAction",
 		"visible": true,
-		"index": 12
+		"index": 13
 	},
 	{
 		"columnKey": "QuantityCol",
@@ -106,11 +112,6 @@
 		"columnKey": "LastChangedOnCol",
 		"text": "EquipmentTblColHdrLastChangedOn",
 		"visible": false
-	},
-	{
-		"columnKey": "AnomalyCol",
-		"text": "EquipmentTblColHdrAnomaly",
-		"visible": true
 	},
 	{
 		"columnKey": "AnomalyPictureCol",

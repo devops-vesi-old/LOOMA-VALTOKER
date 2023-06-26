@@ -255,41 +255,6 @@
 				</t:template>
 			</t:Column>
 			<t:Column 
-				id="ActionCol"
-				hAlign="Center" 
-				width="9.5rem">
-				<Label text="{i18n>EquipmentTblColHdrAction}"/>
-				<t:template>
-					<Bar class="customNoBoxShadow">
-						<contentLeft>
-							<Button 
-								icon="sap-icon://accept"
-								press="onApplyEquipmentStatus"
-								tooltip="{i18n>EquipmentTableButtonTooltipValidate}"
-								type="Accept"
-								visible="{= ${mEquipment>UserStatusId} !== 'E0005'}"/>
-						</contentLeft>
-						<contentMiddle>
-							<Button 
-								icon="sap-icon://delete"
-								press="onApplyEquipmentStatus"
-								tooltip="{= ${mEquipment>Deletable} ? ${i18n>EquipmentTableButtonTooltipReject} : ${i18n>EquipmentTableButtonTooltipRejectDisable}}"
-								type="Reject"
-								enabled="{mEquipment>Deletable}"
-								visible="{= ${mEquipment>UserStatusId} !== 'E0006'}"/>
-						</contentMiddle>
-						<contentRight>
-							<Button 
-								icon="sap-icon://cause"
-								press="onApplyEquipmentStatus"
-								tooltip="{i18n>EquipmentTableButtonTooltipReturnTakeover}"
-								type="Emphasized"
-								visible="{= ${mEquipment>UserStatusId} !== 'E0002'}"/>
-						</contentRight>
-					</Bar>
-				</t:template>
-			</t:Column>
-			<t:Column 
 				id="LastChangedByIdCol"
 				hAlign="Center" 
 				width="5%" 
@@ -355,8 +320,43 @@
 						active="true"
 						press="onOpenAnomalyFragment"
 						state="Warning"
-						visible="{mEquipment>hasAnomaly}"
+						visible="{mEquipment>HasAnomaly}"
 						/>
+				</t:template>
+			</t:Column>
+			<t:Column 
+				id="ActionCol"
+				hAlign="Center" 
+				width="9.5rem">
+				<Label text="{i18n>EquipmentTblColHdrAction}"/>
+				<t:template>
+					<Bar class="customNoBoxShadow">
+						<contentLeft>
+							<Button 
+								icon="sap-icon://accept"
+								press="onApplyEquipmentStatus"
+								tooltip="{i18n>EquipmentTableButtonTooltipValidate}"
+								type="Accept"
+								visible="{= ${mEquipment>UserStatusId} !== 'E0005'}"/>
+						</contentLeft>
+						<contentMiddle>
+							<Button 
+								icon="sap-icon://delete"
+								press="onApplyEquipmentStatus"
+								tooltip="{= ${mEquipment>Deletable} ? ${i18n>EquipmentTableButtonTooltipReject} : ${i18n>EquipmentTableButtonTooltipRejectDisable}}"
+								type="Reject"
+								enabled="{mEquipment>Deletable}"
+								visible="{= ${mEquipment>UserStatusId} !== 'E0006'}"/>
+						</contentMiddle>
+						<contentRight>
+							<Button 
+								icon="sap-icon://cause"
+								press="onApplyEquipmentStatus"
+								tooltip="{i18n>EquipmentTableButtonTooltipReturnTakeover}"
+								type="Emphasized"
+								visible="{= ${mEquipment>UserStatusId} !== 'E0002'}"/>
+						</contentRight>
+					</Bar>
 				</t:template>
 			</t:Column>
 			<t:Column 
@@ -368,7 +368,7 @@
 				<t:template>
 					<Button icon="sap-icon://camera"
 							press="onAnomalyPhotoIconPress"
-							visible="{mEquipment>hasAnomalyPhoto}"
+							visible="{mEquipment>HasAnomaly}"
 					/>
 				</t:template>
 			</t:Column>

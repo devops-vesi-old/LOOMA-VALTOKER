@@ -1406,7 +1406,6 @@ sap.ui.define([
 				oView = this.getView(),
 				sFragmentName = "com.vesi.zfac4_valtoker.view.fragment.Detail.Anomaly",
 				aFieldToCheck = [
-					"AnomalyId",
 					"AnomalyName",
 					"Risk",
 					"Recommendation",

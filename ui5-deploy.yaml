@@ -14,8 +14,8 @@ builder:
       afterTask: generateCachebusterInfo
       configuration:
         target:
-          destination: Codex_DGW
-          url: http://dgw:1080
+          destination: Codex_DVP
+          url: http://dvp:443
         app:
           name: ZFAC4_VALTOKER
           package: ZDEV_C4_FIORI_TAKEOVER

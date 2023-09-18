@@ -338,15 +338,6 @@ sap.ui.define([
 				return aFiltersAll;
 			}
 			return false;
-		},
-		_setStyleClassForPopup: function (oPopup) {
-			var oDeviceData = this.getOwnerComponent().getModel("device").getData();
-			if (oDeviceData.system.desktop) {
-				oPopup.addStyleClass("sapUiSizeCompact");
-			} else {
-				oPopup.addStyleClass("sapUiSizeCozy");
-			}
-			return oPopup;
 		}
 	});
 });

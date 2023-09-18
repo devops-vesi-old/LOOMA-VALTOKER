@@ -50,7 +50,8 @@ sap.ui.define([
 			const oSelectAllLocModel = new JSONModel({
 				aSelectedIndices: [],
 				aSelectedLocations: [],
-				bSelectAll: false
+				bSelectAll: false,
+				aNestedLocations: []
 			});
 			this.getView().setModel(oSelectAllLocModel, "oSelectAllLocationsModel");
 			const oAnomalyModel = new JSONModel({
@@ -1485,7 +1486,6 @@ sap.ui.define([
 		onAnomalyPhotoIconPress: function (oEvent) {
 			let oObjectView = oEvent.getSource(),
 				oObject = oObjectView === "" ? {} : oEvent.getSource().getParent().getRowBindingContext().getObject(),
-				aAnomalyPhotoAttachmentIds = [],
 				aURL = [],
 				aTempURL = [],
 				pictureCounter = 0;
@@ -1503,7 +1503,6 @@ sap.ui.define([
 							this.getOwnerComponent().getModel().read("/AnomalyPhotosSet", {
 								filters: aFilters,
 								success: function (oData) {
-									const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
 									oAnomalyModel.setProperty("/aAnomalyPhotoAttachments", []);
 									let aCurrentAnomalyPhotoAttachments = oAnomalyModel.getProperty("/aAnomalyPhotoAttachments");
 									if (oData.results.length >= 1) {
@@ -1856,39 +1855,66 @@ sap.ui.define([
 		},
 
 		/*
+		 * Callback function called to get node sublocations
+		 */
+		getSelectedLocationData: function (aSiteLocation) {
+			let aNestedLocations = this.fnGetModel("oSelectAllLocationsModel").getProperty("/aNestedLocations");
+			aSiteLocation.forEach(location => {
+				if (location.children.length > 0 && location.children) {
+					aNestedLocations.push(location.children);
+					this.getSelectedLocationData(location.children);
+				}
+			})
+		},
+		/*
+		 * Function to add locations to sublocations array
+		 */
+		getSelectedLocationAndSubLocationData: function (aSiteLocation) {
+			let aNestedLocations = this.fnGetModel("oSelectAllLocationsModel").getProperty("/aNestedLocations");
+			aSiteLocation.forEach(location => {
+				aNestedLocations.push(location);
+			});
+		},
+		/*
+		 * Function to get all locations and sublocations
+		 */
+		getAllLocationsAndSublocationsData: function (aNestedLocationsArray) {
+			let aLocations = [];
+			aNestedLocationsArray.forEach(location => {
+				if (location.length >= 1) {
+					location.forEach(subLocation => {
+						aLocations.push(subLocation);
+					});
+				} else {
+					aLocations.push(location);
+				}
+			});
+			return aLocations;
+		},
+		/*
+		 * Function to get all locations and sublocations indices
+		 */
+		getLocationAndSublocationIndices: function (aLocations) {
+			let aSelectedIndices = [];
+			aLocations.map((location, index) => aSelectedIndices.push(index));
+			return aSelectedIndices;
+		},
+		/*
 		 * Event fire on Selection change on Location hierarchy Tree Table
 		 */
 		onSelectionChangeLocationTable: function (oEvent) {
 			const bSelectAll = oEvent.getParameter("selectAll");
-			const oSelectAllLocModel = this.getView().getModel("oSelectAllLocationsModel");
-			let aNestedLocations = [],
-				aLocations = [],
+			const oSelectAllLocModel = this.fnGetModel("oSelectAllLocationsModel");
+			oSelectAllLocModel.setProperty("/aNestedLocations", []);
+			let aNestedLocations = oSelectAllLocModel.getProperty("/aNestedLocations"),
+				aLocations,
 				aSelectedIndices = [];
 			if (bSelectAll) {
-				const aSiteLocation = this.getView().getModel("mLocationHierarchy").getData().nodeRoot.children;
-
-				function getSelectedLocationData(pSiteLocation) {
-					pSiteLocation.forEach(location => {
-						if (location.children.length > 0 && location.children) {
-							aNestedLocations.push(location.children);
-							getSelectedLocationData(location.children);
-						}
-					})
-				}
-				getSelectedLocationData(aSiteLocation);
-				aSiteLocation.forEach(location => {
-					aNestedLocations.push(location);
-				});
-				aNestedLocations.forEach(location => {
-					if (location.length >= 1) {
-						location.forEach(subLocation => {
-							aLocations.push(subLocation);
-						});
-					} else {
-						aLocations.push(location);
-					}
-				});
-				aLocations.map((location, index) => aSelectedIndices.push(index));
+				const aSiteLocation = this.fnGetModel("mLocationHierarchy").getData().nodeRoot.children;
+				this.getSelectedLocationData(aSiteLocation);
+				this.getSelectedLocationAndSubLocationData(aSiteLocation);
+				aLocations = this.getAllLocationsAndSublocationsData(aNestedLocations);
+				aSelectedIndices = this.getLocationAndSublocationIndices(aLocations);
 				oSelectAllLocModel.setProperty("/aSelectedLocations", aLocations);
 				oSelectAllLocModel.setProperty("/aSelectedIndices", aSelectedIndices);
 				oSelectAllLocModel.setProperty("/bSelectAll", bSelectAll);

@@ -185,6 +185,20 @@
 				</t:template>
 			</t:Column>
 			<t:Column 
+				id="AnomalyMeasuringPoints"
+				hAlign="Center" 
+				width="7%">
+				<Label text="{i18n>EquipmentTblColHdrAnomalyMeasuringDocuments}" wrapping="true"/>
+				<t:template>
+					<Button icon="sap-icon://end-user-experience-monitoring"
+							press="onAnomalyMeasuringDocuments"
+							type="{= ${mEquipment>HasMeasuringDocument}  ? 'Accept' : 'Attention'}"
+							tooltip="{{i18n>EquipmentTblColHdrAnomalyMeasuringDocuments}}"
+							visible="{mEquipment>bMeasuringVisible}"
+					/>
+				</t:template>
+			</t:Column>
+			<t:Column 
 				id="AmdecCounter"
 				hAlign="Center"
 				width="5%" 

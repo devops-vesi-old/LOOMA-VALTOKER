@@ -119,4 +119,10 @@
 		"text": "EquipmentTblColHdrLastChangedOn",
 		"visible": false
 	}
+	,
+	{
+		"columnKey": "AnomalyMeasuringPoints",
+		"text": "EquipmentTblColHdrAnomalyMeasuringPoints",
+		"visible": true
+	}
 ]

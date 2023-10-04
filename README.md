@@ -3,7 +3,7 @@
 # Technical Documentation - Takeover Validation Cockpit
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
-
+[![Quality Gate Status](https://sonarqube.vinci-energies.net/api/project_badges/measure?project=vesi-codex-developments-c4hana-veff-zfac4_valtoker&metric=alert_status&token=sqb_6499814ffc6a1793370f8ddff7430e3d1f1201a5)](https://sonarqube.vinci-energies.net/dashboard?id=vesi-codex-developments-c4hana-veff-zfac4_valtoker)
 | Designation | Name |
 | ----------- | ---- |
 | Reviewer | Nicolas BOUCAUD |

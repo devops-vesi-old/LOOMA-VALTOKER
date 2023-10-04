@@ -17,6 +17,7 @@ variables:
     -Dsonar.host.url=$SONAR_URL
     -Dsonar.login=25598d57f1e870dcfdf6255b402a28bdca972cc4
     -Dsonar.exclusions=webapp/test/**/*
+    -Dsonar.qualitygate.wait=true
 #    -Dsonar.password=$SVC_PASSWORD
 #    -Dsonar.token=
 
@@ -35,7 +36,7 @@ sonar_analyze_on_merge_request:
         -Dsonar.pullrequest.key=$CI_MERGE_REQUEST_ID \
         -Dsonar.pullrequest.branch=$CI_COMMIT_REF_NAME \
         -Dsonar.pullrequest.base=$GITLAB_REF_BRANCH \
-        -Dsonar.qualitygate.wait=true 
+         
   except:
     # Inutile de jouer l'analyse sonar par MR sur la branche master et la pose d'un tag
     - master

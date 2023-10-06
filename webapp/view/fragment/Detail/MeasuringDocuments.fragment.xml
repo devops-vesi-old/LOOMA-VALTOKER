@@ -1,0 +1,40 @@
+<c:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:c="sap.ui.core">
+	<Popover
+		id="MeasuringDocPopover"
+		placement="Bottom"
+		showHeader="false">
+		<Table
+			id="MeasureDocTable"
+			growing="true"
+			growingThreshold="20"
+			alternateRowColors="true"
+			items="{oMeasure>/measureDocuments}">
+			<columns>
+				<Column>
+					<Text text="{i18n>notedNumber}"/>
+				</Column>
+				<Column>
+					<Text text="{i18n>notedDate}"/>
+				</Column>
+				<Column>
+					<Text text="{i18n>notedBy}"/>
+				</Column>
+				<Column>
+					<Text text="{i18n>value}"/>
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem>
+					<cells>
+						<Text text="{oMeasure>MeasuringDocumentId}"/>
+						<Text text="{oMeasure>MeasureDate}"/>
+						<Text text="{oMeasure>MeasureResp}"/>
+						<Text text="{oMeasure>MeasureValue}"/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+	</Popover>
+</c:FragmentDefinition>

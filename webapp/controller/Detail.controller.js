@@ -55,7 +55,8 @@ sap.ui.define([
 			});
 			this.getView().setModel(oSelectAllLocModel, "oSelectAllLocationsModel");
 			const oAnomalyModel = new JSONModel({
-				noAnomaly: true
+				noAnomaly: true,
+				measuringPoints: [],
 			});
 			this.getView().setModel(oAnomalyModel, "oEquipmentAnomalyModel");
 		},
@@ -763,6 +764,7 @@ sap.ui.define([
 		_buildEquipmentModel: async function (oData) {
 			try {
 				const aMeasuringPoints = await this._getMeasuringPoints();
+				this.fnGetModel("oEquipmentAnomalyModel").setProperty("/measuringPoints", aMeasuringPoints);
 				//Reset Selection
 				var aBooleanField = [
 					"PecDeepAnalysisNeeded",
@@ -2250,22 +2252,56 @@ sap.ui.define([
 			});
 		},
 
-		onAnomalyMeasuringDocuments: function (oEvent) {
-			const oModel = this.getOwnerComponent().getModel();
-			const oEquipment = oEvent.getSource().getParent().getRowBindingContext().getObject();
-			const aFilters = [
-				new Filter("EquipmentId", FilterOperator.EQ, oEquipment.EquipmentId),
-			];
-			oModel.read("/MeasuringPointSet", {
-				filters: aFilters,
-				success: (oData) => {
-					console.log(oData);
-				},
-				error: (oError) => {
-					console.log(oError);
-				}
-			});
+		onAnomalyMeasuringDocuments: async function (oEvent) {
+			try {
+				const oEquipment = oEvent.getSource().getParent().getRowBindingContext().getObject();
+				const aMeasuringPoints = this.fnGetModel("oEquipmentAnomalyModel").getProperty("/measuringPoints");
+				const aMeasures = aMeasuringPoints.filter(oMeasurePoint => oMeasurePoint.EquipmentId === oEquipment.EquipmentId);
+				const aGetMeasureDocumentPromises = [];
+				aMeasures.forEach(oMeasure => aGetMeasureDocumentPromises.push(this._fnGetMeasureDocument(oMeasure.MeasuringPointId)));
+				const aResultPromise = await Promise.all(aGetMeasureDocumentPromises);
+				const aMeasureDocuments = [];
+				aResultPromise.forEach(aResult => {
+					aResult.forEach(oResult => aMeasureDocuments.push(oResult));
+				});
+				const oMeasure = new JSONModel({ measureDocuments: aMeasureDocuments });
+				this.fnSetJSONModel(oMeasure, "oMeasure");
+				this._fnOpenMeasurePopover();
+			} catch (e) {
+				MessageBox.error(e.message);
+			}
+
 		},
+		
+		_fnOpenMeasurePopover: async function () {
+			const oView = this.getView();
+			const oButton = oView.byId("AnomalyMeasuringDocButton");
+			this._oMeasurePopover ??= await Fragment.load({
+				id: oView.getId(),
+				name: `${FRAGMENT_PATH}.MeasuringDocuments`,
+				controller: this,
+			});
+			oView.addDependent(this._oMeasurePopover);
+			this._oMeasurePopover.openBy(oButton);
+		},
+
+		_fnGetMeasureDocument: function (sMeasurePointId) {
+			const oModel = this.getOwnerComponent().getModel();
+			const aFilters = [
+				new Filter("MeasuringPointId", FilterOperator.EQ, sMeasurePointId),
+			];
+			return new Promise((res, rej) => {
+				oModel.read("/MeasuringDocumentSet", {
+					filters: aFilters,
+					success: (oData) => {
+						res(oData.results);
+					},
+					error: (oError) => {
+						rej(oError);
+					}
+				});
+			});
+		}
 	});
 
 });

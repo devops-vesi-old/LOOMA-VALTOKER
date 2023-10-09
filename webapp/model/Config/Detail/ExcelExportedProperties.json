@@ -153,5 +153,10 @@
 		"propertyId": "AnomalyId",
 		"i18n": "AnomalyId",
 		"colIndex": 30
+	},
+	"MeasuringDocuments": {
+		"propertyId": "MeasuringPointsIds",
+		"i18n": "EquipmentTblColHdrAnomalyMeasuringDocuments",
+		"colIndex": 31
 	}
 }

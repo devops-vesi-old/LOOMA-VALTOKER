@@ -237,6 +237,44 @@
 							</VBox>
 						</HBox>
 					</HBox>
+					<!--Legend Anomaly Icon-->
+					<HBox alignItems="Start">
+						<HBox class="customWidthLegendLeft" justifyContent="Center">
+							<core:Icon
+								class="customfontSize1_5Rem"
+								color="Default"
+								src="sap-icon://quality-issue"/>
+						</HBox>
+						<HBox class="customWidthLegendRight">
+							<VBox>
+								<Text 
+									class="customPaddingTop0_25Rem"
+									text="{i18n>LegendAnomalyButton}"/>
+								<Text 
+									class="customFontBold"
+									text="{i18n>LegendClickable}"/>
+							</VBox>
+						</HBox>
+					</HBox>
+					<!--Legend Measure Icon-->
+					<HBox alignItems="Start">
+						<HBox class="customWidthLegendLeft" justifyContent="Center">
+							<core:Icon
+								class="customfontSize1_5Rem"
+								color="Default"
+								src="sap-icon://end-user-experience-monitoring"/>
+						</HBox>
+						<HBox class="customWidthLegendRight">
+							<VBox>
+								<Text 
+									class="customPaddingTop0_25Rem"
+									text="{i18n>LegendMeasuringButton}"/>
+								<Text 
+									class="customFontBold"
+									text="{i18n>LegendClickable}"/>
+							</VBox>
+						</HBox>
+					</HBox>
 				</VBox>
 			</content>
 		</Panel>

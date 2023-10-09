@@ -376,7 +376,13 @@ sap.ui.define([],
 					sAnomalieValueToBeReturned = pValue;
 				}
 				return `: ${sAnomalieValueToBeReturned}`;
+			},
+
+			formatDate: function (sDate) {
+				const oDateFormatter = sap.ui.core.format.DateFormat.getDateInstance({
+					pattern: "dd.MM.y"
+				});
+				return oDateFormatter.format(sDate);
 			}
 		};
-
 	});

@@ -2409,7 +2409,7 @@ sap.ui.define(
         const oView = this.getView();
         this._oMeasurePopover ??= await Fragment.load({
           id: oView.getId(),
-          name: `${FRAGMENT_PATH}.MeasuringDocuments`,
+          name: `${FRAGMENT_PATH}MeasuringDocuments`,
           controller: this,
         });
         oView.addDependent(this._oMeasurePopover);

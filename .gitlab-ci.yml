@@ -16,7 +16,7 @@ variables:
     -Dsonar.projectKey=$PROJECT_NAME
     -Dsonar.host.url=$SONAR_URL
     -Dsonar.login=25598d57f1e870dcfdf6255b402a28bdca972cc4
-    -Dsonar.exclusions=webapp/test/**/*
+    -Dsonar.exclusions=webapp/test/**/*,webapp/localService/mockserver.js
     -Dsonar.qualitygate.wait=true
 #    -Dsonar.password=$SVC_PASSWORD
 #    -Dsonar.token=

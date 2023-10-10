@@ -748,7 +748,7 @@ sap.ui.define(
           .read("/EquipmentSet", {
             filters: aFilters,
             urlParameters: {
-              $expand: "ModifiedInfo,FamilyCharacteristic",
+              $expand: "ModifiedInfo,FamilyCharacteristic,Anomaly",
               $inlinecount: "allpages",
             },
             success: async function (oData, response) {
@@ -811,6 +811,7 @@ sap.ui.define(
               SuperiorEquiId: oLine.SuperiorEquiId,
               StatusFSM: 0,
             };
+            oLine.AnomalyId = this._fnCreateStringWithBreakLine(oLine.Anomaly.results, "AnomalyId");
             //Manage descriptions (needed for extract excel)
             oLine.CompleteLocationName = oLocationDescription[oLine.LocationId].LocationName;
             oLine.IsCreatedDuringPecDesc = oLine.IsCreatedDuringPec ? sYes : sNo;
@@ -835,7 +836,6 @@ sap.ui.define(
             oLine.UsageDesc = oLine.UsageId === "" ? "" : oDDICValue.UsageId[oLine.UsageId].ValueDesc;
             oLine.Anomaly = oLine.Anomaly.length > 0 ? oLine.Anomaly : "";
             oLine.HasAnomaly = oLine.HasAnomaly === true ? true : false;
-
             for (var sPorperty in oLine) {
               if (oDDICValue[sPorperty]) {
                 //Manage only properties with value list (from DDIC)
@@ -845,12 +845,10 @@ sap.ui.define(
             }
             this._fnSetAmdecCounter(oLine, sYes, sNo); // Set Amdec counter and boolean for all amdec value filled
             oLine.StatusFSM = this._setEquipmentStatusFSM(oEquipmentFSM, oLine); // Set
-
             //Manage Modified info
             oLine.ModifiedInfoTmp = oLine.ModifiedInfo.results;
             oLine.ModifiedInfo = [];
             oLine.ModifiedProperty = [];
-
             //Manage Modified info on characteristics with multi value
             for (var iLine in oLine.ModifiedInfoTmp) {
               var oLineMod = oLine.ModifiedInfoTmp[iLine];
@@ -890,7 +888,6 @@ sap.ui.define(
                 oLine.ModifiedInfo.push(oLineMod);
               }
             }
-
             //Manage Modified info description
             for (iLine in oLine.ModifiedInfo) {
               oLineMod = oLine.ModifiedInfo[iLine];
@@ -902,13 +899,11 @@ sap.ui.define(
                 this._fnSetCharactisticDescription(oLineMod, oFamilyCharacteristic);
               }
             }
-
             //Manage the new way to display modified info
             oLine.ModifiedInfoProperty = [];
             oLine.ModifiedInfoFamilyCharact = [];
             oLine.bDisplayModifiedInfoProperty = false;
             oLine.bDisplayModifiedInfoFamilyCharact = false;
-
             for (iLine in oLine.ModifiedInfo) {
               oLineMod = oLine.ModifiedInfo[iLine];
               if (oLineMod.IsProperty) {
@@ -921,33 +916,39 @@ sap.ui.define(
                 oLine.bDisplayModifiedInfoFamilyCharact = true;
               }
             }
-
             //Manage Family Characteristic
             oLine.FamilyCharacteristic = oLine.FamilyCharacteristic.results;
             this._fnSetFamilyImportantCounter(oLine, oFamilyCharacteristic, oVH.Family[oLine.FamilyId], sYes, sNo); // Set Family Characteristic Important counter and boolean
             const aEquipMeasure = aMeasuringPoints.filter((oMeasuringPoint) => oMeasuringPoint.EquipmentId === oLine.EquipmentId);
             oLine.bMeasuringVisible = aEquipMeasure.length > 0;
             oLine.HasMeasuringDocument = aEquipMeasure.find((oEquip) => oEquip.HasMeasuringDocument === true) !== undefined;
-            oLine.MeasuringPointsIds = this._fnCreateStringWithBreakLine(aEquipMeasure);
+            oLine.MeasuringPointsIds = this._fnCreateStringWithBreakLine(aEquipMeasure, "MeasuringPointId");
+            oLine.sMeasureButtonType = this._fnHandleMeasurePointIconType(aEquipMeasure[aEquipMeasure.length - 1]);
           }
           return oEquipment;
         } catch (oError) {
           MessageBox.error(oError.message);
         }
       },
-      _fnCreateStringWithBreakLine: function(aMeasures) {
-        let result = '';
-      
-        aMeasures.forEach((obj, index) => {
-          if (obj.MeasuringPointId) {
-            result += obj.MeasuringPointId;
-            if (index < aMeasures.length - 1) {
-              result += '\n';
+      _fnHandleMeasurePointIconType: function (oMeasure) {
+        if (!oMeasure) return "Attention";
+        let { ValueMax, ValueMin, ValueTarget } = oMeasure;
+        ValueMax = parseFloat(ValueMax.replaceAll(",", "."));
+        ValueMin = parseFloat(ValueMin.replaceAll(",", "."));
+        ValueTarget = parseFloat(ValueTarget.replaceAll(",", "."));
+        return ValueTarget < ValueMax && ValueTarget > ValueMin ? "Accept" : "Attention";
+      },
+      _fnCreateStringWithBreakLine: function (aData, sProp) {
+        let sResult = "";
+        aData.forEach((obj, index) => {
+          if (obj[sProp]) {
+            sResult += obj[sProp];
+            if (index < aData.length - 1) {
+              sResult += "\n";
             }
           }
         });
-      
-        return result;
+        return sResult;
       },
       /*
        * Called from _buildEquipmentModel to set description on modified info from property
@@ -2171,7 +2172,6 @@ sap.ui.define(
           oPopover.openBy(oObjectView);
         });
       },
-
       /*
        * Event fire for excel export
        */
@@ -2312,7 +2312,6 @@ sap.ui.define(
       },
       onAfterOpen: async function (oEvent) {
         try {
-          BusyIndicator.show();
           const oEquipment = this._oSelectedEquipment;
           const aMeasuringPoints = this.fnGetModel("oEquipmentAnomalyModel").getProperty("/measuringPoints");
           const aMeasures = aMeasuringPoints.filter((oMeasurePoint) => oMeasurePoint.EquipmentId === oEquipment.EquipmentId);
@@ -2320,7 +2319,6 @@ sap.ui.define(
           aMeasures.forEach((oMeasure) => aGetMeasureDocumentPromises.push(this._fnGetMeasureDocument(oMeasure.MeasuringPointId)));
           const aMeasureDocuments = await Promise.all(aGetMeasureDocumentPromises);
           this.fnGetModel("oMeasure").setProperty("/measureDocuments", aMeasureDocuments);
-          BusyIndicator.hide();
           const oMeasuresDocs = {};
           aMeasureDocuments.forEach((oMeasureDocument) => {
             oMeasuresDocs[Object.keys(oMeasureDocument)[0]] = oMeasureDocument[Object.keys(oMeasureDocument)[0]];
@@ -2364,7 +2362,7 @@ sap.ui.define(
               ],
             }),
             new sap.m.Text({ text: `{i18n>MinValue}.: ${ValueMin}`, visible: ValueMin !== "" }),
-            new sap.m.Text({ text: `{i18n>TheoreticalValue}.: ${ValueTarget}`, visible: ValueTarget !== ""}),
+            new sap.m.Text({ text: `{i18n>TheoreticalValue}.: ${ValueTarget}`, visible: ValueTarget !== "" }),
             new sap.m.Text({ text: `{i18n>MaxValue}.: ${ValueMax}`, visible: ValueMax !== "" }),
           ],
         });
@@ -2409,7 +2407,6 @@ sap.ui.define(
 
       _fnOpenMeasurePopover: async function () {
         const oView = this.getView();
-        // const oButton = oEvent.getSource();
         this._oMeasurePopover ??= await Fragment.load({
           id: oView.getId(),
           name: `${FRAGMENT_PATH}.MeasuringDocuments`,

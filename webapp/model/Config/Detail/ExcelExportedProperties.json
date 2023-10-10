@@ -149,14 +149,14 @@
 		"i18n": "IsAmdecCompleteDesc",
 		"colIndex": 29
 	},
-	"Anomaly": {
+	"AnomalyId": {
 		"propertyId": "AnomalyId",
 		"i18n": "AnomalyId",
 		"colIndex": 30
 	},
-	"MeasuringDocuments": {
+	"MeasuringPointsIds": {
 		"propertyId": "MeasuringPointsIds",
-		"i18n": "EquipmentTblColHdrAnomalyMeasuringDocuments",
+		"i18n": "MeasurePointIds",
 		"colIndex": 31
 	}
 }

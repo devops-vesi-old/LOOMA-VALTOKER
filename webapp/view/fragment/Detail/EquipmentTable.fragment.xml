@@ -193,8 +193,8 @@
 					<Button id="AnomalyMeasuringDocButton"
 							icon="sap-icon://end-user-experience-monitoring"
 							press="onPressAnomalyMeasuringDocuments"
-							type="{= ${mEquipment>HasMeasuringDocument}  ? 'Accept' : 'Attention'}"
-							tooltip="{{i18n>EquipmentTblColHdrAnomalyMeasuringDocuments}}"
+							type="{mEquipment>sMeasureButtonType}"
+							tooltip="{i18n>EquipmentTblColHdrAnomalyMeasuringDocuments}"
 							visible="{mEquipment>bMeasuringVisible}"
 					/>
 				</t:template>

@@ -190,10 +190,10 @@
 				width="7%">
 				<Label text="{i18n>EquipmentTblColHdrAnomalyMeasuringDocuments}" wrapping="true"/>
 				<t:template>
-					<Button id="AnomalyMeasuringDocButton"
-							icon="sap-icon://end-user-experience-monitoring"
+					<core:Icon id="AnomalyMeasuringDocButton"
+							src="sap-icon://end-user-experience-monitoring"
 							press="onPressAnomalyMeasuringDocuments"
-							type="{mEquipment>sMeasureButtonType}"
+							color="{mEquipment>sMeasureButtonType}"
 							tooltip="{i18n>EquipmentTblColHdrAnomalyMeasuringDocuments}"
 							visible="{mEquipment>bMeasuringVisible}"
 					/>

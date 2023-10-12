@@ -11,8 +11,8 @@ server:
         backend:
           - path: /sap
             url: http://dvp:443
-            client: "550"
-            destination: Codex_DVP
+            client: "750"
+            destination: Codex_DVP_750
           - path: /resources/com/vesi/zaclib
             destination: Codex_DVP
             url: http://dvp:443

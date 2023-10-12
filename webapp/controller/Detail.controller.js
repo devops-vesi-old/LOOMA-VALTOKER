@@ -18,29 +18,36 @@ sap.ui.define(
     "sap/m/Text",
     "sap/ui/core/BusyIndicator",
     "sap/m/ObjectStatus",
+	"sap/ui/model/Sorter",
   ],
   function (
     BaseController,
-    Filter,
-    FilterOperator,
-    JSONModel,
-    UriParameters,
-    Fragment,
-    formatter,
-    MessageBox,
-    MessageToast,
-    Excel,
-    Panel,
-    OverflowToolbar,
-    Title,
-    VBox,
-    HBox,
-    Text,
-    BusyIndicator
+	Filter,
+	FilterOperator,
+	JSONModel,
+	UriParameters,
+	Fragment,
+	formatter,
+	MessageBox,
+	MessageToast,
+	Excel,
+	Panel,
+	OverflowToolbar,
+	Title,
+	VBox,
+	HBox,
+	Text,
+	BusyIndicator,
+	ObjectStatus,
+	Sorter
   ) {
     "use strict";
 
     const FRAGMENT_PATH = "com.vesi.zfac4_valtoker.view.fragment.Detail.";
+    const ICON_COLORS = {
+      Attention: "#e56e0c",
+      Accept: "#107e3e",
+    };
 
     return BaseController.extend("com.vesi.zfac4_valtoker.controller.Detail", {
       formatter: formatter,
@@ -936,7 +943,7 @@ sap.ui.define(
         ValueMax = parseFloat(ValueMax.replaceAll(",", "."));
         ValueMin = parseFloat(ValueMin.replaceAll(",", "."));
         ValueTarget = parseFloat(ValueTarget.replaceAll(",", "."));
-        return ValueTarget < ValueMax && ValueTarget > ValueMin ? "Accept" : "Attention";
+        return ValueTarget < ValueMax && ValueTarget > ValueMin ? ICON_COLORS["Accept"] : ICON_COLORS["Attention"];
       },
       _fnCreateStringWithBreakLine: function (aData, sProp) {
         let sResult = "";
@@ -2342,11 +2349,13 @@ sap.ui.define(
       },
       _fnCreateTable: function (oMeasurePoint, aItems) {
         const sId = oMeasurePoint.MeasuringPointId;
-        return new sap.m.Table({
+        const oTable = new sap.m.Table({
           id: `table${sId}`,
           columns: this._fnCreateTableColumns(),
           items: aItems,
+          noDataText: this.fnGetResourceBundle("noDataMeasureDocs"),
         });
+        return oTable;
       },
       _fnCreateHeader: function (oMeasurePoint) {
         const { MeasuringPointId, MeasuringPointName, MeasuringPointPosition, ValueMin, ValueTarget, ValueMax } = oMeasurePoint;
@@ -2370,9 +2379,15 @@ sap.ui.define(
       _fnAddPage(oMeasureDocs, aMeasuresPoints) {
         const oPopover = this.getView().byId("MeasuringDocPopover");
         oPopover.setBusy(true);
+        aMeasuresPoints.sort((a, b) => b.MeasuringPointId - a.MeasuringPointId);
         aMeasuresPoints.forEach((oMeasurePoint) => {
           const aItems = [];
           oMeasureDocs[oMeasurePoint.MeasuringPointId].forEach((oMeasureDoc) => {
+            let { MeasureValue } = oMeasureDoc;
+            let { ValueMax, ValueMin } = oMeasurePoint;
+            MeasureValue = parseFloat(MeasureValue?.replaceAll(",", "."));
+            ValueMax = parseFloat(ValueMax?.replaceAll(",", "."));
+            ValueMin = parseFloat(ValueMin?.replaceAll(",", "."));
             aItems.push(
               new sap.m.ColumnListItem({
                 cells: [
@@ -2381,7 +2396,7 @@ sap.ui.define(
                   new sap.m.Text({ text: oMeasureDoc.MeasureResp }),
                   new sap.m.ObjectStatus({
                     text: `${oMeasureDoc.MeasureValue} ${oMeasurePoint.Unit}`,
-                    state: parseFloat(oMeasureDoc.MeasureValue) < parseFloat(oMeasurePoint.ValueMax) ? "Warning" : "None",
+                    state: MeasureValue < ValueMax && MeasureValue > ValueMin ? "None" : "Warning",
                   }),
                 ],
               })

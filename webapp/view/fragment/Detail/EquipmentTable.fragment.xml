@@ -193,7 +193,7 @@
 					<core:Icon id="AnomalyMeasuringDocButton"
 							src="sap-icon://end-user-experience-monitoring"
 							press="onPressAnomalyMeasuringDocuments"
-							color="{mEquipment>sMeasureButtonType}"
+							color="{=${mEquipment>HasMeasuringDocument} ? '#107e3e' : '#e56e0c'}"
 							tooltip="{i18n>EquipmentTblColHdrAnomalyMeasuringDocuments}"
 							visible="{mEquipment>bMeasuringVisible}"
 					/>

@@ -49,3 +49,7 @@
 .customTextAlignCenter {
 	text-align: center !important;
 }
+
+.noDataTextMeasurepoint>.sapUiSizeCompact .sapMListTblCell.sapMListTblCellNoData {
+    color: #e56e0c !important;
+}

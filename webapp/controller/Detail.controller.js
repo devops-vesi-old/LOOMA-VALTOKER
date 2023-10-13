@@ -44,10 +44,6 @@ sap.ui.define(
     "use strict";
 
     const FRAGMENT_PATH = "com.vesi.zfac4_valtoker.view.fragment.Detail.";
-    const ICON_COLORS = {
-      Attention: "#e56e0c",
-      Accept: "#107e3e",
-    };
 
     return BaseController.extend("com.vesi.zfac4_valtoker.controller.Detail", {
       formatter: formatter,
@@ -930,21 +926,11 @@ sap.ui.define(
             oLine.bMeasuringVisible = aEquipMeasure.length > 0;
             oLine.HasMeasuringDocument = aEquipMeasure.find((oEquip) => oEquip.HasMeasuringDocument === true) !== undefined;
             oLine.MeasuringPointsIds = this._fnCreateStringWithBreakLine(aEquipMeasure, "MeasuringPointId");
-            aEquipMeasure.sort((a, b) => b.MeasuringPointId - a.MeasuringPointId);
-            oLine.sMeasureButtonType = this._fnHandleMeasurePointIconType(aEquipMeasure[0]);
           }
           return oEquipment;
         } catch (oError) {
           MessageBox.error(oError.message);
         }
-      },
-      _fnHandleMeasurePointIconType: function (oMeasure) {
-        if (!oMeasure) return "Attention";
-        let { ValueMax, ValueMin, ValueTarget } = oMeasure;
-        ValueMax = parseFloat(ValueMax.replaceAll(",", "."));
-        ValueMin = parseFloat(ValueMin.replaceAll(",", "."));
-        ValueTarget = parseFloat(ValueTarget.replaceAll(",", "."));
-        return !ValueMax && !ValueMin ? ICON_COLORS["Accept"] : ICON_COLORS["Attention"];
       },
       _fnCreateStringWithBreakLine: function (aData, sProp) {
         let sResult = "";
@@ -2354,8 +2340,12 @@ sap.ui.define(
           id: `table${sId}`,
           columns: this._fnCreateTableColumns(),
           items: aItems,
-          noDataText: this.fnGetResourceBundle("noDataMeasureDocs"),
+          noData: new sap.m.ObjectStatus({
+            text: this.fnGetResourceBundle("noDataMeasureDocs"),
+            state: "Warning",
+          }),
         });
+
         return oTable;
       },
       _fnCreateHeader: function (oMeasurePoint) {
@@ -2379,7 +2369,7 @@ sap.ui.define(
       },
       _getStatusByMeasureValue: function (MeasureValue, ValueMax, ValueMin) {
         let sStatus = "None";
-        if(isNaN(ValueMax) && isNaN(ValueMin)) return sStatus;
+        if (isNaN(ValueMax) && isNaN(ValueMin)) return sStatus;
         if (MeasureValue < ValueMax && MeasureValue > ValueMin) {
           sStatus = "None";
         } else {

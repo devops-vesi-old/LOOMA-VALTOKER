@@ -18,28 +18,28 @@ sap.ui.define(
     "sap/m/Text",
     "sap/ui/core/BusyIndicator",
     "sap/m/ObjectStatus",
-	"sap/ui/model/Sorter",
+    "sap/ui/model/Sorter",
   ],
   function (
     BaseController,
-	Filter,
-	FilterOperator,
-	JSONModel,
-	UriParameters,
-	Fragment,
-	formatter,
-	MessageBox,
-	MessageToast,
-	Excel,
-	Panel,
-	OverflowToolbar,
-	Title,
-	VBox,
-	HBox,
-	Text,
-	BusyIndicator,
-	ObjectStatus,
-	Sorter
+    Filter,
+    FilterOperator,
+    JSONModel,
+    UriParameters,
+    Fragment,
+    formatter,
+    MessageBox,
+    MessageToast,
+    Excel,
+    Panel,
+    OverflowToolbar,
+    Title,
+    VBox,
+    HBox,
+    Text,
+    BusyIndicator,
+    ObjectStatus,
+    Sorter
   ) {
     "use strict";
 
@@ -930,7 +930,8 @@ sap.ui.define(
             oLine.bMeasuringVisible = aEquipMeasure.length > 0;
             oLine.HasMeasuringDocument = aEquipMeasure.find((oEquip) => oEquip.HasMeasuringDocument === true) !== undefined;
             oLine.MeasuringPointsIds = this._fnCreateStringWithBreakLine(aEquipMeasure, "MeasuringPointId");
-            oLine.sMeasureButtonType = this._fnHandleMeasurePointIconType(aEquipMeasure[aEquipMeasure.length - 1]);
+            aEquipMeasure.sort((a, b) => b.MeasuringPointId - a.MeasuringPointId);
+            oLine.sMeasureButtonType = this._fnHandleMeasurePointIconType(aEquipMeasure[0]);
           }
           return oEquipment;
         } catch (oError) {
@@ -943,7 +944,7 @@ sap.ui.define(
         ValueMax = parseFloat(ValueMax.replaceAll(",", "."));
         ValueMin = parseFloat(ValueMin.replaceAll(",", "."));
         ValueTarget = parseFloat(ValueTarget.replaceAll(",", "."));
-        return ValueTarget < ValueMax && ValueTarget > ValueMin ? ICON_COLORS["Accept"] : ICON_COLORS["Attention"];
+        return !ValueMax && !ValueMin ? ICON_COLORS["Accept"] : ICON_COLORS["Attention"];
       },
       _fnCreateStringWithBreakLine: function (aData, sProp) {
         let sResult = "";
@@ -2376,6 +2377,17 @@ sap.ui.define(
           ],
         });
       },
+      _getStatusByMeasureValue: function (MeasureValue, ValueMax, ValueMin) {
+        let sStatus = "None";
+        if(isNaN(ValueMax) && isNaN(ValueMin)) return sStatus;
+        if (MeasureValue < ValueMax && MeasureValue > ValueMin) {
+          sStatus = "None";
+        } else {
+          sStatus = "Warning";
+        }
+
+        return sStatus;
+      },
       _fnAddPage(oMeasureDocs, aMeasuresPoints) {
         const oPopover = this.getView().byId("MeasuringDocPopover");
         oPopover.setBusy(true);
@@ -2388,6 +2400,7 @@ sap.ui.define(
             MeasureValue = parseFloat(MeasureValue?.replaceAll(",", "."));
             ValueMax = parseFloat(ValueMax?.replaceAll(",", "."));
             ValueMin = parseFloat(ValueMin?.replaceAll(",", "."));
+
             aItems.push(
               new sap.m.ColumnListItem({
                 cells: [
@@ -2396,7 +2409,7 @@ sap.ui.define(
                   new sap.m.Text({ text: oMeasureDoc.MeasureResp }),
                   new sap.m.ObjectStatus({
                     text: `${oMeasureDoc.MeasureValue} ${oMeasurePoint.Unit}`,
-                    state: MeasureValue < ValueMax && MeasureValue > ValueMin ? "None" : "Warning",
+                    state: this._getStatusByMeasureValue(MeasureValue, ValueMax, ValueMin),
                   }),
                 ],
               })

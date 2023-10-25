@@ -772,7 +772,7 @@ sap.ui.define(
       _getMeasuringPoints: function () {
         const oModel = this.getOwnerComponent().getModel();
         const { SiteId: sSiteId } = this.fnGetModel("mSite").getData();
-        const aFilters = [new Filter("LocationId", FilterOperator.EQ, sSiteId)];
+        const aFilters = [new Filter("SiteId", FilterOperator.EQ, sSiteId)];
         return new Promise((res, rej) => {
           oModel.read("/MeasuringPointSet", {
             filters: aFilters,

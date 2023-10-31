@@ -5,7 +5,7 @@
 		id="MeasuringDocPopover"
 		placement="Left"
 		showHeader="false"
-		contentWidth="30rem"
+		contentWidth="40rem"
 		afterOpen="onAfterOpen"
 		afterClose="onAfterClose">
 		

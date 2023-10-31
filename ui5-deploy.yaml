@@ -19,6 +19,6 @@ builder:
         app:
           name: ZFAC4_VALTOKER
           package: ZDEV_C4_FIORI_TAKEOVER
-          transport: DVPK9A7ER2
+          transport: DVPK9A7FN2
         exclude:
           - /test/

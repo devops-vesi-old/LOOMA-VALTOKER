@@ -39,6 +39,13 @@
 					type="Default"/>
 				<ToolbarSpacer/>
 				<Button 
+					enabled="true"
+					icon="sap-icon://doc-attachment"
+					press="onPressGeneratePecReport"
+					text="{i18n>btnGeneratePecReport}"
+					tooltip="{i18n>btnGeneratePecReport}"
+					type="Emphasized"/>
+				<Button 
 					enabled="{= ${mDetailPage>/bLocationSelected}}"
 					icon="sap-icon://accept"
 					press="onApplyLocationMassStatus"

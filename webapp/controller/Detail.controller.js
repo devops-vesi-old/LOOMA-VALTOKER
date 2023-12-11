@@ -1112,7 +1112,7 @@ sap.ui.define(
         }
       },
       _fnFormatDate: function (sDate) {
-        if (!sDate === "00000000") return "";
+        if (sDate === "00000000") return "";
         return this._oFormatDate.format(
           new Date(sDate.slice(0, 4), sDate.slice(4, 6) - 1, sDate.slice(6, 8))
         );

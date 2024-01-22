@@ -10,7 +10,26 @@
 		search="onFiltersSearch" 
 		clear="onFiltersClear">
 		<fb:filterGroupItems>
-			<fb:FilterGroupItem
+			<!-- 14168 - BEGIN -->
+			<fb:FilterGroupItem 
+				groupName="MultiInput"
+				name="ContractId" 
+				label="{i18n>filterGroupItemFilterLabelContract}" 
+				visibleInFilterBar="true">
+				<fb:control>
+					<MultiInput 
+						id="ContractId" 
+						valueHelpRequest="onIdContractValueHelpRequest" 
+						valueHelpOnly="true" 
+						tokens='{mTokens>/ContractId}'
+						tokenUpdate="onUpdateToken">
+						<tokens>
+							<Token text='{tokens>}'/>
+						</tokens>
+					</MultiInput>
+				</fb:control>
+			</fb:FilterGroupItem>
+			<!-- <fb:FilterGroupItem
 				groupName="MultiInput"
 				name="ContractId" 
 				label="{i18n>filterGroupItemFilterLabelContract}" 
@@ -29,7 +48,8 @@
 						</tokens>
 					</MultiInput>
 				</fb:control>	
-			</fb:FilterGroupItem>
+			</fb:FilterGroupItem> -->
+			<!-- 14168 - END -->
 			<fb:FilterGroupItem
 				groupName="MultiInput"
 				name="SiteId" 

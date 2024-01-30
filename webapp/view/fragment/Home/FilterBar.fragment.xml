@@ -10,7 +10,6 @@
 		search="onFiltersSearch" 
 		clear="onFiltersClear">
 		<fb:filterGroupItems>
-			<!-- 14168 - BEGIN -->
 			<fb:FilterGroupItem 
 				groupName="MultiInput"
 				name="ContractId" 
@@ -24,32 +23,11 @@
 						tokens='{mTokens>/ContractId}'
 						tokenUpdate="onUpdateToken">
 						<tokens>
-							<Token text='{tokens>}'/>
+							<Token text='{mTokens>Id}'/>
 						</tokens>
 					</MultiInput>
 				</fb:control>
 			</fb:FilterGroupItem>
-			<!-- <fb:FilterGroupItem
-				groupName="MultiInput"
-				name="ContractId" 
-				label="{i18n>filterGroupItemFilterLabelContract}" 
-				visibleInFilterBar="true">
-				<fb:control>
-					<MultiInput 
-						id="ContractId" 
-						valueHelpRequest=".onValueHelpRequested" 
-						valueHelpOnly="true"
-						tokens="{mTokens>/ContractId}"
-						tokenUpdate="onUpdateToken">
-						<tokens>
-							<Token 
-								key="{mTokens>Id}"
-								text="{mTokens>Text}"/>
-						</tokens>
-					</MultiInput>
-				</fb:control>	
-			</fb:FilterGroupItem> -->
-			<!-- 14168 - END -->
 			<fb:FilterGroupItem
 				groupName="MultiInput"
 				name="SiteId" 
@@ -81,11 +59,11 @@
 						showSecondaryValues="true"
 						items="{
 							path: 'VH>/CharacteristicValueListSet',
-    						templateShareable: true, 
+							templateShareable: true, 
 							filters : {
 								path : 'CharactId',
-                				operator : 'EQ',
-                				value1 : 'YLO_SITE_TYPE'
+								operator : 'EQ',
+								value1 : 'YLO_SITE_TYPE'
 							}}">
 						<core:ListItem
 							key="{VH>CharactValueChar}" 
@@ -137,16 +115,16 @@
 						showSecondaryValues="true"
 						items="{
 							path: 'VH>/UserStatusSet',
-    						templateShareable: true, 
+							templateShareable: true, 
 							filters : {
 								filters : [{
 									path : 'Object',
-	                				operator : 'EQ',
-	                				value1 : 'LoomaLocation'
+									operator : 'EQ',
+									value1 : 'LoomaLocation'
 								},{
 									path : 'IsValPecFilterable',
-	                				operator : 'EQ',
-	                				value1 : true
+									operator : 'EQ',
+									value1 : true
 								}],
 								and: true
 							},

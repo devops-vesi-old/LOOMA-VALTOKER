@@ -42,9 +42,7 @@ sap.ui.define(
     Sorter
   ) {
     "use strict";
-
     const FRAGMENT_PATH = "com.vesi.zfac4_valtoker.view.fragment.Detail.";
-
     return BaseController.extend("com.vesi.zfac4_valtoker.controller.Detail", {
       formatter: formatter,
       _oFormatDate: sap.ui.core.format.DateFormat.getDateInstance({
@@ -85,12 +83,11 @@ sap.ui.define(
         });
         this.getView().setModel(oAnomalyModel, "oEquipmentAnomalyModel");
       },
-
       //--------------------------------------------
       // Internal functions
       //--------------------------------------------
       _onPatternMatched: function (oEvent) {
-        var sObjectId = oEvent.getParameter("arguments").SiteId;
+        let sObjectId = oEvent.getParameter("arguments").SiteId;
         this._bRefreshHierarchy = false;
         this.fnSetJSONModel({}, "mSite");
         this.fnSetJSONModel({}, "mLocationHierarchy");
@@ -99,14 +96,12 @@ sap.ui.define(
         this._bindSiteData();
         this._bindTreeTable();
       },
-
       /*
        * Called from method "onInit" to initialize Equipment User Status Description model
        */
       _initEquipmentStatusDesc: function () {
         this._initStatusDesc("LoomaEquipment");
       },
-
       /*
        * Called from method "onInit" to initialize models for global data
        */
@@ -120,66 +115,60 @@ sap.ui.define(
         // Get Country Region and Department description
         this._getAddressDescription();
       },
-
       /*
        * Called from method "onInit" to initialize DDIC properties model
        */
       _getDDICDomainValue: function () {
-        var aFilters = [];
+        let aFilters = [];
         aFilters.push(new Filter("Scope", FilterOperator.EQ, "LOOMA"));
-        var mParams = {
+        let mParams = {
           filters: aFilters,
           success: function (oData) {
-            var oDDICValue = {};
-            var aData = oData.results;
-            for (var idx in aData) {
-              var oLine = aData[idx];
+            let oDDICValue = {};
+            let aData = oData.results;
+            for (let idx in aData) {
+              let oLine = aData[idx];
               if (!oDDICValue[oLine.Object + "Id"]) {
                 oDDICValue[oLine.Object + "Id"] = {};
               }
-
               oDDICValue[oLine.Object + "Id"][oLine.ValueId] = oLine;
             }
-            var oVHJsonModel = new JSONModel(oDDICValue);
+            let oVHJsonModel = new JSONModel(oDDICValue);
             this.fnSetModel(oVHJsonModel, "mDDICValue");
           }.bind(this),
         };
         this.fnGetODataModel("VH").read("/DDICDomainValueListSet", mParams);
       },
-
       /*
        * Called from method "onInit" to initialize Characteristic information model
        */
       _getFamilyCharacteristic: function () {
-        var mParams = {
+        let mParams = {
           urlParameters: {
             $expand: "CharacteristicValueList",
           },
           success: function (oData) {
-            var oCharacteristic = {
+            let oCharacteristic = {
               Class: {},
               Characteristic: {},
               ValueList: {},
             };
-            var aData = oData.results;
-            for (var idx in aData) {
+            let aData = oData.results;
+            for (let idx in aData) {
               //Fill Class information
-              var oLine = aData[idx];
+              let oLine = aData[idx];
               if (!oCharacteristic.Class[oLine.ClassId]) {
                 oCharacteristic.Class[oLine.ClassId] = {
                   _iImportant: 0,
                 };
               }
-
               oCharacteristic.Class[oLine.ClassId][oLine.CharactId] = {
                 CharactImportant: oLine.CharactImportant,
                 CharactName: oLine.CharactName,
               };
-
               if (oLine.CharactImportant) {
                 oCharacteristic.Class[oLine.ClassId]._iImportant++;
               }
-
               // Fill Characteristic information
               if (!oCharacteristic.Characteristic[oLine.CharactId]) {
                 oCharacteristic.Characteristic[oLine.CharactId] = {
@@ -192,38 +181,36 @@ sap.ui.define(
                   CharactInterval: oLine.CharactInterval,
                 };
               }
-
               //Fill ValueList is needed
               if (oLine.CharactListOfValue && !oCharacteristic.ValueList[oLine.CharactId]) {
                 if (!oCharacteristic.ValueList[oLine.CharactId]) {
                   oCharacteristic.ValueList[oLine.CharactId] = {};
                 }
-                for (var iVal in oLine.CharacteristicValueList.results) {
-                  var oVal = oLine.CharacteristicValueList.results[iVal];
+                for (let iVal in oLine.CharacteristicValueList.results) {
+                  let oVal = oLine.CharacteristicValueList.results[iVal];
                   oCharacteristic.ValueList[oLine.CharactId][oVal.CharactValueChar] = oVal;
                 }
               }
             }
-            var oVHJsonModel = new JSONModel(oCharacteristic);
+            let oVHJsonModel = new JSONModel(oCharacteristic);
             this.fnSetModel(oVHJsonModel, "mFamilyCharacteristic");
           }.bind(this),
         };
         this.fnGetODataModel("VH").read("/FamilyCharacteristicSet", mParams);
       },
-
       /*
        * Called from method "onInit" to initialize Country, Region and Department descriptionmodel
        */
       _getAddressDescription: function () {
-        var mParams = {
+        let mParams = {
           success: function (oData) {
-            var oAddress = {
+            let oAddress = {
               Country: {},
               Region: {},
               Department: {},
             };
-            var aData = oData.results;
-            for (var idx in aData) {
+            let aData = oData.results;
+            for (let idx in aData) {
               //Manage Country
               if (!oAddress.Country[aData[idx].CountryId]) {
                 oAddress.Country[aData[idx].CountryId] = {
@@ -244,33 +231,32 @@ sap.ui.define(
                 Desc: aData[idx].DepartmentDesc,
               };
             }
-            var oVHJsonModel = new JSONModel(oAddress);
+            let oVHJsonModel = new JSONModel(oAddress);
             oVHJsonModel.setSizeLimit(aData.length ? aData.length : oVHJsonModel.iSizeLimit);
             this.fnSetModel(oVHJsonModel, "mAddress");
           }.bind(this),
         };
         this.fnGetODataModel("VH").read("/DepartmentSet", mParams);
       },
-
       /*
        *
        */
       _getLocationTypeDescription: function () {
-        var aFilters = [];
+        let aFilters = [];
         aFilters.push(new Filter("CharactId", FilterOperator.EQ, "YLO_SITE_TYPE"));
         aFilters.push(new Filter("CharactId", FilterOperator.EQ, "YLO_TYPE_BATIMENT"));
         aFilters.push(new Filter("CharactId", FilterOperator.EQ, "YLO_TYPE_ETAGE"));
         aFilters.push(new Filter("CharactId", FilterOperator.EQ, "YLO_TYPE_LOCAL"));
-        var mParams = {
+        let mParams = {
           filters: aFilters,
           success: function (oData) {
-            var oLocationType = {};
-            var aData = oData.results;
-            for (var idx in aData) {
-              var oLine = aData[idx];
+            let oLocationType = {};
+            let aData = oData.results;
+            for (let idx in aData) {
+              let oLine = aData[idx];
               switch (oLine.CharactId) {
                 case "YLO_SITE_TYPE":
-                  var sType = "SITE";
+                  let sType = "SITE";
                   break;
                 case "YLO_TYPE_BATIMENT":
                   sType = "BUILDING";
@@ -285,29 +271,27 @@ sap.ui.define(
               if (!oLocationType[sType]) {
                 oLocationType[sType] = {};
               }
-
               oLocationType[sType][oLine.CharactValueChar] = oLine;
             }
-            var oVHJsonModel = new JSONModel(oLocationType);
+            let oVHJsonModel = new JSONModel(oLocationType);
             this.fnSetModel(oVHJsonModel, "mLocationType");
           }.bind(this),
         };
         this.fnGetODataModel("VH").read("/CharacteristicValueListSet", mParams);
       },
-
       /*
        * Called from method "onInit" to initialize VHs model
        */
       _initVHModels: function () {
-        var mParams = {
+        let mParams = {
           success: function (oData) {
-            var oVH = {
+            let oVH = {
               Domain: {},
               Function: {},
               Family: {},
             };
-            var aData = oData.results;
-            for (var idx in aData) {
+            let aData = oData.results;
+            for (let idx in aData) {
               //Manage Domain
               if (!oVH.Domain[aData[idx].DomainId]) {
                 oVH.Domain[aData[idx].DomainId] = {
@@ -332,19 +316,18 @@ sap.ui.define(
                 ClassId: aData[idx].ClassId,
               };
             }
-            var oVHJsonModel = new JSONModel(oVH);
+            let oVHJsonModel = new JSONModel(oVH);
             oVHJsonModel.setSizeLimit(aData.length ? aData.length : oVHJsonModel.iSizeLimit);
             this.fnSetModel(oVHJsonModel, "mVH");
           }.bind(this),
         };
         this.fnGetODataModel("VH").read("/FamilySet", mParams);
       },
-
       /*
        * Called from method "onInit" to initialize default selected keys for MultiComboBox
        */
       _initDefaultFilterMCB: function () {
-        var aDefault = {
+        let aDefault = {
           filterStatusInternalId: [
             "E0004", // To be deleted
             "E0003", // Takeover done
@@ -353,16 +336,15 @@ sap.ui.define(
           filterFunctionId: [],
           filterFamilyId: [],
         };
-        for (var sIdMCB in aDefault) {
+        for (let sIdMCB in aDefault) {
           this.byId(sIdMCB).setSelectedKeys(aDefault[sIdMCB]);
         }
       },
-
       /*
        * Called from method "onInit" to initialize model mDetailPage
        */
       _initDetailPageModel: function () {
-        var oDetailPage = {
+        let oDetailPage = {
           bSwitchDirect: false,
           bEquipmentSelected: false,
           bEquipmentSelectedDeletable: false,
@@ -377,7 +359,7 @@ sap.ui.define(
        * Called from method "_bindTreeTable" to transform equipment hierarchy to tree structure
        */
       _transformTreeData: function (aNodesIn) {
-        var aNodes = [], //'deep' object structure
+        let aNodes = [], //'deep' object structure
           mNodeMap = {}, //'map', each node is an attribute
           oDetailPageModel = this.fnGetModel("mDetailPage"),
           oLocationType = this.fnGetModel("mLocationType").getData(),
@@ -386,9 +368,9 @@ sap.ui.define(
           };
         oDetailPageModel.getData().SynchroniseFSM = false;
         if (aNodesIn) {
-          var oNodeOut, sSuperiorLocationId;
-          for (var i in aNodesIn) {
-            var oNodeIn = aNodesIn[i],
+          let oNodeOut, sSuperiorLocationId;
+          for (let i in aNodesIn) {
+            let oNodeIn = aNodesIn[i],
               sTypeDesc =
                 oNodeIn.TypeId === ""
                   ? ""
@@ -403,7 +385,6 @@ sap.ui.define(
               oLocationFSM,
               oNodeIn
             );
-
             if (!sTypeDesc) {
               sTypeDesc = "";
             }
@@ -433,13 +414,12 @@ sap.ui.define(
               SitePecInProgress: oNodeIn.SitePecInProgress,
               children: [],
             };
-
             if (oNodeOut.LoomaTypeId === "SITE" && oNodeOut.StatusFSM === 1) {
               oDetailPageModel.getData().SynchroniseFSM = true;
             }
             sSuperiorLocationId = oNodeIn.SuperiorLocationId;
             if (sSuperiorLocationId && sSuperiorLocationId.length > 0) {
-              var oParent = mNodeMap[oNodeIn.SuperiorLocationId];
+              let oParent = mNodeMap[oNodeIn.SuperiorLocationId];
               if (oParent) {
                 oParent.children.push(oNodeOut);
               }
@@ -456,7 +436,6 @@ sap.ui.define(
         oDetailPageModel.refresh(true);
         return aNodes;
       },
-
       /*
        * Set the property status FSM for Location
        * 0 = Not validate and not sent
@@ -473,7 +452,7 @@ sap.ui.define(
             // No superior location
             return 1; //Current Location validated and will be sent to FSM
           } else {
-            var SuperiorLocationStatusFSM =
+            let SuperiorLocationStatusFSM =
               oLocationFSM[oCurrentLocation.SuperiorLocationId].StatusFSM;
             if (SuperiorLocationStatusFSM === 1) {
               //Superior Location will be sent to FSM
@@ -488,7 +467,6 @@ sap.ui.define(
         oLocationFSM.AllForFSM = false;
         return 0; //Current Location not validated
       },
-
       /*
        * Set the property status FSM for Equipment
        * 0 = Not validate and not sent
@@ -496,7 +474,7 @@ sap.ui.define(
        * 2 = Validate but not sent
        */
       _setEquipmentStatusFSM: function (oEquipment, oCurrentEquipment) {
-        var iLocationStatusFSM = this._oLocationFSM[oCurrentEquipment.LocationId].StatusFSM;
+        let iLocationStatusFSM = this._oLocationFSM[oCurrentEquipment.LocationId].StatusFSM;
         if (
           oCurrentEquipment.UserStatusId === "E0005" ||
           oCurrentEquipment.UserStatusId === "E0006"
@@ -511,15 +489,13 @@ sap.ui.define(
         }
         return 0; //Current Equipment not validated
       },
-
       /*
        * Method is used to fetch site Information
        */
       _bindSiteData: function () {
-        var sRequest = this.getOwnerComponent().getModel().createKey("/SiteSet", {
+        let sRequest = this.getOwnerComponent().getModel().createKey("/SiteSet", {
           SiteId: this._SiteId,
         });
-
         this.getOwnerComponent()
           .getModel()
           .read(sRequest, {
@@ -538,12 +514,11 @@ sap.ui.define(
             }.bind(this),
           });
       },
-
       /*
        * Method is used to generate site address to display from site Information
        */
       _fnSetSiteAddress: function (oData) {
-        var sAddress = "",
+        let sAddress = "",
           oCountry = this.fnGetModel("mAddress").getData().Country;
         if (oData.AddressStreetNo !== "") {
           sAddress = oData.AddressStreetNo + " ";
@@ -564,21 +539,20 @@ sap.ui.define(
           sAddress = sAddress + oData.AddressCity + "\r\n";
         }
         if (oData.AddressCountryId !== "") {
-          var sCountry = oCountry[oData.AddressCountryId]
+          let sCountry = oCountry[oData.AddressCountryId]
             ? oCountry[oData.AddressCountryId].Desc
             : oData.AddressCountryId;
           sAddress = sAddress + sCountry;
         }
         return sAddress;
       },
-
       /*
        * Method is used to fetch Location hierarchy for a Site
        * Once data is fetched,_transformTreeData is called to tranform data to tree and bound to tree table
        */
       _bindTreeTable: function () {
-        var aTableFilters = this._fnGetFilters("detailFilterBar");
-        var aFilters = [];
+        let aTableFilters = this._fnGetFilters("detailFilterBar");
+        let aFilters = [];
         aFilters.push(new Filter("SiteId", FilterOperator.EQ, this._SiteId));
         if (aTableFilters && aTableFilters.length > 0) {
           aFilters = aFilters.concat(aTableFilters);
@@ -593,7 +567,7 @@ sap.ui.define(
               $expand: "EquipmentNumber",
             },
             success: function (oData, response) {
-              var aNodes = this._transformTreeData(oData.results);
+              let aNodes = this._transformTreeData(oData.results);
               this.fnHideBusyIndicator();
               if (this._bRefreshHierarchy) {
                 //Only refresh hierarchy (status and equipment's number)
@@ -602,7 +576,7 @@ sap.ui.define(
                 //Set hierarchy from scratch
                 this._setTreeModelData(aNodes);
                 this._setLocationDescription(oData.results);
-                var oEquipment = {
+                let oEquipment = {
                   count: 0,
                   list: [],
                 };
@@ -615,23 +589,20 @@ sap.ui.define(
             }.bind(this),
           });
       },
-
       /*
        * Method to update values in already existing hierarchy
        */
       _updateHierarchy: function (oData, oNewHierarchy) {
-        var oLocationHierarchyModel = this.fnGetModel("mLocationHierarchy");
-        var oLocationHierarchyData = oLocationHierarchyModel.getData();
-        for (var idx in oLocationHierarchyData.nodeRoot.children) {
+        let oLocationHierarchyModel = this.fnGetModel("mLocationHierarchy");
+        let oLocationHierarchyData = oLocationHierarchyModel.getData();
+        for (let idx in oLocationHierarchyData.nodeRoot.children) {
           oLocationHierarchyData.nodeRoot.children[idx] = this._setUpdateFields(
             oLocationHierarchyData.nodeRoot.children[idx],
             oNewHierarchy[idx]
           );
         }
-
         oLocationHierarchyModel.refresh(true);
       },
-
       /*
        * Method call from _updateHierarchy to update values in already existing hierarchy recursively
        */
@@ -648,7 +619,7 @@ sap.ui.define(
         oBase.Deletable = oNewHierarchy.Deletable;
         oBase.SiteHierPecCompleted = oNewHierarchy.SiteHierPecCompleted;
         oBase.SitePecInProgress = oNewHierarchy.SitePecInProgress;
-        for (var idx in oBase.children) {
+        for (let idx in oBase.children) {
           oBase.children[idx] = this._setUpdateFields(
             oBase.children[idx],
             oNewHierarchy.children[idx]
@@ -656,14 +627,13 @@ sap.ui.define(
         }
         return oBase;
       },
-
       /*
        * Common method called in all OData calls to parse backend errors and display on Message Dialog
        */
       _oDataError: function (oError) {
-        var sMsg;
+        let sMsg;
         if (oError.responseText) {
-          var oInnerError = JSON.parse(oError.responseText).error.innererror;
+          let oInnerError = JSON.parse(oError.responseText).error.innererror;
           if (oInnerError && oInnerError.errordetails && oInnerError.errordetails.length > 0) {
             this._openErrorDialog(oInnerError.errordetails);
           } else {
@@ -678,7 +648,6 @@ sap.ui.define(
           MessageBox.error(sMsg);
         }
       },
-
       _MessageError: function (sDialogName, sText) {
         if (!this[sDialogName]) {
           this[sDialogName] = new sap.m.Dialog({
@@ -695,15 +664,13 @@ sap.ui.define(
             }),
           });
         }
-
         this[[sDialogName]].open();
       },
-
       /*
        * Called from method "_bindTreeTable" to bind the tree data to JSON Model
        */
       _setTreeModelData: function (aNodes) {
-        var oLocationHierarchyModel = new JSONModel();
+        let oLocationHierarchyModel = new JSONModel();
         oLocationHierarchyModel.setData({
           nodeRoot: {
             children: aNodes,
@@ -711,15 +678,13 @@ sap.ui.define(
         });
         this.fnSetModel(oLocationHierarchyModel, "mLocationHierarchy");
       },
-
       /*
        * Called from method "_bindTreeTable" to set location description for equipment
        */
       _setLocationDescription: function (aLocation) {
-        var oModel = {};
-
-        for (var iLoc in aLocation) {
-          var oLocation = aLocation[iLoc];
+        let oModel = {};
+        for (let iLoc in aLocation) {
+          let oLocation = aLocation[iLoc];
           if (!oModel[oLocation.LocationId]) {
             oModel[oLocation.LocationId] = {
               LocationId: oLocation.LocationId,
@@ -727,24 +692,21 @@ sap.ui.define(
               SuperiorLocationId: oLocation.SuperiorLocationId,
             };
           }
-
           //Concatenate Superior Location Names with current Location Name
           if (oLocation.SuperiorLocationId !== "") {
-            var oSuperiorLocation = oModel[oLocation.SuperiorLocationId];
+            let oSuperiorLocation = oModel[oLocation.SuperiorLocationId];
             oModel[oLocation.LocationId].LocationName =
               oSuperiorLocation.LocationName + "/" + oModel[oLocation.LocationId].LocationName;
           }
         }
-
         this.fnSetJSONModel(oModel, "mLocationDescription");
       },
-
       /*
        * Method is called from method "onGetEquiForFuncLocPress".
        * It fetched equipments for selected functional location and bind it to Equipment table
        */
       _bindEquipmentTable: function (sLocationId, sLocationType) {
-        var aFilters = [],
+        let aFilters = [],
           sLocationFilter = "LocationId";
         if (!this.fnGetModel("mDetailPage").getData().bSwitchDirect) {
           switch (sLocationType) {
@@ -763,7 +725,7 @@ sap.ui.define(
           }
         }
         aFilters.push(new Filter(sLocationFilter, FilterOperator.EQ, sLocationId));
-        var aFilterBarFilters = this._fnGetFilters("detailFilterBar");
+        let aFilterBarFilters = this._fnGetFilters("detailFilterBar");
         if (aFilterBarFilters && aFilterBarFilters.length > 0) {
           aFilters = aFilters.concat(aFilterBarFilters);
         }
@@ -782,7 +744,7 @@ sap.ui.define(
               this.fnSetJSONModel(oEquipment, "mEquipment");
             }.bind(this),
             error: function (oError) {
-              var oEquipment = {
+              let oEquipment = {
                 count: 0,
                 list: [],
               };
@@ -818,7 +780,7 @@ sap.ui.define(
             aMeasuringPoints
           );
           //Reset Selection
-          var aBooleanField = ["PecDeepAnalysisNeeded", "PecQuote", "PecTrainingReq", "Critical"],
+          let aBooleanField = ["PecDeepAnalysisNeeded", "PecQuote", "PecTrainingReq", "Critical"],
             aDateField = ["WarrantyEndDate"],
             oFamilyCharacteristic = this.fnGetModel("mFamilyCharacteristic").getData(),
             oLocationDescription = this.fnGetModel("mLocationDescription").getData(),
@@ -832,8 +794,8 @@ sap.ui.define(
             sYes = this.fnGetResourceBundle("yes"),
             sNo = this.fnGetResourceBundle("no");
           this.byId("EquipmentTable").setSelectedIndex(-1);
-          for (var i in oEquipment.list) {
-            var oLine = oEquipment.list[i];
+          for (let i in oEquipment.list) {
+            let oLine = oEquipment.list[i];
             oEquipmentFSM[oLine.EquipmentId] = {
               LocationId: oLine.LocationId,
               SuperiorEquiId: oLine.SuperiorEquiId,
@@ -888,10 +850,10 @@ sap.ui.define(
               oLine.UsageId === "" ? "" : oDDICValue.UsageId[oLine.UsageId].ValueDesc;
             oLine.Anomaly = oLine.Anomaly.length > 0 ? oLine.Anomaly : "";
             oLine.HasAnomaly = oLine.HasAnomaly === true ? true : false;
-            for (var sPorperty in oLine) {
+            for (let sPorperty in oLine) {
               if (oDDICValue[sPorperty]) {
                 //Manage only properties with value list (from DDIC)
-                var sLink = sPorperty.split("Id").shift();
+                let sLink = sPorperty.split("Id").shift();
                 oLine[sLink + "Desc"] =
                   oLine[sPorperty] === "" ? "" : oDDICValue[sPorperty][oLine[sPorperty]].ValueDesc;
               }
@@ -903,32 +865,32 @@ sap.ui.define(
             oLine.ModifiedInfo = [];
             oLine.ModifiedProperty = [];
             //Manage Modified info on characteristics with multi value
-            for (var iLine in oLine.ModifiedInfoTmp) {
-              var oLineMod = oLine.ModifiedInfoTmp[iLine];
+            for (let iLine in oLine.ModifiedInfoTmp) {
+              let oLineMod = oLine.ModifiedInfoTmp[iLine];
               if (oLineMod.IsCharacteristic) {
                 //Line is a characteristic
-                var sSplitOld = oLineMod.ValueOld.split("¤");
-                var sSplitNew = oLineMod.ValueNew.split("¤");
-                var sToDeleteOld = [];
-                for (var iOld in sSplitOld) {
-                  var sCurrentOld = sSplitOld[iOld];
-                  var indexToDeleteNew = sSplitNew.indexOf(sCurrentOld);
+                let sSplitOld = oLineMod.ValueOld.split("¤");
+                let sSplitNew = oLineMod.ValueNew.split("¤");
+                let sToDeleteOld = [];
+                for (let iOld in sSplitOld) {
+                  let sCurrentOld = sSplitOld[iOld];
+                  let indexToDeleteNew = sSplitNew.indexOf(sCurrentOld);
                   if (indexToDeleteNew !== -1) {
                     sToDeleteOld.push(sCurrentOld);
                     sSplitNew.splice(indexToDeleteNew, 1);
                   }
                 }
                 for (iOld in sToDeleteOld) {
-                  var indexToDeleteOld = sSplitOld.indexOf(sToDeleteOld[iOld]);
+                  let indexToDeleteOld = sSplitOld.indexOf(sToDeleteOld[iOld]);
                   sSplitOld.splice(indexToDeleteOld, 1);
                 }
-                var sNewLine = JSON.parse(JSON.stringify(oLineMod));
-                var iMax = Math.max(sSplitOld.length, sSplitNew.length);
-                var iLoop = 0;
+                let sNewLine = JSON.parse(JSON.stringify(oLineMod));
+                let iMax = Math.max(sSplitOld.length, sSplitNew.length);
+                let iLoop = 0;
                 //Generate as many rows as needed
                 while (iLoop < iMax) {
-                  var sOld = sSplitOld[iLoop] ? sSplitOld[iLoop] : "";
-                  var sNew = sSplitNew[iLoop] ? sSplitNew[iLoop] : "";
+                  let sOld = sSplitOld[iLoop] ? sSplitOld[iLoop] : "";
+                  let sNew = sSplitNew[iLoop] ? sSplitNew[iLoop] : "";
                   sNewLine.ValueOld = sOld;
                   sNewLine.ValueNew = sNew;
                   //flag to hide description
@@ -1050,8 +1012,7 @@ sap.ui.define(
           oLineMod.FieldI18n === "FamilyId"
         ) {
           // Manage description from VH (Family Function, Domain)
-
-          var sLink = oLineMod.FieldI18n.split("Id").shift();
+        let sLink = oLineMod.FieldI18n.split("Id").shift();
           oLineMod.ValueOldDesc =
             oLineMod.ValueOld === "" ? "" : oVH[sLink][oLineMod.ValueOld].Desc;
           oLineMod.ValueNewDesc =
@@ -1076,14 +1037,13 @@ sap.ui.define(
           oLineMod.ValueNewDesc = oLineMod.ValueNew;
         }
       },
-
       /*
        * Called from _buildEquipmentModel to set description on modified info from characteristic
        */
       _fnSetCharactisticDescription: function (oLineMod, oFamilyCharacteristic) {
         if (oFamilyCharacteristic.ValueList[oLineMod.FieldId]) {
           //Manage Chararacteristic with value list
-          var oValueList = oFamilyCharacteristic.ValueList[oLineMod.FieldId];
+          let oValueList = oFamilyCharacteristic.ValueList[oLineMod.FieldId];
           oLineMod.ValueOldDesc = oValueList[oLineMod.ValueOld]
             ? oValueList[oLineMod.ValueOld].CharactValueDescription
             : oLineMod.ValueOld;
@@ -1121,7 +1081,7 @@ sap.ui.define(
        * Set descriptions and characteristics descriptions for familyon equipement
        */
       _fnSetFamilyCharactisticDescription: function (oCharact, oInfo) {
-        var oCharacteristics = oInfo.Characteristic;
+        let oCharacteristics = oInfo.Characteristic;
         oCharact.ValueToDisplay = "";
         switch (oCharact.CharactDataType) {
           case "CHAR":
@@ -1136,7 +1096,7 @@ sap.ui.define(
             );
             if (oCharacteristics[oCharact.CharactId].CharactInterval) {
               if (parseFloat(oCharact.CharactValueNumDecTo > 0)) {
-                var valTo = parseFloat(oCharact.CharactValueNumDecTo).toFixed(
+                let valTo = parseFloat(oCharact.CharactValueNumDecTo).toFixed(
                   oCharacteristics[oCharact.CharactId].CharactDecimal
                 );
                 oCharact.ValueToDisplay += " - " + valTo;
@@ -1162,12 +1122,11 @@ sap.ui.define(
             break;
         }
       },
-
       /*
        * Called from _buildEquipmentModel to set counter and boolean for missing Amdec
        */
       _fnSetAmdecCounter: function (oLine, sYes, sNo) {
-        var aAmdecProp = [
+        let aAmdecProp = [
             "AmdecStateId",
             "AmdecDisrepairId",
             "AmdecAccessibilityId",
@@ -1178,30 +1137,26 @@ sap.ui.define(
           ],
           iTot = 0,
           iCount = 0;
-
-        for (var idx in aAmdecProp) {
-          var sVal = oLine[aAmdecProp[idx]];
+        for (let idx in aAmdecProp) {
+          let sVal = oLine[aAmdecProp[idx]];
           iTot++;
           if (sVal !== "") {
             iCount++;
           }
         }
-
         oLine.AmdecCounter = iCount + "/" + iTot;
         oLine.IsAmdecComplete = iTot === iCount;
         oLine.IsAmdecCompleteDesc = oLine.IsAmdecComplete ? sYes : sNo;
         oLine.AmdecSorter = iCount;
       },
-
       /*
        * Called from _buildEquipmentModel to set counter and boolean for missing important Family Characteristic
        */
       _fnSetFamilyImportantCounter: function (oLine, oInfo, oFamily, sYes, sNo) {
-        var iCount = 0,
+        let iCount = 0,
           iTot = 0,
           aChecked = [],
           oClass = oInfo.Class;
-
         if (!oFamily || oFamily.ClassId === "") {
           oLine.FamilyCharactImportantCounter = "-";
           oLine.IsFamilyCharactImportantComplete = true;
@@ -1211,16 +1166,14 @@ sap.ui.define(
         } else {
           iTot = oClass[oFamily.ClassId]._iImportant;
         }
-
-        for (var idx in oLine.FamilyCharacteristic) {
-          var oCharact = oLine.FamilyCharacteristic[idx];
+        for (let idx in oLine.FamilyCharacteristic) {
+          let oCharact = oLine.FamilyCharacteristic[idx];
           this._fnSetFamilyCharactisticDescription(oCharact, oInfo, sYes, sNo);
           if (oCharact.CharactImportant && aChecked.indexOf(oCharact.CharactId) === -1) {
             aChecked.push(oCharact.CharactId);
             iCount++;
           }
         }
-
         oLine.FamilyCharactImportantCounter = iCount + "/" + iTot;
         oLine.IsFamilyCharactImportantComplete = iTot === iCount;
         oLine.IsFamilyCharactImportantCompleteDesc = oLine.IsFamilyCharactImportantComplete
@@ -1228,13 +1181,12 @@ sap.ui.define(
           : sNo;
         oLine.FamilyCharactImportantSorter = iTot === 0 ? 1 : iCount / iTot;
       },
-
       /*
        * Method is called to update status for 1 object
        */
       _ApplyStatus: function (oEvent, sNewStatus, sEquipmentId, sLocationId, bToDelete) {
-        var sObjectName = sEquipmentId === "" ? "Location" : "Equipement";
-        var oParameters = {
+        let sObjectName = sEquipmentId === "" ? "Location" : "Equipement";
+        let oParameters = {
           async: false,
           success: function (oData, resp) {
             this._bRefreshHierarchy = true;
@@ -1256,38 +1208,33 @@ sap.ui.define(
             );
           }.bind(this),
         };
-
-        var payload = {
+        let payload = {
           Scope: "PEC",
           EquipmentId: sEquipmentId,
           LocationId: sLocationId,
           UserStatusId: sNewStatus,
           ToDelete: bToDelete,
         };
-
         this.fnShowBusyIndicator(null, 0);
         this.getOwnerComponent().getModel().create("/UserStatusSet", payload, oParameters);
       },
-
       /*
        * Method is called to update status for 1 location
        */
       _ApplyLocationStatus: function (oEvent, sNewStatus) {
-        var oObject = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject(),
+        let oObject = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject(),
           sLocationId = oObject.LocationId,
           bToDelete = oObject.SitePecInProgress;
-
         if (sNewStatus !== "E0008") {
           bToDelete = false;
         }
         this._ApplyStatus(oEvent, sNewStatus, "", sLocationId, bToDelete);
       },
-
       /*
        * Method is called to update status for 1 equipment
        */
       _ApplyEquipmentStatus: function (oEvent, sNewStatus) {
-        var sEquipmentId = oEvent
+        let sEquipmentId = oEvent
           .getSource()
           .getParent()
           .getParent()
@@ -1295,24 +1242,21 @@ sap.ui.define(
           .getObject().EquipmentId;
         this._ApplyStatus(oEvent, sNewStatus, sEquipmentId, "", false);
       },
-
       /*
        * Method is called to update status for a list of Object
        */
       _ApplyMassStatus: function (oEvent, sNewStatus, bIsEquipments) {
         // Initialize Id for mass call
-        var sId = oEvent.getSource().getId().split("-").pop(),
+        let sId = oEvent.getSource().getId().split("-").pop(),
           sObjectName = bIsEquipments ? "Equipment" : "Location",
           sTableName = bIsEquipments ? "EquipmentTable" : "LocationHierarchyTreeTable";
-
         // Set parameters for singles calls
-        var oSingleParameters = {
+        let oSingleParameters = {
           async: false,
           groupId: sId,
         };
-
         //Set parameters for mass cal
-        var oMassParameters = {
+        let oMassParameters = {
           async: false,
           groupId: sId,
           success: function (oData, resp) {
@@ -1335,12 +1279,11 @@ sap.ui.define(
             );
           }.bind(this),
         };
-
         // Set deferred group for mass call
-        var oModel = this.getOwnerComponent().getModel();
+        let oModel = this.getOwnerComponent().getModel();
         oModel.setDeferredGroups([sId]);
         // Get rows
-        var oObjectTable = this.byId(sTableName);
+        let oObjectTable = this.byId(sTableName);
         const oSelectAllLocModel = this.getView().getModel("oSelectAllLocationsModel");
         let bSelectAllLoc = oSelectAllLocModel.getProperty("/bSelectAll"),
           aIndexSelected;
@@ -1350,46 +1293,40 @@ sap.ui.define(
           // Get indices selected
           aIndexSelected = oObjectTable.getSelectedIndices();
         }
-
         //Initialize the call by Indices selected
         let oObjectSelected;
-        for (var iInd in aIndexSelected) {
+        for (let iInd in aIndexSelected) {
           if (bSelectAllLoc) {
             const aSelectedLoc = oSelectAllLocModel.getProperty("/aSelectedLocations");
             oObjectSelected = aSelectedLoc[iInd];
           } else {
             oObjectSelected = oObjectTable.getContextByIndex(aIndexSelected[iInd]).getObject();
           }
-          var payload = {
+          let payload = {
             Scope: "PEC",
             EquipmentId: bIsEquipments ? oObjectSelected.EquipmentId : "",
             LocationId: bIsEquipments ? "" : oObjectSelected.LocationId,
             UserStatusId: sNewStatus,
           };
-
           this.fnShowBusyIndicator(null, 0);
           oModel.create("/UserStatusSet", payload, oSingleParameters);
         }
-
         if (aIndexSelected.length > 0) {
           oModel.submitChanges(oMassParameters);
         }
       },
-
       /*
        * Method is called to update status for a list of equipment
        */
       _ApplyEquipmentMassStatus: function (oEvent, sNewStatus) {
         this._ApplyMassStatus(oEvent, sNewStatus, true);
       },
-
       /*
        * Method is called to update status for a list of location
        */
       _ApplyLocationMassStatus: function (oEvent, sNewStatus) {
         this._ApplyMassStatus(oEvent, sNewStatus, false);
       },
-
       /*
        * Method is called to return the right user status id for equipment
        */
@@ -1397,17 +1334,13 @@ sap.ui.define(
         switch (oEvent.getSource().getType()) {
           case "Accept": // Validated Status to apply
             return "E0005";
-
           case "Emphasized": // Return to take over to apply
             return "E0008";
-
           case "Reject": // Deleted Status to apply
             return "E0006";
         }
-
         return "";
       },
-
       /*
        * Method is called to return the right user status id for equipment
        */
@@ -1415,33 +1348,28 @@ sap.ui.define(
         switch (oEvent.getSource().getType()) {
           case "Accept": // Validated Status to apply
             return "E0003";
-
           case "Reject": // Deleted Status to apply
             return "E0004";
-
           case "Emphasized": // Take over in progress or Return to takeover Status to apply
             if (oEvent.getSource().getIcon() === "sap-icon://complete") {
               return "E0008"; // Take over in progress
             }
         }
-
         return "";
       },
-
       /*
        * Set Columns to Excel File
        */
       _setExcelColumns: function (oExcel, aColSize, oColumnProperties) {
-        var iHeaderStyle = oExcel.generateNewStyle({
+        let iHeaderStyle = oExcel.generateNewStyle({
             font: "Calibri 12 B",
             fill: "#F2F2F2",
           }),
           iSheetProperties = 0,
           iRow = 0;
-
         // Set first sheet with properties
-        for (var idx in oColumnProperties) {
-          var oCol = oColumnProperties[idx];
+        for (let idx in oColumnProperties) {
+          let oCol = oColumnProperties[idx];
           oExcel.addCell(
             iSheetProperties,
             oCol.colIndex,
@@ -1452,12 +1380,11 @@ sap.ui.define(
           );
         }
       },
-
       /*
        * Generate file to save
        */
       _generateExcel: function (oExcel) {
-        var dDate = new Date(),
+        let dDate = new Date(),
           iMonth = parseInt(dDate.getMonth(), 10) + 1,
           sFileName =
             dDate.getFullYear() +
@@ -1472,15 +1399,13 @@ sap.ui.define(
             ":" +
             dDate.getSeconds() +
             ".xlsx";
-
         oExcel.generate(sFileName);
       },
-
       /*
        * Set Rows to Excel File
        */
       _setExcelRows: function (oExcel, aData, aColSize, oColumnProperties) {
-        var iDefaultStyle = oExcel.generateNewStyle({
+        let iDefaultStyle = oExcel.generateNewStyle({
             align: "L T W", //Left Top Wrap
           }),
           iGreenStyle = oExcel.generateNewStyle({
@@ -1498,15 +1423,14 @@ sap.ui.define(
           }),
           iFirstRow = 1, // Start To 1 because Row 0 is Header
           iRow = iFirstRow;
-
-        for (var iEquip in aData) {
-          var oEquipment = aData[iEquip];
-          for (var sProp in oEquipment) {
-            var oProprerty = oEquipment[sProp];
-            var oColProperty = oColumnProperties[sProp];
+        for (let iEquip in aData) {
+          let oEquipment = aData[iEquip];
+          for (let sProp in oEquipment) {
+            let oProprerty = oEquipment[sProp];
+            let oColProperty = oColumnProperties[sProp];
             if (oColProperty) {
               //Property is customize to export excel
-              var iStyle = iDefaultStyle;
+              let iStyle = iDefaultStyle;
               if (sProp === "IsCreatedDuringPecDesc" && oEquipment.IsCreatedDuringPec) {
                 iStyle = iGreenStyle;
               }
@@ -1522,39 +1446,34 @@ sap.ui.define(
           iRow++;
         }
       },
-
       /*
        * Fill missing important characteristic
        */
       _missingImportantCharact: function (oObject) {
-        var aImportantFilled = [],
+        let aImportantFilled = [],
           aImportantMissing = [],
           oVH = this.fnGetModel("mVH").getData(),
           oFamilyCharacteristic = this.fnGetModel("mFamilyCharacteristic").getData();
-
-        for (var i1 in oObject.FamilyCharacteristic) {
+        for (let i1 in oObject.FamilyCharacteristic) {
           aImportantFilled.push(oObject.FamilyCharacteristic[i1].CharactId);
         }
-
-        var sFamily = oVH.Family[oObject.FamilyId];
+        let sFamily = oVH.Family[oObject.FamilyId];
         if (sFamily) {
-          var oClass = oFamilyCharacteristic.Class[sFamily.ClassId];
-          for (var i2 in oClass) {
-            var oCharact = oClass[i2];
+          let oClass = oFamilyCharacteristic.Class[sFamily.ClassId];
+          for (let i2 in oClass) {
+            let oCharact = oClass[i2];
             if (oCharact.CharactImportant && aImportantFilled.indexOf(i2) === -1) {
               aImportantMissing.push(oCharact);
             }
           }
         }
-
         return aImportantMissing;
       },
-
       /*
        * Fill other properties to display in popover
        */
       _otherProperties: function (oObject) {
-        var aFieldToCheck = [
+        let aFieldToCheck = [
             "BrandId",
             "Critical",
             "InstallYear",
@@ -1567,20 +1486,17 @@ sap.ui.define(
             "WarrantyEndDateText",
           ],
           aOtherProperties = [];
-
-        for (var iProp in aFieldToCheck) {
-          var sProp = aFieldToCheck[iProp];
+        for (let iProp in aFieldToCheck) {
+          let sProp = aFieldToCheck[iProp];
           aOtherProperties.push({
             label: this.fnGetResourceBundle("LabelProperty" + sProp),
             valueToDisplay: oObject[sProp],
           });
         }
-
         return aOtherProperties;
       },
-
       _loadFragment: function (sDialogName) {
-        var oView = this.getView();
+        let oView = this.getView();
         return Fragment.load({
           id: oView.getId(),
           name: FRAGMENT_PATH + sDialogName,
@@ -1742,7 +1658,7 @@ sap.ui.define(
                             url: sURL,
                             cache: false,
                             xhr: function () {
-                              var xhr = new XMLHttpRequest();
+                              let xhr = new XMLHttpRequest();
                               xhr.responseType = "blob";
                               return xhr;
                             },
@@ -1806,7 +1722,7 @@ sap.ui.define(
         this.byId("idAnomalyPicturesCarouselDialog").close();
       },
       _getObjectLinkedDatas: function (bSubEquipment, oEquipment, oEvent) {
-        var oObjectView = oEvent.getSource(),
+        let oObjectView = oEvent.getSource(),
           idFrag = "LinkedObject",
           idThisPopover = "_" + idFrag + "Popover",
           oView = this.getView(),
@@ -1825,24 +1741,23 @@ sap.ui.define(
           fnSuccess = function (oData) {
             this.fnHideBusyIndicator();
             if (bSubEquipment) {
-              var aResult = oData.results;
+              let aResult = oData.results;
             } else {
               aResult = [oData];
             }
-            var oLocationDescription = this.fnGetModel("mLocationDescription").getData();
-            for (var iLine in aResult) {
-              var oLine = aResult[iLine];
+            let oLocationDescription = this.fnGetModel("mLocationDescription").getData();
+            for (let iLine in aResult) {
+              let oLine = aResult[iLine];
               oLine.UserStatusDesc = this.formatter.setStatusDescription.call(
                 this,
                 oLine.UserStatusId
               );
               oLine.CompleteLocationName = oLocationDescription[oLine.LocationId].LocationName;
             }
-            var oModel = {
+            let oModel = {
               IsSub: bSubEquipment,
               List: aResult,
             };
-
             this.fnSetJSONModel(oModel, "mLinkedObject");
             //Display popover for datas
             if (!this[idThisPopover]) {
@@ -1859,39 +1774,32 @@ sap.ui.define(
               oPopover.openBy(oObjectView);
             });
           };
-
-        var oParam = {
+        let oParam = {
           success: fnSuccess.bind(this),
           error: fnError.bind(this),
         };
-
         switch (bSubEquipment) {
           case true:
-            var sRequest = "/EquipmentSet",
+            let sRequest = "/EquipmentSet",
               aFilters = [];
             aFilters.push(new Filter("SuperiorEquiId", FilterOperator.EQ, oEquipment.EquipmentId));
             oParam.filters = aFilters;
             break;
-
           case false:
             sRequest = this.getOwnerComponent().getModel().createKey("/EquipmentSet", {
               EquipmentId: oEquipment.SuperiorEquiId,
             });
             break;
         }
-
         this.fnShowBusyIndicator(null, 0);
         this.getOwnerComponent().getModel().read(sRequest, oParam);
       },
-
       /*
        * fonction to dispay photo photo
        */
       _displayPhoto: function (oPhoto) {
-        var oView = this.getView();
-
+        let oView = this.getView();
         this.fnSetJSONModel(oPhoto, "mPhoto");
-
         if (!this._PhotoDialog) {
           this._PhotoDialog = Fragment.load({
             id: oView.getId(),
@@ -1906,7 +1814,6 @@ sap.ui.define(
           oDialog.open();
         });
       },
-
       //--------------------------------------------
       // Event functions
       //--------------------------------------------
@@ -1916,19 +1823,16 @@ sap.ui.define(
        */
       onGetEquiForLocationPress: function (oEvent) {
         // this.byId("filterBar").setFilterBarExpanded(false);
-        var oContext = oEvent.getSource().getBindingContext("mLocationHierarchy");
-
+        let oContext = oEvent.getSource().getBindingContext("mLocationHierarchy");
         this._sSelectedLocationId = oContext.getProperty("LocationId");
         this._sSelectedLocationType = oContext.getProperty("LoomaTypeId");
-
         this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
       },
-
       /*
        * Method is called when press on Modified Info icone
        */
       onDisplayModifiedInfoPopoverPress: function (oEvent) {
-        var oIcon = oEvent.getSource(),
+        let oIcon = oEvent.getSource(),
           oView = this.getView(),
           sModifiedInfo = oEvent
             .getSource()
@@ -1936,9 +1840,7 @@ sap.ui.define(
             .getParent()
             .getRowBindingContext()
             .getObject();
-
         this.fnSetJSONModel(sModifiedInfo, "mModifiedInfo");
-
         if (!this._ModPopover) {
           this._ModPopover = Fragment.load({
             id: oView.getId(),
@@ -1959,36 +1861,32 @@ sap.ui.define(
       onClosePopoverPress: function (oEvent) {
         this.byId("ModifiedInfo").close();
       },
-
       /*
        * Method is called when press on close button from dialog
        */
       onCloseDialogPress: function (oEvent) {
         this.byId(oEvent.getSource().getParent().getId().split("-").pop()).close();
       },
-
       /*
        * Method is called when press on location single button
        */
       onApplyLocationStatus: function (oEvent) {
-        var sUserStatusId = this._fnSetLocationUserStatusId(oEvent);
+        let sUserStatusId = this._fnSetLocationUserStatusId(oEvent);
         this._ApplyLocationStatus(oEvent, sUserStatusId);
       },
-
       /*
        * Method is called when press on equipment single button
        */
       onApplyEquipmentStatus: function (oEvent) {
-        var sUserStatusId = this._fnSetEquipmentUserStatusId(oEvent);
+        let sUserStatusId = this._fnSetEquipmentUserStatusId(oEvent);
         this._ApplyEquipmentStatus(oEvent, sUserStatusId);
       },
-
       /*
        * Method is called when press on object
        */
       onApplyMassStatus: function (oEvent, sTableName, sObjectName, sFunctionName, sUserStatusId) {
         if (this.byId(sTableName).getSelectedIndices().length > 0) {
-          var sStatusText = oEvent.getSource().getText(),
+          let sStatusText = oEvent.getSource().getText(),
             sMassDialog = "_MassDialog" + sObjectName + sUserStatusId;
           this._oEvent = oEvent;
           this._sUserStatusId = sUserStatusId;
@@ -2017,16 +1915,14 @@ sap.ui.define(
               }),
             });
           }
-
           this[sMassDialog].open();
         }
       },
-
       /*
        * Method is called when press on Location hierarchy mass button
        */
       onApplyLocationMassStatus: function (oEvent) {
-        var sUserStatusId = this._fnSetLocationUserStatusId(oEvent);
+        let sUserStatusId = this._fnSetLocationUserStatusId(oEvent);
         this.onApplyMassStatus(
           oEvent,
           "LocationHierarchyTreeTable",
@@ -2035,12 +1931,11 @@ sap.ui.define(
           sUserStatusId
         );
       },
-
       /*
        * Method is called when press on equipment mass button
        */
       onApplyEquipmentMassStatus: function (oEvent) {
-        var sUserStatusId = this._fnSetEquipmentUserStatusId(oEvent);
+        let sUserStatusId = this._fnSetEquipmentUserStatusId(oEvent);
         this.onApplyMassStatus(
           oEvent,
           "EquipmentTable",
@@ -2049,7 +1944,6 @@ sap.ui.define(
           sUserStatusId
         );
       },
-
       /*
        * Event on Search in filter bar
        */
@@ -2057,7 +1951,6 @@ sap.ui.define(
         this._bRefreshHierarchy = false;
         this._bindTreeTable();
       },
-
       /*
        * Event on Clear in filter bar
        */
@@ -2067,26 +1960,24 @@ sap.ui.define(
         // Reser default selected keys for multicombobox
         this._initDefaultFilterMCB();
       },
-
       /*
        * Event on Personalization for Equipment Table
        */
       onEquipmentTablePersonalizationPress: function () {
         this._onTablePersonalizePress("/model/Config/Detail/EquipmentTable.json", "EquipmentTable");
       },
-
       /*
        * Event fire on Selection change on Equipment Table
        */
       onSelectionChangeEquipmentTable: function (oEvent) {
-        var oDetailPageModel = this.fnGetModel("mDetailPage"),
+        let oDetailPageModel = this.fnGetModel("mDetailPage"),
           aSelectedIndices = oEvent.getSource().getSelectedIndices(),
           oTreeTable = this.byId("EquipmentTable");
         if (oEvent.getSource().getSelectedIndices().length > 0) {
           oDetailPageModel.getData().bEquipmentSelected = true;
           oDetailPageModel.getData().bEquipmentSelectedDeletable = true;
-          for (var iSel in aSelectedIndices) {
-            var oObject = oTreeTable.getContextByIndex(aSelectedIndices[iSel]).getObject();
+          for (let iSel in aSelectedIndices) {
+            let oObject = oTreeTable.getContextByIndex(aSelectedIndices[iSel]).getObject();
             if (!oObject.Deletable) {
               oDetailPageModel.getData().bEquipmentSelectedDeletable = false;
               break;
@@ -2096,10 +1987,8 @@ sap.ui.define(
           oDetailPageModel.getData().bEquipmentSelected = false;
           oDetailPageModel.getData().bEquipmentSelectedDeletable = false;
         }
-
         oDetailPageModel.refresh(true);
       },
-
       /*
        * Callback function called to get node sublocations
        */
@@ -2177,8 +2066,8 @@ sap.ui.define(
         if (aSelectedIndices.length > 0) {
           oDetailPageModel.getData().bLocationSelected = true;
           oDetailPageModel.getData().bLocationSelectedDeletable = true;
-          for (var iSel in aSelectedIndices) {
-            var oObject = oTreeTable.getContextByIndex(aSelectedIndices[iSel]).getObject();
+          for (let iSel in aSelectedIndices) {
+            let oObject = oTreeTable.getContextByIndex(aSelectedIndices[iSel]).getObject();
             if (!oObject.Deletable) {
               oDetailPageModel.getData().bLocationSelectedDeletable = false;
               break;
@@ -2190,56 +2079,48 @@ sap.ui.define(
         }
         oDetailPageModel.refresh(true);
       },
-
       /*
        * Event fire on press on icon Photo
        */
       onPhotoDownload: function (oEvent) {
-        var oObject = oEvent.getSource().getParent().getRowBindingContext().getObject(),
+        let oObject = oEvent.getSource().getParent().getRowBindingContext().getObject(),
           oPhoto = {
             Title: this.fnGetResourceBundle("EquipmentTableIconTooltipPhotoId"),
             PhotoId: oObject.PhotoId,
             EntitySet: "PhotoSet",
             EquipmentName: oObject.EquipmentName,
           };
-
         this._displayPhoto(oPhoto);
       },
-
       /*
        * Event fire on press on icon Nameplate
        */
       onNameplateDownload: function (oEvent) {
-        var oObject = oEvent.getSource().getParent().getRowBindingContext().getObject(),
+        let oObject = oEvent.getSource().getParent().getRowBindingContext().getObject(),
           oNameplate = {
             Title: this.fnGetResourceBundle("EquipmentTableIconTooltipNameplateId"),
             PhotoId: oObject.NameplateId,
             EntitySet: "NameplateSet",
             EquipmentName: oObject.EquipmentName,
           };
-
         this._displayPhoto(oNameplate);
       },
-
       /*
        * Fire when press on comment icon
        */
       onDisplayComment: function (oEvent) {
-        var oIcon = oEvent.getSource(),
+        let oIcon = oEvent.getSource(),
           oView = this.getView(),
           oObject = oEvent.getSource().getParent().getRowBindingContext().getObject(),
           iCols = 20,
           iRows = 1;
-
         if (oObject.Comments.length > 100) {
           iCols = 100;
           iRows = Math.floor(oObject.Comments.length / 100) + 1;
         } else if (oObject.Comments.length > 20) {
           iCols = oObject.Comments.length;
         }
-
         iRows = iRows > 30 ? 30 : iRows;
-
         this.fnSetJSONModel(
           {
             Comment: oObject.Comments,
@@ -2248,7 +2129,6 @@ sap.ui.define(
           },
           "mLongTexts"
         );
-
         if (!this._ComPopover) {
           this._ComPopover = Fragment.load({
             id: oView.getId(),
@@ -2263,12 +2143,11 @@ sap.ui.define(
           oPopover.openBy(oIcon);
         });
       },
-
       /*
        * Fire when press on Amdec / Family / Others properties
        */
       onDisplayDetailEquipment: function (oEvent) {
-        var oAmdec = {
+        let oAmdec = {
             Amdec1: [
               "AmdecStateId",
               "AmdecDisrepairId",
@@ -2296,20 +2175,18 @@ sap.ui.define(
             MissingImportantCharact: [],
             OtherProperties: [],
           };
-
         //AMDEC
         if (idFrag === "Amdec") {
           oModel.AmdecComment1 = oObject.AmdecTechnicalScoreComment;
           oModel.AmdecComment2 = oObject.AmdecSeverityScoreComment;
-          for (var iAmdec in oAmdec) {
-            var aAmdec = oAmdec[iAmdec];
-            for (var iProp in aAmdec) {
-              var sPropId = aAmdec[iProp],
+          for (let iAmdec in oAmdec) {
+            let aAmdec = oAmdec[iAmdec];
+            for (let iProp in aAmdec) {
+              let sPropId = aAmdec[iProp],
                 sPropDesc = sPropId.split("Id").shift() + "Desc",
                 sI18n = "ModifiedInfoLbl" + sPropId,
                 sPropIdValue = oObject[sPropId],
                 sPropDescValue = oObject[sPropDesc];
-
               oModel[iAmdec].push({
                 id: sPropIdValue,
                 icon: sPropIdValue === "" ? "sap-icon://alert" : "",
@@ -2328,9 +2205,7 @@ sap.ui.define(
         } else if (idFrag === "OtherProperties") {
           oModel.OtherProperties = this._otherProperties(oObject);
         }
-
         this.fnSetJSONModel(oModel, "mDisplayPopover");
-
         if (!this[idThisPopover]) {
           this[idThisPopover] = Fragment.load({
             id: oView.getId(),
@@ -2352,8 +2227,7 @@ sap.ui.define(
         if (!this.fnGetModel("mEquipment")) {
           return;
         }
-
-        var oExcel = new Excel("Calibri 12", [
+        let oExcel = new Excel("Calibri 12", [
             {
               name: "Tab",
               bFreezePane: true,
@@ -2367,11 +2241,9 @@ sap.ui.define(
           },
           sRootPath = sap.ui.require.toUrl("com/vesi/zfac4_valtoker"),
           oColumnProperties = new JSONModel();
-
         if (!oData.list || (oData.list && oData.list.length === 0)) {
           return;
         }
-
         oColumnProperties.loadData(
           sRootPath + "/model/Config/Detail/ExcelExportedProperties.json",
           null,
@@ -2379,30 +2251,26 @@ sap.ui.define(
         ); // Config for properties
         oColumnProperties = oColumnProperties.getData();
         this._setExcelColumns(oExcel, aColSize, oColumnProperties);
-
         this._setExcelRows(oExcel, oData.list, aColSize, oColumnProperties);
         //Because we use bold for the font we have to had 1 to the colsize
-        for (var i in aColSize.Sheet0) {
+        for (let i in aColSize.Sheet0) {
           aColSize.Sheet0[i] += 1;
         }
         oExcel.manageColSize(0, aColSize.Sheet0);
         this._generateExcel(oExcel);
       },
-
       /*
        * Event fire when press on collapse all
        */
       onLocationHierarchyCollapseAll: function (oEvent) {
         this.byId("LocationHierarchyTreeTable").collapseAll();
       },
-
       /*
        * Event fire when press on expand all
        */
       onLocationHierarchyExpandAll: function (oEvent) {
         this.byId("LocationHierarchyTreeTable").expandToLevel(4);
       },
-
       /*
        * Event fire when press on button Synchronise with FSM
        */
@@ -2442,33 +2310,28 @@ sap.ui.define(
             }),
           });
         }
-
         this._oSynchroniseDialog.open();
       },
-
       /*
        * Event fire when needed after a selection on multicombobox
        */
       onSelectionFinishedMCBVH: function () {
         this.fnGetModel("mVH").refresh(true);
       },
-
       /*
        * Event fire when press on icon for object linked
        */
       onLinkedObject: function (oEvent) {
-        var bSubEquipment = oEvent.getSource().getSrc() === "sap-icon://org-chart",
+        let bSubEquipment = oEvent.getSource().getSrc() === "sap-icon://org-chart",
           oEquipment = oEvent.getSource().getParent().getRowBindingContext().getObject();
         this._getObjectLinkedDatas(bSubEquipment, oEquipment, oEvent);
       },
-
       /*
        * Event fire chen click on legend
        */
       fnOnPressLegend: function (oEvent) {
-        var oIcon = oEvent.getSource(),
+        let oIcon = oEvent.getSource(),
           oView = this.getView();
-
         if (!this._LegendPopover) {
           this._LegendPopover = Fragment.load({
             id: oView.getId(),
@@ -2483,7 +2346,6 @@ sap.ui.define(
           oPopover.openBy(oIcon);
         });
       },
-
       onPressAnomalyMeasuringDocuments: function (oEvent) {
         this._oButton = oEvent.getSource();
         this._oSelectedEquipment = oEvent
@@ -2540,7 +2402,6 @@ sap.ui.define(
             state: "Warning",
           }),
         });
-
         return oTable;
       },
       _fnCreateHeader: function (oMeasurePoint) {
@@ -2587,7 +2448,6 @@ sap.ui.define(
         } else {
           sStatus = "Warning";
         }
-
         return sStatus;
       },
       _fnAddPage(oMeasureDocs, aMeasuresPoints) {
@@ -2602,7 +2462,6 @@ sap.ui.define(
             MeasureValue = parseFloat(MeasureValue?.replaceAll(",", "."));
             ValueMax = parseFloat(ValueMax?.replaceAll(",", "."));
             ValueMin = parseFloat(ValueMin?.replaceAll(",", "."));
-
             aItems.push(
               new sap.m.ColumnListItem({
                 cells: [
@@ -2636,7 +2495,6 @@ sap.ui.define(
         const oMeasure = new JSONModel({ measureDocuments: [] });
         this.fnSetJSONModel(oMeasure, "oMeasure");
       },
-
       _fnOpenMeasurePopover: async function () {
         const oView = this.getView();
         this._oMeasurePopover ??= await Fragment.load({
@@ -2647,7 +2505,6 @@ sap.ui.define(
         oView.addDependent(this._oMeasurePopover);
         this._oMeasurePopover.openBy(this._oButton);
       },
-
       _fnGetMeasureDocument: function (sMeasurePointId) {
         const oModel = this.getOwnerComponent().getModel();
         const aFilters = [new Filter("MeasuringPointId", FilterOperator.EQ, sMeasurePointId)];

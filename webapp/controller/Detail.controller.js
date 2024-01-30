@@ -254,9 +254,10 @@ sap.ui.define(
             let aData = oData.results;
             for (let idx in aData) {
               let oLine = aData[idx];
+              let sType;
               switch (oLine.CharactId) {
                 case "YLO_SITE_TYPE":
-                  let sType = "SITE";
+                  sType = "SITE";
                   break;
                 case "YLO_TYPE_BATIMENT":
                   sType = "BUILDING";
@@ -1740,8 +1741,9 @@ sap.ui.define(
           },
           fnSuccess = function (oData) {
             this.fnHideBusyIndicator();
+            let aResult;
             if (bSubEquipment) {
-              let aResult = oData.results;
+              aResult = oData.results;
             } else {
               aResult = [oData];
             }
@@ -1778,9 +1780,10 @@ sap.ui.define(
           success: fnSuccess.bind(this),
           error: fnError.bind(this),
         };
+        let sRequest;
         switch (bSubEquipment) {
           case true:
-            let sRequest = "/EquipmentSet",
+            sRequest = "/EquipmentSet",
               aFilters = [];
             aFilters.push(new Filter("SuperiorEquiId", FilterOperator.EQ, oEquipment.EquipmentId));
             oParam.filters = aFilters;

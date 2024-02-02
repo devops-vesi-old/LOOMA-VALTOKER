@@ -284,7 +284,7 @@ sap.ui.define([
 				oTreeDataModel = this.getView().getModel("oTreeDataModel");
 				let oTreeDataModelContractData = oTreeDataModel.getData().contractData;
 				let aAllNonChildContracts = [...oTreeDataModelContractData];
-				let aAllParentContracts = oTreeDataModelContractData.filter(contract => contract.ContractType == "YLMP");
+				let aAllParentContracts = this._fnGetContractsByType(oTreeDataModelContractData, "ParentContracts");
 				let aAllChildContracts = [];
 				aAllParentContracts.forEach(parentContract => {
 					parentContract.ChildContracts.forEach(childContract => {
@@ -385,6 +385,22 @@ sap.ui.define([
 				this._fnUpdateContractSearchHelpSelectedItemsUponTokenDeletion(sTokenToRemove);
 			}
 		},
+		_fnHandleIndependentAndParentContractsTokenUpdate: function (oTreeTableModelData, sTokenToRemove) {
+			let aIndependentContract = [];
+			let aParentContract = [];
+			oTreeTableModelData.contractData.forEach(contract => {
+				if (contract.ContractId == sTokenToRemove) {
+					if (contract.ContractParent == "" && contract.ContractType == "YLMO") {
+						aIndependentContract.push(contract);
+					} else if (contract.DisplayAsParent) {
+						aIndependentContract.push(contract);
+					} else {
+						aParentContract.push(contract);
+					}
+				}
+			});
+			return [aIndependentContract, aParentContract];
+		},
 		_fnUpdateContractSearchHelpSelectedItemsUponTokenDeletion: function (sTokenToRemove) {
 			let oTreeTableModel = this.getView().getModel("oTreeDataModel");
 			let oTreeTableModelData = oTreeTableModel.getData();
@@ -392,15 +408,9 @@ sap.ui.define([
 			let aChildContract = [];
 			let aParentContract = [];
 			let aIndependentContract = [];
-			oTreeTableModelData.contractData.forEach(contract => {
-				if (contract.ContractId == sTokenToRemove) {
-					if (contract.ContractParent == "" && contract.ContractType == "YLMO") {
-						aIndependentContract.push(contract);
-					} else {
-						aParentContract.push(contract);
-					}
-				}
-			});
+			let aFilteredIndependentAndParentContracts = this._fnHandleIndependentAndParentContractsTokenUpdate(oTreeTableModelData, sTokenToRemove);
+			aIndependentContract = aFilteredIndependentAndParentContracts[0];
+			aParentContract = aFilteredIndependentAndParentContracts[1];
 			if (aIndependentContract.length > 0) {
 				oTreeTableModelData.contractData.forEach(contract => {
 					if (contract.ContractId == sTokenToRemove) {
@@ -628,7 +638,11 @@ sap.ui.define([
 			let bSelectedValue = oSelectedContract.selected;
 			this._fnUpdateTokens("ContractId", bSelectedValue);
 			if (oSelectedContract.ContractParent != "" && oSelectedContract.ContractType == "YLMO") {
-				this._fnHandleChildContractSelection(aCopyOfTreeTableModelContractData, oSelectedContract, bSelectedValue, oTreeTableModel);
+				if (oSelectedContract.DisplayAsParent) {
+					this._fnHandleIndependentContractSelection(aCopyOfTreeTableModelContractData, oSelectedContract, oTreeTableModel);
+				} else {
+					this._fnHandleChildContractSelection(aCopyOfTreeTableModelContractData, oSelectedContract, bSelectedValue, oTreeTableModel);
+				}
 			} else if (oSelectedContract.ContractParent == "" && oSelectedContract.ContractType == "YLMO") {
 				this._fnHandleIndependentContractSelection(aCopyOfTreeTableModelContractData, oSelectedContract, oTreeTableModel);
 			} else {
@@ -645,7 +659,7 @@ sap.ui.define([
 		fnFillInContractParents: function (aRawContractData) {
 			let aParentContractsWithDuplicateEntries = [];
 			aRawContractData.forEach(contract => {
-				if (contract.ContractParent !== "") {
+				if (contract.ContractParent !== "" && !contract.DisplayAsParent) {
 					aParentContractsWithDuplicateEntries.push({
 							ContractId: contract.ContractParent,
 							ContractName: contract.ContractPTitle,
@@ -661,6 +675,23 @@ sap.ui.define([
 			let aParentContracts = this._fnRemoveDuplicateEntriesFromArray(aParentContractsWithDuplicateEntries);
 			return aRawContractData.concat(aParentContracts);
 		},
+		_fnHandleIndependentAndParentContractSelectionUponConfirmPress: function (oTreeDataModelContractData) {
+			let aSelectedParentContracts = [];
+			let aPartiallySelectedParentContracts = [];
+			let aSelectedIndependentContracts = [];
+			for (let contract of oTreeDataModelContractData) {
+				if (contract.selected == true && contract.partiallySelected == false && contract.ContractType == "YLMP") {
+					aSelectedParentContracts.push(contract);
+				} else if (contract.selected == true && contract.partiallySelected == true && contract.ContractType == "YLMP") {
+					aPartiallySelectedParentContracts.push(contract);
+				} else if (contract.selected == true && contract.ContractType == "YLMO" && contract.ContractParent == "") {
+					aSelectedIndependentContracts.push(contract);
+				} else if (contract.selected && contract.DisplayAsParent) {
+					aSelectedIndependentContracts.push(contract);
+				}
+			}
+			return [aSelectedParentContracts, aPartiallySelectedParentContracts, aSelectedIndependentContracts];
+		},
 		onContractSearchHelpConfirm: function (oEvent) {
 			if (!oEvent) {
 				return;
@@ -669,15 +700,10 @@ sap.ui.define([
 				let aSelectedParentContracts = [];
 				let aPartiallySelectedParentContracts = [];
 				let aSelectedIndependentContracts = [];
-				for (let contract of oTreeDataModelContractData) {
-					if (contract.selected == true && contract.partiallySelected == false && contract.ContractType == "YLMP") {
-						aSelectedParentContracts.push(contract);
-					} else if (contract.selected == true && contract.partiallySelected == true && contract.ContractType == "YLMP") {
-						aPartiallySelectedParentContracts.push(contract);
-					} else if (contract.selected == true && contract.ContractType == "YLMO" && contract.ContractParent == "") {
-						aSelectedIndependentContracts.push(contract);
-					}
-				}
+				let aSelectedIndependentAndParentContracts = this._fnHandleIndependentAndParentContractSelectionUponConfirmPress(oTreeDataModelContractData);
+				aSelectedParentContracts = aSelectedIndependentAndParentContracts[0];
+				aPartiallySelectedParentContracts = aSelectedIndependentAndParentContracts[1];
+				aSelectedIndependentContracts = aSelectedIndependentAndParentContracts[2];
 				if (aSelectedParentContracts.length == 0 && aPartiallySelectedParentContracts.length == 0 && aSelectedIndependentContracts.length == 0) {
 					this.onContractSearchHelpClose();
 				} else {
@@ -721,12 +747,24 @@ sap.ui.define([
 				})
 			})
 		},
+		_fnGetContractsByType: function (oTreeTableModelData, sType) {
+			switch (sType) {
+				case "IndependentContracts":
+					let aOnlyIndependentContracts = oTreeTableModelData.filter(contract => contract.ContractParent == "" && contract.ContractType == "YLMO");
+					let aChildContractsToDisplayAsIndependent = oTreeTableModelData.filter(contract => contract.DisplayAsParent);
+					return aOnlyIndependentContracts.concat(aChildContractsToDisplayAsIndependent);
+				case "ParentContracts":
+					return oTreeTableModelData.filter(contract => contract.ContractType == "YLMP");
+				case "ChildContracts":
+					return oTreeTableModelData.filter(contract => contract.ContractParent != "" && contract.ContractType == "YLMO");
+			}
+		},
 		_fnHandleContractSearchHelpData: function () {
 			let oTreeTableModel = this.getView().getModel("oTreeDataModel");
 			let oTreeTableModelData = oTreeTableModel.getData();
-			let aIndependentContracts = oTreeTableModelData.results.filter(contract => contract.ContractParent == "" && contract.ContractType == "YLMO");
-			let aParentContracts = oTreeTableModelData.results.filter(contract => contract.ContractType == "YLMP");
-			let aChildContracts = oTreeTableModelData.results.filter(contract => contract.ContractParent != "" && contract.ContractType == "YLMO");
+			let aIndependentContracts = this._fnGetContractsByType(oTreeTableModelData.results, "IndependentContracts");
+			let aParentContracts = this._fnGetContractsByType(oTreeTableModelData.results, "ParentContracts");
+			let aChildContracts = this._fnGetContractsByType(oTreeTableModelData.results, "ChildContracts");
 			let aContractGroups = [];
 			let aNestedContracts = [];
 			let aIndependentContractWithSelection = [];

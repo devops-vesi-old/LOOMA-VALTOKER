@@ -796,7 +796,7 @@ sap.ui.define([
 			let iText = 1;
 			try {
 				aSelectedItems = oEvent.getParameter("selectedItems");
-				sIdMultiInput = oEvent.getSource().getId().split("-id").pop().split("Dialog").shift();
+				sIdMultiInput = oEvent.getSource().getId().split("--").pop().split("Dialog").shift();
 			} catch (error) {
 				aSelectedItems = aSelectedContracts;
 				sIdMultiInput = oContractEvent.getId().split("--").pop().split("Dialog").shift();

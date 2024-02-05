@@ -6,17 +6,16 @@
 sap.ui.define([],
 	function () {
 		"use strict";
-
 		return {
 			/*
 			 * Set Type Description depending of Type Id
 			 */
 			setTypeDescription: function (typeId) {
-				var oTypeDesc = this.fnGetModel("mTypeDesc");
+				let oTypeDesc = this.fnGetModel("mTypeDesc");
 				if (!oTypeDesc || !oTypeDesc.getData) {
 					return "";
 				}
-				var sDescription = oTypeDesc.getData()[typeId];
+				let sDescription = oTypeDesc.getData()[typeId];
 				if (sDescription && sDescription !== "") {
 					return sDescription;
 				}
@@ -25,16 +24,15 @@ sap.ui.define([],
 				}
 				return "";
 			},
-
 			/*
 			 * Set Status Description depending of Type Id
 			 */
 			setStatusDescription: function (statusInternalId) {
-				var oStatusDesc = this.fnGetModel("mStatusDesc");
+				let oStatusDesc = this.fnGetModel("mStatusDesc");
 				if (!oStatusDesc || !oStatusDesc.getData) {
 					return "";
 				}
-				var sDescription = oStatusDesc.getData()[statusInternalId];
+				let sDescription = oStatusDesc.getData()[statusInternalId];
 				if (sDescription && sDescription !== "") {
 					return sDescription;
 				}
@@ -43,26 +41,24 @@ sap.ui.define([],
 				}
 				return "";
 			},
-
 			/*
 			 * Set selected Items in VH depending of data in MultiInput
 			 */
 			setVHSelectedItem: function (sId, tokenModel) {
-				var oMultiInputTokens = this.byId(this._sCurrId).getTokens();
-				for (var iTok in oMultiInputTokens) {
-					var oToken = oMultiInputTokens[iTok];
+				let oMultiInputTokens = this.byId(this._sCurrId).getTokens();
+				for (let iTok in oMultiInputTokens) {
+					let oToken = oMultiInputTokens[iTok];
 					if (oToken.getKey() === sId) {
 						return true;
 					}
 				}
 				return false;
 			},
-
 			/*
 			 * Set usage icon
 			 */
 			fnUsageIcon: function (sUsageId) {
-				var sIcon;
+				let sIcon;
 				switch (sUsageId) {
 				case "1":
 					sIcon = "sap-icon://status-positive";
@@ -87,12 +83,11 @@ sap.ui.define([],
 				}
 				return sIcon;
 			},
-
 			/*
 			 * Set usage icon color
 			 */
 			fnUsageIconColor: function (sUsageId) {
-				var sColor;
+				let sColor;
 				switch (sUsageId) {
 				case "1":
 					sColor = "green";
@@ -117,13 +112,12 @@ sap.ui.define([],
 				}
 				return sColor;
 			},
-
 			/*
 			 * Set usage icon tooltip
 			 */
 			fnUsageIconTooltip: function (sUsageId) {
-				var oResourceBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
-				var sTooltip;
+				let oResourceBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
+				let sTooltip;
 				switch (sUsageId) {
 				case "1":
 					sTooltip = oResourceBundle.getText("EquipmentTableTblUtilTooltipActive");
@@ -148,7 +142,6 @@ sap.ui.define([],
 				}
 				return sTooltip;
 			},
-
 			/*
 			 * Set visibility of the modified info icon 
 			 */
@@ -158,7 +151,6 @@ sap.ui.define([],
 				}
 				return false;
 			},
-
 			/*
 			 * Set property description depending id from backend
 			 */
@@ -167,9 +159,7 @@ sap.ui.define([],
 					return "";
 				}
 				return this.fnGetResourceBundle("ModifiedInfoLbl" + sIdProperty, []);
-
 			},
-
 			/*
 			 * Set link enabled
 			 */
@@ -177,8 +167,8 @@ sap.ui.define([],
 				if (bDirect === undefined || sNbEquipmentDirect === undefined || sNbEquipment === undefined) {
 					return false;
 				}
-				var iNbEquipmentDirect = parseInt(sNbEquipmentDirect, 10);
-				var iNbEquipment = parseInt(sNbEquipment, 10);
+				let iNbEquipmentDirect = parseInt(sNbEquipmentDirect, 10);
+				let iNbEquipment = parseInt(sNbEquipment, 10);
 				if (bDirect) {
 					if (iNbEquipmentDirect > 0) {
 						return true;
@@ -188,21 +178,18 @@ sap.ui.define([],
 						return true;
 					}
 				}
-
 				return false;
 			},
-
 			/*
 			 * Set link enabled
 			 */
 			fnImageUrlFormatter: function (sPhotoId, sEntitySet) {
-				var src = "";
+				let src = "";
 				if (sPhotoId) {
 					src = "/sap/opu/odata/sap/ZSRC4_PEC_SRV/" + sEntitySet + "('" + encodeURIComponent(sPhotoId) + "')/$value";
 				}
 				return src;
 			},
-
 			/*
 			 * Set the highlight indicator for object in tree table and equipement table
 			 */
@@ -218,7 +205,6 @@ sap.ui.define([],
 					return "None";
 				}
 			},
-
 			/*
 			 * Set the status FSM icon for object in tree table and equipement table
 			 */
@@ -232,7 +218,6 @@ sap.ui.define([],
 					return null;
 				}
 			},
-
 			/*
 			 * Set the status FSM tooltip for object in tree table and equipement table
 			 */
@@ -246,7 +231,6 @@ sap.ui.define([],
 					return "";
 				}
 			},
-
 			/*
 			 * Set the status FSM icon type for object in tree table and equipement table
 			 */
@@ -260,23 +244,21 @@ sap.ui.define([],
 					return "Default";
 				}
 			},
-
 			/*
 			 * Method to filter Function multi combobox
 			 */
 			fnFilterFunction: function (a) {
-				var aSelectedDomain = this.byId("filterDomainId").getSelectedKeys();
+				let aSelectedDomain = this.byId("filterDomainId").getSelectedKeys();
 				if (aSelectedDomain.length > 0 && aSelectedDomain.indexOf(a.DomainId) === -1) {
 					return false; // hide
 				}
 				return true; // visible
 			},
-
 			/*
 			 * Method to filter Family multi combobox
 			 */
 			fnFilterFamily: function (a) {
-				var aSelectedDomain = this.byId("filterDomainId").getSelectedKeys(),
+				let aSelectedDomain = this.byId("filterDomainId").getSelectedKeys(),
 					aSelectedFunction = this.byId("filterFunctionId").getSelectedKeys();
 				if ((aSelectedDomain.length > 0 && aSelectedDomain.indexOf(a.DomainId) === -1) ||
 					(aSelectedFunction.length > 0 && aSelectedFunction.indexOf(a.FunctionId) === -1)) {
@@ -284,7 +266,6 @@ sap.ui.define([],
 				}
 				return true; // visible
 			},
-
 			/*
 			 * Method to set icon for linked object
 			 * It can be for superior equipment if current equipment has an superior equipment
@@ -305,7 +286,6 @@ sap.ui.define([],
 				// Other case = no icon, it will be not visible
 				return "sap-icon://circle-task-2";
 			},
-
 			/*
 			 * Method to set tooltip for linked object
 			 * It can be for superior equipment if current equipment has an superior equipment
@@ -316,7 +296,6 @@ sap.ui.define([],
 					//Object undefined
 					return "";
 				}
-
 				if (oEquipmentInfo.SuperiorEquiId !== "") {
 					// Current equipment has superior equipment					
 					return this.fnGetResourceBundle("IconLinkedObjectSuperior");
@@ -327,7 +306,6 @@ sap.ui.define([],
 				// Other case = empty string
 				return "";
 			},
-
 			/*
 			 * Method to set tooltip for linked object
 			 * It can be for superior equipment if current equipment has an superior equipment
@@ -338,7 +316,6 @@ sap.ui.define([],
 					//Object undefined
 					return false;
 				}
-
 				if (oEquipmentInfo.SuperiorEquiId !== "" || oEquipmentInfo.HasSubEquipment) {
 					// Visible
 					return true;
@@ -346,7 +323,6 @@ sap.ui.define([],
 				// Hide
 				return false;
 			},
-
 			/*
 			 * Method to set custom value for Anomalies Popover
 			 */
@@ -356,7 +332,7 @@ sap.ui.define([],
 					switch (pValue) {
 						case "1":
 							sAnomalieValueToBeReturned = oContext.fnGetResourceBundle("AnomalyPriorityHigh");
-						  	break;
+							break;
 						case "2":
 							sAnomalieValueToBeReturned = oContext.fnGetResourceBundle("AnomalyPriorityMedium");
 							break;
@@ -365,7 +341,7 @@ sap.ui.define([],
 							break;
 						default:
 							sAnomalieValueToBeReturned = pValue;
-					  }
+					}
 				} else if (pDescription == "Quotation") {
 						if (pAnomalyQuotationType.QuotationType !== "") {
 							sAnomalieValueToBeReturned = oContext.fnGetResourceBundle("yes");
@@ -377,7 +353,6 @@ sap.ui.define([],
 				}
 				return `: ${sAnomalieValueToBeReturned}`;
 			},
-
 			formatDate: function (sDate) {
 				const oDateFormatter = sap.ui.core.format.DateFormat.getDateInstance({
 					pattern: "dd.MM.y"

@@ -24,7 +24,7 @@ sap.ui.define([
 			return this.getView().getModel(sName);
 		},
 		fnGetResourceBundle: function (sKey, aParam) {
-			var aParamText = [];
+			let aParamText = [];
 			if (aParam && aParam.length) {
 				aParamText = aParam;
 			}
@@ -36,7 +36,6 @@ sap.ui.define([
 			}
 			return this.getOwnerComponent().getModel(sName);
 		},
-
 		/*
 		 * Called to show busy Indicator
 		 */
@@ -52,28 +51,26 @@ sap.ui.define([
 				});
 			}
 		},
-
 		/*
 		 * Called to hide busy Indicator
 		 */
 		fnHideBusyIndicator: function () {
 			sap.ui.core.BusyIndicator.hide();
 		},
-
 		/*
 		 * Called from method "_initFilter" to initialize User Status Description model
 		 */
 		_initStatusDesc: function (sObjectFilter) {
-			var mParams = {
+			let mParams = {
 				filters: [new Filter({
 					path: "Object",
 					operator: "EQ",
 					value1: sObjectFilter
 				})],
 				success: function (oData) {
-					var oStatusDesc = {};
-					for (var idx in oData.results) {
-						var oLine = oData.results[idx];
+					let oStatusDesc = {};
+					for (let idx in oData.results) {
+						let oLine = oData.results[idx];
 						oStatusDesc[oLine.StatusInternalId] = oLine.StatusDesc;
 					}
 					this.fnSetJSONModel(oStatusDesc, "mStatusDesc");
@@ -81,7 +78,6 @@ sap.ui.define([
 			};
 			this.fnGetODataModel("VH").read("/UserStatusSet", mParams);
 		},
-
 		/********** Manage Personalization **********/
 		/*
 		 * Method is used to open the Personalization dialog to personalize table when personalization button is pressed
@@ -89,17 +85,16 @@ sap.ui.define([
 		 * Method requires Personalisation JSON Path and Table Id as importing parameter to work
 		 */
 		_onTablePersonalizePress: function (sConfigJSONPath, sTableId) {
-			var sRootPath = sap.ui.require.toUrl("com/vesi/zfac4_valtoker");
-			var oPersoData = this._fnGetTablePersoConfigData(sRootPath + sConfigJSONPath, sTableId);
+			let sRootPath = sap.ui.require.toUrl("com/vesi/zfac4_valtoker");
+			let oPersoData = this._fnGetTablePersoConfigData(sRootPath + sConfigJSONPath, sTableId);
 			this._fnOpenPersoDialog(oPersoData, sTableId);
 		},
-
 		_fnGetTablePersoConfigData: function (configPath, tableId) {
-			var oColumnItemsModel = new JSONModel();
+			let oColumnItemsModel = new JSONModel();
 			oColumnItemsModel.loadData(configPath, null, false);
-			var aColumnData = oColumnItemsModel.getData();
-			var aItems = this._getItemAggrDataForPerso(aColumnData);
-			var oPersoData = {
+			let aColumnData = oColumnItemsModel.getData();
+			let aItems = this._getItemAggrDataForPerso(aColumnData);
+			let oPersoData = {
 				Table: tableId,
 				Type: "grid",
 				Items: aItems,
@@ -109,9 +104,9 @@ sap.ui.define([
 			return oPersoData;
 		},
 		_getItemAggrDataForPerso: function (aColumnData) {
-			var aItems = [];
-			for (var iCol in aColumnData) {
-				var oCol = aColumnData[iCol];
+			let aItems = [];
+			for (let iCol in aColumnData) {
+				let oCol = aColumnData[iCol];
 				aItems.push({
 					columnKey: oCol.columnKey,
 					text: this.fnGetResourceBundle(oCol.text)
@@ -120,12 +115,12 @@ sap.ui.define([
 			return aItems;
 		},
 		_fnOpenPersoDialog: function (oPersoData, sOrigTableId) {
-			var oInitialPersoModel, oMainPersoModel;
+			let oInitialPersoModel, oMainPersoModel;
 			oInitialPersoModel = new JSONModel(Object.assign({}, oPersoData));
 			oInitialPersoModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
-			var sInitialModelName = "initialPersoModel" + sOrigTableId;
-			var sMainPersoModelName = "mainPersoModel" + sOrigTableId;
-			var sPersoDataBeforeOpenModelName = "persoDataBeforeOpenModel" + sOrigTableId;
+			let sInitialModelName = "initialPersoModel" + sOrigTableId;
+			let sMainPersoModelName = "mainPersoModel" + sOrigTableId;
+			let sPersoDataBeforeOpenModelName = "persoDataBeforeOpenModel" + sOrigTableId;
 			this.getView().setModel(oInitialPersoModel, sInitialModelName);
 			oMainPersoModel = this.getView().getModel(sMainPersoModelName);
 			if (!oMainPersoModel) {
@@ -133,16 +128,16 @@ sap.ui.define([
 				oMainPersoModel.setDefaultBindingMode(sap.ui.model.BindingMode.TwoWay);
 				this.getView().setModel(oMainPersoModel, sMainPersoModelName);
 			}
-			var oDataBeforeOpenPersoDialogModel = new JSONModel(Object.assign({}, oMainPersoModel.getData()));
+			let oDataBeforeOpenPersoDialogModel = new JSONModel(Object.assign({}, oMainPersoModel.getData()));
 			this.getView().setModel(oDataBeforeOpenPersoDialogModel, sPersoDataBeforeOpenModelName);
-			var oView = this.getView();
+			let oView = this.getView();
 			if (!this.oPersonalizationDialog) {
 				this.oPersonalizationDialog = Fragment.load({
 					id: oView.getId(),
 					name: "com.vesi.zfac4_valtoker.view.fragment.PersonalizationDialog",
 					controller: this
 				}).then(function (oPersonalizationDialog) {
-					var oPersonalizationDialogMod = this._setStyleClassForPopup(oPersonalizationDialog);
+					let oPersonalizationDialogMod = this._setStyleClassForPopup(oPersonalizationDialog);
 					return oPersonalizationDialogMod;
 				}.bind(this));
 			}
@@ -156,7 +151,7 @@ sap.ui.define([
 			}.bind(this));
 		},
 		_setStyleClassForPopup: function (oPopup) {
-			var oDeviceData = this.getOwnerComponent().getModel("device").getData();
+			let oDeviceData = this.getOwnerComponent().getModel("device").getData();
 			if (oDeviceData.system.desktop) {
 				oPopup.addStyleClass("sapUiSizeCompact");
 			} else {
@@ -165,19 +160,19 @@ sap.ui.define([
 			return oPopup;
 		},
 		_isChangedColumnsItems: function (oPersonalizationDialog) {
-			var fnGetArrayElementByKey = function (sKey, sValue, aArray) {
-				var aElements = aArray.filter(function (oElement) {
+			let fnGetArrayElementByKey = function (sKey, sValue, aArray) {
+				let aElements = aArray.filter(function (oElement) {
 					return oElement[sKey] !== undefined && oElement[sKey] === sValue;
 				});
 				return aElements.length ? aElements[0] : null;
 			};
-			var fnGetUnion = function (aDataBase, aData) {
+			let fnGetUnion = function (aDataBase, aData) {
 				if (!aData) {
 					return Object.assign([], aDataBase);
 				}
-				var aUnion = Object.assign([], aData);
+				let aUnion = Object.assign([], aData);
 				aDataBase.forEach(function (oMItemBase) {
-					var oMItemUnion = fnGetArrayElementByKey("columnKey", oMItemBase.columnKey, aUnion);
+					let oMItemUnion = fnGetArrayElementByKey("columnKey", oMItemBase.columnKey, aUnion);
 					if (!oMItemUnion) {
 						aUnion.push(oMItemBase);
 						return;
@@ -197,14 +192,14 @@ sap.ui.define([
 				});
 				return aUnion;
 			};
-			var fnIsEqual = function (aDataBase, aData) {
+			let fnIsEqual = function (aDataBase, aData) {
 				if (!aData) {
 					return true;
 				}
 				if (aDataBase.length !== aData.length) {
 					return false;
 				}
-				var fnSort = function (a, b) {
+				let fnSort = function (a, b) {
 					if (a.columnKey < b.columnKey) {
 						return -1;
 					} else if (a.columnKey > b.columnKey) {
@@ -215,37 +210,37 @@ sap.ui.define([
 				};
 				aDataBase.sort(fnSort);
 				aData.sort(fnSort);
-				var aItemsNotEqual = aDataBase.filter(function (oDataBase, iIndex) {
+				let aItemsNotEqual = aDataBase.filter(function (oDataBase, iIndex) {
 					return oDataBase.columnKey !== aData[iIndex].columnKey || oDataBase.visible !== aData[iIndex].visible || oDataBase.index !==
 						aData[iIndex].index || oDataBase.width !== aData[iIndex].width || oDataBase.total !== aData[iIndex].total;
 				});
 				return aItemsNotEqual.length === 0;
 			};
-			var oPersoDialogModel = oPersonalizationDialog.getModel();
-			var sTableId = oPersoDialogModel.getProperty("/Table");
-			var sInitialPersoModelName = "initialPersoModel" + sTableId;
-			var oInitialPersoModel = this.getView().getModel(sInitialPersoModelName);
-			var sMainPersoModelName = "mainPersoModel" + sTableId;
-			var oMainPersoModel = this.getView().getModel(sMainPersoModelName);
-			var aDataRuntime = fnGetUnion(oInitialPersoModel.getProperty("/ColumnsItems"), oMainPersoModel.getProperty("/ColumnsItems"));
+			let oPersoDialogModel = oPersonalizationDialog.getModel();
+			let sTableId = oPersoDialogModel.getProperty("/Table");
+			let sInitialPersoModelName = "initialPersoModel" + sTableId;
+			let oInitialPersoModel = this.getView().getModel(sInitialPersoModelName);
+			let sMainPersoModelName = "mainPersoModel" + sTableId;
+			let oMainPersoModel = this.getView().getModel(sMainPersoModelName);
+			let aDataRuntime = fnGetUnion(oInitialPersoModel.getProperty("/ColumnsItems"), oMainPersoModel.getProperty("/ColumnsItems"));
 			return !fnIsEqual(aDataRuntime, oInitialPersoModel.getProperty("/ColumnsItems"));
 		},
 		onPersonalizeOkPress: function (oEvent) {
-			var oLocalEvent = oEvent.getParameter("payload").columns.tableItems;
-			var oSrc = oEvent.getSource();
+			let oLocalEvent = oEvent.getParameter("payload").columns.tableItems;
+			let oSrc = oEvent.getSource();
 			this.oPersonalizationDialog.then(function (oPersonalizationDialog) {
-				var oPersoDialogModel = oPersonalizationDialog.getModel();
-				var sTableId = oPersoDialogModel.getProperty("/Table");
-				var sTableType = oPersoDialogModel.getProperty("/Type");
-				var oTable = this.byId(sTableId);
-				var aColumns = this.byId(sTableId).getColumns();
-				var aPersonalizedCols = oLocalEvent;
+				let oPersoDialogModel = oPersonalizationDialog.getModel();
+				let sTableId = oPersoDialogModel.getProperty("/Table");
+				let sTableType = oPersoDialogModel.getProperty("/Type");
+				let oTable = this.byId(sTableId);
+				let aColumns = this.byId(sTableId).getColumns();
+				let aPersonalizedCols = oLocalEvent;
 				if (sTableType !== "grid") {
 					aPersonalizedCols.forEach(function (item, index) {
-						var sColKey = item.columnKey;
-						var oColumn = aColumns.find(function (oCol) {
-							var aSplitStrings = oCol.getId().split("--");
-							var sColId = aSplitStrings && aSplitStrings.length > 0 ? aSplitStrings[aSplitStrings.length - 1] : "";
+						let sColKey = item.columnKey;
+						let oColumn = aColumns.find(function (oCol) {
+							let aSplitStrings = oCol.getId().split("--");
+							let sColId = aSplitStrings && aSplitStrings.length > 0 ? aSplitStrings[aSplitStrings.length - 1] : "";
 							return (sColId === sColKey);
 						});
 						oColumn.setVisible(item.visible);
@@ -255,10 +250,10 @@ sap.ui.define([
 				} else {
 					oTable.removeAllColumns();
 					aPersonalizedCols.forEach(function (item, index) {
-						var sColKey = item.columnKey;
-						var oColumn = aColumns.find(function (oCol) {
-							var aSplitStrings = oCol.getId().split("--");
-							var sColId = aSplitStrings && aSplitStrings.length > 0 ? aSplitStrings[aSplitStrings.length - 1] : "";
+						let sColKey = item.columnKey;
+						let oColumn = aColumns.find(function (oCol) {
+							let aSplitStrings = oCol.getId().split("--");
+							let sColId = aSplitStrings && aSplitStrings.length > 0 ? aSplitStrings[aSplitStrings.length - 1] : "";
 							return (sColId === sColKey);
 						});
 						oColumn.setVisible(item.visible);
@@ -269,14 +264,14 @@ sap.ui.define([
 			}.bind(this));
 		},
 		onPersonalizeCancelPress: function (oEvent) {
-			var oSrc = oEvent.getSource();
+			let oSrc = oEvent.getSource();
 			this.oPersonalizationDialog.then(function (oPersonalizationDialog) {
-				var oPersoData = oPersonalizationDialog.getModel().getData();
-				var sTableId = oPersoData.Table;
-				var sPersoDataBeforeOpenModelName = "persoDataBeforeOpenModel" + sTableId;
-				var oPersoDataBeforeOpenModel = this.getView().getModel(sPersoDataBeforeOpenModelName);
-				var sMainPersoModelName = "mainPersoModel" + sTableId;
-				var oMainPersoModel = this.getView().getModel(sMainPersoModelName);
+				let oPersoData = oPersonalizationDialog.getModel().getData();
+				let sTableId = oPersoData.Table;
+				let sPersoDataBeforeOpenModelName = "persoDataBeforeOpenModel" + sTableId;
+				let oPersoDataBeforeOpenModel = this.getView().getModel(sPersoDataBeforeOpenModelName);
+				let sMainPersoModelName = "mainPersoModel" + sTableId;
+				let oMainPersoModel = this.getView().getModel(sMainPersoModelName);
 				oMainPersoModel.setProperty("/", Object.assign([], oPersoDataBeforeOpenModel.getData()));
 				oMainPersoModel.updateBindings(true);
 				oPersoDataBeforeOpenModel.setData({});
@@ -286,45 +281,47 @@ sap.ui.define([
 		},
 		onPersonalizeResetPress: function () {
 			this.oPersonalizationDialog.then(function (oPersonalizationDialog) {
-				var oPersoDialogModel = oPersonalizationDialog.getModel();
-				var sTableId = oPersoDialogModel.getProperty("/Table");
-				var sInitialPersoModelName = "initialPersoModel" + sTableId;
-				var oInitialPersoModel = this.getView().getModel(sInitialPersoModelName);
-				var sMainPersoModelName = "mainPersoModel" + sTableId;
-				var oMainPersoModel = this.getView().getModel(sMainPersoModelName);
-				var aInitialData = oInitialPersoModel.getData();
+				let oPersoDialogModel = oPersonalizationDialog.getModel();
+				let sTableId = oPersoDialogModel.getProperty("/Table");
+				let sInitialPersoModelName = "initialPersoModel" + sTableId;
+				let oInitialPersoModel = this.getView().getModel(sInitialPersoModelName);
+				let sMainPersoModelName = "mainPersoModel" + sTableId;
+				let oMainPersoModel = this.getView().getModel(sMainPersoModelName);
+				let aInitialData = oInitialPersoModel.getData();
 				oMainPersoModel.setProperty("/", Object.assign([], aInitialData));
 				oMainPersoModel.updateBindings(true);
 			}.bind(this));
 		},
-
 		/*
 		 * Get filters from home filter bar
 		 */
 		_fnGetFilters: function (sIdFilterBar) {
-			var aFiltersAll = [];
-			var aFilterBarFilters = this.byId(sIdFilterBar).getAllFilterItems();
-			for (var idx in aFilterBarFilters) {
-				var oFilter = aFilterBarFilters[idx];
-				var aFilters = [];
+			let aFiltersAll = [];
+			let aFilterBarFilters = this.byId(sIdFilterBar).getAllFilterItems();
+			for (let idx in aFilterBarFilters) {
+				let oFilter = aFilterBarFilters[idx];
+				let aFilters = [];
 				switch (oFilter.getGroupName()) {
 					case ("MultiInput"):
-						var aTokens = oFilter.getControl().getTokens();
-						for (var iTok in aTokens) {
-							var oToken = aTokens[iTok];
-							aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oToken.getKey()));
+						let aTokens = oFilter.getControl().getTokens();
+						for (let iTok in aTokens) {
+							let oToken = aTokens[iTok];
+							if (oFilter.getName() == "ContractId") {
+								aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oToken.getProperty("text")));
+							} else {
+								aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oToken.getKey()));
+							}
 						}
 						break;
-
 					case ("ComboBoxBoolean"):
 						if (oFilter.getControl().getSelectedKey() && oFilter.getControl().getSelectedKey() !== "0") {
 							aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oFilter.getControl().getSelectedKey() === "true"));
 						}
 						break;
 					case ("MultiComboBox"):
-						var aSelectedKeys = oFilter.getControl().getSelectedKeys();
-						for (var iSel in aSelectedKeys) {
-							var oSelectedKey = aSelectedKeys[iSel];
+						let aSelectedKeys = oFilter.getControl().getSelectedKeys();
+						for (let iSel in aSelectedKeys) {
+							let oSelectedKey = aSelectedKeys[iSel];
 							aFilters.push(new Filter(oFilter.getName(), FilterOperator.EQ, oSelectedKey));
 						}
 						break;
@@ -333,7 +330,6 @@ sap.ui.define([
 					aFiltersAll.push(new Filter(aFilters, false));
 				}
 			}
-
 			if (aFiltersAll.length > 0) {
 				return aFiltersAll;
 			}

@@ -10,7 +10,7 @@
 		search="onFiltersSearch" 
 		clear="onFiltersClear">
 		<fb:filterGroupItems>
-			<fb:FilterGroupItem
+			<fb:FilterGroupItem 
 				groupName="MultiInput"
 				name="ContractId" 
 				label="{i18n>filterGroupItemFilterLabelContract}" 
@@ -18,17 +18,15 @@
 				<fb:control>
 					<MultiInput 
 						id="ContractId" 
-						valueHelpRequest=".onValueHelpRequested" 
-						valueHelpOnly="true"
-						tokens="{mTokens>/ContractId}"
+						valueHelpRequest="onIdContractValueHelpRequest" 
+						valueHelpOnly="true" 
+						tokens='{mTokens>/ContractId}'
 						tokenUpdate="onUpdateToken">
 						<tokens>
-							<Token 
-								key="{mTokens>Id}"
-								text="{mTokens>Text}"/>
+							<Token text='{mTokens>Id}'/>
 						</tokens>
 					</MultiInput>
-				</fb:control>	
+				</fb:control>
 			</fb:FilterGroupItem>
 			<fb:FilterGroupItem
 				groupName="MultiInput"
@@ -61,11 +59,11 @@
 						showSecondaryValues="true"
 						items="{
 							path: 'VH>/CharacteristicValueListSet',
-    						templateShareable: true, 
+							templateShareable: true, 
 							filters : {
 								path : 'CharactId',
-                				operator : 'EQ',
-                				value1 : 'YLO_SITE_TYPE'
+								operator : 'EQ',
+								value1 : 'YLO_SITE_TYPE'
 							}}">
 						<core:ListItem
 							key="{VH>CharactValueChar}" 
@@ -117,16 +115,16 @@
 						showSecondaryValues="true"
 						items="{
 							path: 'VH>/UserStatusSet',
-    						templateShareable: true, 
+							templateShareable: true, 
 							filters : {
 								filters : [{
 									path : 'Object',
-	                				operator : 'EQ',
-	                				value1 : 'LoomaLocation'
+									operator : 'EQ',
+									value1 : 'LoomaLocation'
 								},{
 									path : 'IsValPecFilterable',
-	                				operator : 'EQ',
-	                				value1 : true
+									operator : 'EQ',
+									value1 : true
 								}],
 								and: true
 							},

@@ -851,6 +851,8 @@ sap.ui.define(
               oLine.UsageId === "" ? "" : oDDICValue.UsageId[oLine.UsageId].ValueDesc;
             oLine.Anomaly = oLine.Anomaly.length > 0 ? oLine.Anomaly : "";
             oLine.HasAnomaly = oLine.HasAnomaly === true ? true : false;
+            let iLine = null;
+            let oLineMod = null;
             for (let sPorperty in oLine) {
               if (oDDICValue[sPorperty]) {
                 //Manage only properties with value list (from DDIC)
@@ -866,8 +868,8 @@ sap.ui.define(
             oLine.ModifiedInfo = [];
             oLine.ModifiedProperty = [];
             //Manage Modified info on characteristics with multi value
-            for (let iLine in oLine.ModifiedInfoTmp) {
-              let oLineMod = oLine.ModifiedInfoTmp[iLine];
+            for (iLine in oLine.ModifiedInfoTmp) {
+              oLineMod = oLine.ModifiedInfoTmp[iLine];
               if (oLineMod.IsCharacteristic) {
                 //Line is a characteristic
                 let sSplitOld = oLineMod.ValueOld.split("¤");

@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
+specVersion: "2.5"
+metadata:
+  name: com.vesi.zfac4_valtoker
+type: application
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        ignoreCertError: false
+        target:
+            url: https://vinapdvp0400.vinci-energies.net
+            client: "550"
+        credentials:
+          username: env:S4HANA_USER
+          password: env:S4HANA_PWD
+        app:
+          name: ZFAC4_VALTOKER
+          description: SME_C4_W:ZFAC4_VALTOKER DO NOT TRANSPORT
+          package: ZDEV_C4_FIORI_TAKEOVER
+          transport: DVPK9A83TN
+        exclude:
+          - /test/
+              # Ajoutez cette tâche "ui5" avec le paramètre "loglevel"
+    - name: ui5
+      afterTask: deploy-to-abap
+      configuration:
+        loglevel: debug

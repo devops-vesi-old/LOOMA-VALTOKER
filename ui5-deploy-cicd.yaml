@@ -21,9 +21,9 @@ builder:
           username: env:S4HANA_USER
           password: env:S4HANA_PWD
         app:
-          name: ZFAC4_QUOTATN
-          description: SME_C4_W:ZFAC4_QUOTATN DO NOT TRANSPORT
-          package: ZDEV_C4_FIORI_QUOTATN
+          name: ZFAC4_VALTOKER
+          description: SME_C4_W:ZFAC4_VALTOKER DO NOT TRANSPORT
+          package: ZDEV_C4_FIORI_TAKEOVER
           transport: DVPK9A83TN
         exclude:
           - /test/

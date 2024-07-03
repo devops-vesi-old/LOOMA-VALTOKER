@@ -19,6 +19,7 @@ sap.ui.define(
     "sap/ui/core/BusyIndicator",
     "sap/m/ObjectStatus",
     "sap/ui/model/Sorter",
+	"sap/ui/core/ValueState",
   ],
   function (
     BaseController,
@@ -39,7 +40,8 @@ sap.ui.define(
     Text,
     BusyIndicator,
     ObjectStatus,
-    Sorter
+    Sorter,
+    ValueState
   ) {
     "use strict";
     const FRAGMENT_PATH = "com.vesi.zfac4_valtoker.view.fragment.Detail.";
@@ -654,13 +656,13 @@ sap.ui.define(
           this[sDialogName] = new sap.m.Dialog({
             type: sap.m.DialogType.Message,
             title: "Error",
-            state: sap.m.ValueState.Error,
-            content: sText,
+            state: ValueState.Error,
+            content: new Text({text:sText}),
             beginButton: new sap.m.Button({
               type: "Emphasized",
-              text: this.getResourceBundle("close"),
+              text: this.fnGetResourceBundle("close"),
               press: function () {
-                this.oErrorMessageDialog.close();
+                this[[sDialogName]].close();
               }.bind(this),
             }),
           });
@@ -1184,6 +1186,26 @@ sap.ui.define(
           : sNo;
         oLine.FamilyCharactImportantSorter = iTot === 0 ? 1 : iCount / iTot;
       },
+
+      _fnExtractErrorMessage: function (oError) {
+        if (!oError) return;
+        let sMessage = "";
+        if (oError.hasOwnProperty("responseText")) {
+          const { responseText } = oError;
+          const oResponse = JSON.parse(responseText);
+          sMessage = this._fnExtractInnerError(oResponse);
+        }
+        return sMessage;
+      },
+      _fnExtractInnerError: function (oError) {
+        const { error } = oError;
+        if (!error) return;
+        const { innererror: { errordetails } } = error;
+        if(!errordetails || errordetails.length === 0) return;
+        const oMessage = errordetails.find(error => error.code === "ZMC_C4_PEC/001");
+        if(!oMessage) return;
+        return oMessage.message;
+      },
       /*
        * Method is called to update status for 1 object
        */
@@ -1205,9 +1227,10 @@ sap.ui.define(
             if (sEquipmentId !== "") {
               this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
             }
+            const sErrorMessage = this._fnExtractErrorMessage(oData);
             this._MessageError(
               "oError" + sObjectName + "Status",
-              this.fnGetResourceBundle("DialogErrorStatusChange")
+              sErrorMessage ?? this.fnGetResourceBundle("DialogErrorStatusChange")
             );
           }.bind(this),
         };

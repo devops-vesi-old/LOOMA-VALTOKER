@@ -19,6 +19,7 @@ sap.ui.define(
     "sap/ui/core/BusyIndicator",
     "sap/m/ObjectStatus",
     "sap/ui/model/Sorter",
+    "sap/ui/core/ValueState",
   ],
   function (
     BaseController,
@@ -39,7 +40,8 @@ sap.ui.define(
     Text,
     BusyIndicator,
     ObjectStatus,
-    Sorter
+    Sorter,
+    ValueState
   ) {
     "use strict";
     const FRAGMENT_PATH = "com.vesi.zfac4_valtoker.view.fragment.Detail.";
@@ -654,13 +656,13 @@ sap.ui.define(
           this[sDialogName] = new sap.m.Dialog({
             type: sap.m.DialogType.Message,
             title: "Error",
-            state: sap.m.ValueState.Error,
-            content: sText,
+            state: ValueState.Error,
+            content: new Text({ text: sText }),
             beginButton: new sap.m.Button({
               type: "Emphasized",
-              text: this.getResourceBundle("close"),
+              text: this.fnGetResourceBundle("close"),
               press: function () {
-                this.oErrorMessageDialog.close();
+                this[[sDialogName]].close();
               }.bind(this),
             }),
           });
@@ -1015,7 +1017,7 @@ sap.ui.define(
           oLineMod.FieldI18n === "FamilyId"
         ) {
           // Manage description from VH (Family Function, Domain)
-        let sLink = oLineMod.FieldI18n.split("Id").shift();
+          let sLink = oLineMod.FieldI18n.split("Id").shift();
           oLineMod.ValueOldDesc =
             oLineMod.ValueOld === "" ? "" : oVH[sLink][oLineMod.ValueOld].Desc;
           oLineMod.ValueNewDesc =
@@ -1130,14 +1132,14 @@ sap.ui.define(
        */
       _fnSetAmdecCounter: function (oLine, sYes, sNo) {
         let aAmdecProp = [
-            "AmdecStateId",
-            "AmdecDisrepairId",
-            "AmdecAccessibilityId",
-            "AmdecReliabilityId",
-            "AmdecCriticityId",
-            "AmdecDetectabilityId",
-            "AmdecFunctionningId",
-          ],
+          "AmdecStateId",
+          "AmdecDisrepairId",
+          "AmdecAccessibilityId",
+          "AmdecReliabilityId",
+          "AmdecCriticityId",
+          "AmdecDetectabilityId",
+          "AmdecFunctionningId",
+        ],
           iTot = 0,
           iCount = 0;
         for (let idx in aAmdecProp) {
@@ -1184,6 +1186,26 @@ sap.ui.define(
           : sNo;
         oLine.FamilyCharactImportantSorter = iTot === 0 ? 1 : iCount / iTot;
       },
+
+      _fnExtractErrorMessage: function (oError) {
+        if (!oError) return;
+        let sMessage = "";
+        if (oError.hasOwnProperty("responseText")) {
+          const { responseText } = oError;
+          const oResponse = JSON.parse(responseText);
+          sMessage = this._fnExtractInnerError(oResponse);
+        }
+        return sMessage;
+      },
+      _fnExtractInnerError: function (oError) {
+        const { error } = oError;
+        if (!error) return;
+        const { innererror: { errordetails } } = error;
+        if (!errordetails || errordetails.length === 0) return;
+        const oMessage = errordetails.find(error => error.code === "ZMC_C4_PEC/001");
+        if (!oMessage) return;
+        return oMessage.message;
+      },
       /*
        * Method is called to update status for 1 object
        */
@@ -1202,12 +1224,11 @@ sap.ui.define(
           }.bind(this),
           error: function (oData, resp) {
             this.fnHideBusyIndicator();
-            if (sEquipmentId !== "") {
-              this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
-            }
-            this._MessageError(
+            this._fnHandleUpdateStatusError(
+              sEquipmentId !== "", 
+              sObjectName, 
               "oError" + sObjectName + "Status",
-              this.fnGetResourceBundle("DialogErrorStatusChange")
+              oData
             );
           }.bind(this),
         };
@@ -1245,6 +1266,22 @@ sap.ui.define(
           .getObject().EquipmentId;
         this._ApplyStatus(oEvent, sNewStatus, sEquipmentId, "", false);
       },
+      _fnHandleUpdateStatusError: function (bIsEquipments, sObjectName, sDialogName, oError) {
+        if (bIsEquipments) {
+          this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
+        }
+        let sErrorMessage = this.fnGetResourceBundle("DialogErrorStatusChange");
+        if(oError.hasOwnProperty("error")) {
+          sErrorMessage = this._fnExtractInnerError(oError);
+        } else {
+          sErrorMessage = this._fnExtractErrorMessage(oError);
+        }
+        
+        return this._MessageError(
+          sDialogName,
+          sErrorMessage
+        );
+      },
       /*
        * Method is called to update status for a list of Object
        */
@@ -1266,6 +1303,16 @@ sap.ui.define(
             this._bRefreshHierarchy = true;
             this.fnHideBusyIndicator();
             this._bindTreeTable();
+            const { __batchResponses: aBatchResponse } = oData;
+            const { response: oResponse } = aBatchResponse[0];
+            if (oResponse.statusCode === "500") {
+              return this._fnHandleUpdateStatusError(
+                bIsEquipments, 
+                sObjectName, 
+                "oErrorMass" + sObjectName, 
+                JSON.parse(oResponse.body)
+              )
+            }
             if (bIsEquipments) {
               this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
             }
@@ -1273,13 +1320,12 @@ sap.ui.define(
           }.bind(this),
           error: function (oData, resp) {
             this.fnHideBusyIndicator();
-            if (bIsEquipments) {
-              this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
-            }
-            this._MessageError(
-              "oErrorMass" + sObjectName,
-              this.fnGetResourceBundle("DialogErrorStatusChange")
-            );
+            this._fnHandleUpdateStatusError(
+              bIsEquipments, 
+              sObjectName, 
+              "oErrorMass" + sObjectName, 
+              JSON.parse(oResponse.body)
+            )
           }.bind(this),
         };
         // Set deferred group for mass call
@@ -1365,9 +1411,9 @@ sap.ui.define(
        */
       _setExcelColumns: function (oExcel, aColSize, oColumnProperties) {
         let iHeaderStyle = oExcel.generateNewStyle({
-            font: "Calibri 12 B",
-            fill: "#F2F2F2",
-          }),
+          font: "Calibri 12 B",
+          fill: "#F2F2F2",
+        }),
           iSheetProperties = 0,
           iRow = 0;
         // Set first sheet with properties
@@ -1409,8 +1455,8 @@ sap.ui.define(
        */
       _setExcelRows: function (oExcel, aData, aColSize, oColumnProperties) {
         let iDefaultStyle = oExcel.generateNewStyle({
-            align: "L T W", //Left Top Wrap
-          }),
+          align: "L T W", //Left Top Wrap
+        }),
           iGreenStyle = oExcel.generateNewStyle({
             font: "Calibri 12 " + "#00B050" + " B",
             align: "L T W", //Left Top Wrap
@@ -1477,17 +1523,17 @@ sap.ui.define(
        */
       _otherProperties: function (oObject) {
         let aFieldToCheck = [
-            "BrandId",
-            "Critical",
-            "InstallYear",
-            "Manufref",
-            "PecDeepAnalysisNeededDesc",
-            "PecQuoteDesc",
-            "PecTrainingReqDesc",
-            "Qrcode",
-            "SerialNumber",
-            "WarrantyEndDateText",
-          ],
+          "BrandId",
+          "Critical",
+          "InstallYear",
+          "Manufref",
+          "PecDeepAnalysisNeededDesc",
+          "PecQuoteDesc",
+          "PecTrainingReqDesc",
+          "Qrcode",
+          "SerialNumber",
+          "WarrantyEndDateText",
+        ],
           aOtherProperties = [];
         for (let iProp in aFieldToCheck) {
           let sProp = aFieldToCheck[iProp];
@@ -1565,9 +1611,8 @@ sap.ui.define(
                     });
                     oToolbar = new OverflowToolbar();
                     let oTitle = new Title({
-                      text: `${this.fnGetResourceBundle("TitleAnomaly")} - ${
-                        aAnomalies[i].AnomalyId
-                      }`,
+                      text: `${this.fnGetResourceBundle("TitleAnomaly")} - ${aAnomalies[i].AnomalyId
+                        }`,
                     });
                     for (let iProp in aFieldToCheck) {
                       let sProp = aFieldToCheck[iProp];
@@ -2153,14 +2198,14 @@ sap.ui.define(
        */
       onDisplayDetailEquipment: function (oEvent) {
         let oAmdec = {
-            Amdec1: [
-              "AmdecStateId",
-              "AmdecDisrepairId",
-              "AmdecAccessibilityId",
-              "AmdecFunctionningId",
-            ],
-            Amdec2: ["AmdecCriticityId", "AmdecDetectabilityId", "AmdecReliabilityId"],
-          },
+          Amdec1: [
+            "AmdecStateId",
+            "AmdecDisrepairId",
+            "AmdecAccessibilityId",
+            "AmdecFunctionningId",
+          ],
+          Amdec2: ["AmdecCriticityId", "AmdecDetectabilityId", "AmdecReliabilityId"],
+        },
           oObjectView = oEvent.getSource(),
           idFrag = oObjectView.getId().split("Object").pop().split("-").shift(),
           idThisPopover = "_" + idFrag + "Popover",
@@ -2233,13 +2278,13 @@ sap.ui.define(
           return;
         }
         let oExcel = new Excel("Calibri 12", [
-            {
-              name: "Tab",
-              bFreezePane: true,
-              iCol: 0,
-              iRow: 2,
-            },
-          ]),
+          {
+            name: "Tab",
+            bFreezePane: true,
+            iCol: 0,
+            iRow: 2,
+          },
+        ]),
           oData = this.fnGetModel("mEquipment").getData(),
           aColSize = {
             Sheet0: [], //Sheet 1

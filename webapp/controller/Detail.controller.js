@@ -1305,7 +1305,7 @@ sap.ui.define(
             this._bindTreeTable();
             const { __batchResponses: aBatchResponse } = oData;
             const { response: oResponse } = aBatchResponse[0];
-            if (oResponse.statusCode === "500") {
+            if (oResponse && oResponse.statusCode === "500") {
               return this._fnHandleUpdateStatusError(
                 bIsEquipments, 
                 sObjectName, 
@@ -1356,6 +1356,7 @@ sap.ui.define(
             EquipmentId: bIsEquipments ? oObjectSelected.EquipmentId : "",
             LocationId: bIsEquipments ? "" : oObjectSelected.LocationId,
             UserStatusId: sNewStatus,
+            MassProcess: true
           };
           this.fnShowBusyIndicator(null, 0);
           oModel.create("/UserStatusSet", payload, oSingleParameters);

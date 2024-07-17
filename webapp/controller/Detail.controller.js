@@ -1305,7 +1305,7 @@ sap.ui.define(
             this._bindTreeTable();
             const { __batchResponses: aBatchResponse } = oData;
             const { response: oResponse } = aBatchResponse[0];
-            if (oResponse && oResponse.statusCode === "500") {
+            if (oResponse?.statusCode === "500") {
               return this._fnHandleUpdateStatusError(
                 bIsEquipments, 
                 sObjectName, 
@@ -1334,22 +1334,18 @@ sap.ui.define(
         // Get rows
         let oObjectTable = this.byId(sTableName);
         const oSelectAllLocModel = this.getView().getModel("oSelectAllLocationsModel");
-        let bSelectAllLoc = oSelectAllLocModel.getProperty("/bSelectAll"),
-          aIndexSelected;
+        let bSelectAllLoc = oSelectAllLocModel.getProperty("/bSelectAll");
+        let aIndexSelected = oObjectTable.getSelectedIndices(); //Initially get selected indexes;
         if (bSelectAllLoc && sTableName == "LocationHierarchyTreeTable") {
           aIndexSelected = oSelectAllLocModel.getProperty("/aSelectedIndices");
-        } else {
-          // Get indices selected
-          aIndexSelected = oObjectTable.getSelectedIndices();
         }
         //Initialize the call by Indices selected
         let oObjectSelected;
         for (let iInd in aIndexSelected) {
+          oObjectSelected = oObjectTable.getContextByIndex(aIndexSelected[iInd]).getObject();
           if (bSelectAllLoc) {
             const aSelectedLoc = oSelectAllLocModel.getProperty("/aSelectedLocations");
             oObjectSelected = aSelectedLoc[iInd];
-          } else {
-            oObjectSelected = oObjectTable.getContextByIndex(aIndexSelected[iInd]).getObject();
           }
           let payload = {
             Scope: "PEC",

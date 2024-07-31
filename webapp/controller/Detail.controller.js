@@ -20,6 +20,7 @@ sap.ui.define(
     "sap/m/ObjectStatus",
     "sap/ui/model/Sorter",
     "sap/ui/core/ValueState",
+    "sap/base/security/URLListValidator"
   ],
   function (
     BaseController,
@@ -41,7 +42,8 @@ sap.ui.define(
     BusyIndicator,
     ObjectStatus,
     Sorter,
-    ValueState
+    ValueState,
+    URLListValidator
   ) {
     "use strict";
     const FRAGMENT_PATH = "com.vesi.zfac4_valtoker.view.fragment.Detail.";
@@ -1656,113 +1658,106 @@ sap.ui.define(
       },
       onAnomalyPhotoIconPress: function (oEvent) {
         let oObjectView = oEvent.getSource(),
-          oObject =
-            oObjectView === ""
-              ? {}
-              : oEvent.getSource().getParent().getRowBindingContext().getObject(),
-          aURL = [],
-          aTempURL = [],
-          pictureCounter = 0;
+            oObject =
+                oObjectView === ""
+                    ? {}
+                    : oEvent.getSource().getParent().getRowBindingContext().getObject(),
+            aURL = [],
+            aTempURL = [],
+            pictureCounter = 0;
         const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
         oAnomalyModel.setProperty("/aURL", aURL);
         this.getOwnerComponent()
-          .getModel()
-          .read(`/EquipmentSet('${oObject.EquipmentId}')`, {
-            urlParameters: {
-              $expand: "Anomaly",
-            },
-            success: function (oAnomalyData, response) {
-              let aAnomalies = oAnomalyData.Anomaly.results;
-              aAnomalies.forEach((anomaly) => {
-                let aFilters = [];
-                aFilters.push(
-                  new Filter("ObjectId", FilterOperator.EQ, `0000${anomaly.AnomalyId}`)
-                );
-                this.getOwnerComponent()
-                  .getModel()
-                  .read("/AnomalyPhotosSet", {
-                    filters: aFilters,
-                    success: function (oData) {
-                      oAnomalyModel.setProperty("/aAnomalyPhotoAttachments", []);
-                      let aCurrentAnomalyPhotoAttachments = oAnomalyModel.getProperty(
-                        "/aAnomalyPhotoAttachments"
-                      );
-                      if (oData.results.length >= 1) {
-                        pictureCounter = pictureCounter + 1;
-                        if (aCurrentAnomalyPhotoAttachments.length > 1) {
-                          aCurrentAnomalyPhotoAttachments.concat(oData.results);
-                        } else {
-                          oAnomalyModel.setProperty("/aAnomalyPhotoAttachments", oData.results);
-                        }
-                        let aAnomalyPhotoAttachmentIds = oAnomalyModel.getProperty(
-                          "/aAnomalyPhotoAttachments"
+            .getModel()
+            .read(`/EquipmentSet('${oObject.EquipmentId}')`, {
+                urlParameters: {
+                    $expand: "Anomaly",
+                },
+                success: function (oAnomalyData, response) {
+                    let aAnomalies = oAnomalyData.Anomaly.results;
+                    aAnomalies.forEach((anomaly) => {
+                        let aFilters = [];
+                        aFilters.push(
+                            new Filter("ObjectId", FilterOperator.EQ, `0000${anomaly.AnomalyId}`)
                         );
-                        aAnomalyPhotoAttachmentIds.forEach((attachmentId) => {
-                          let sURL = `/sap/opu/odata/sap/ZSRC4_PEC_SRV/AnomalyPhotoSet('${attachmentId.AttachmentID}')/$value`;
-                          jQuery.ajax({
-                            url: sURL,
-                            cache: false,
-                            xhr: function () {
-                              let xhr = new XMLHttpRequest();
-                              xhr.responseType = "blob";
-                              return xhr;
-                            },
-                            success: function (data) {
-                              jQuery.sap.addUrlWhitelist("blob");
-                              aTempURL = [];
-                              aTempURL.push({
-                                url: URL.createObjectURL(data),
-                              });
-                              let aCurrentURL = oAnomalyModel.getProperty("/aURL");
-                              if (aCurrentURL.length > 0) {
-                                aURL = aTempURL.concat(aCurrentURL);
-                                oAnomalyModel.setProperty("/aURL", aURL);
-                              } else {
-                                oAnomalyModel.setProperty("/aURL", aTempURL);
-                              }
-                              this.fnHideBusyIndicator();
-                            }.bind(this),
-                            error: function (oErr) {
-                              MessageBox.error(oErr);
-                              this.fnHideBusyIndicator();
-                            }.bind(this),
-                          });
-                        });
-                      } else {
-                        if (pictureCounter == 0) {
-                          this.onAnomalyPictureDialogCancel();
-                          MessageBox.information("L'anomalie n'a pas de photo.");
-                        }
-                      }
-                      this.fnHideBusyIndicator();
-                    }.bind(this),
-                    error: function (oError) {
-                      this.fnHideBusyIndicator();
-                      MessageBox.error(oError);
-                    }.bind(this),
-                  });
-              });
-            }.bind(this),
-            error: function (oError) {
-              MessageBox.error(oError);
-              this.fnHideBusyIndicator();
-            }.bind(this),
-          });
+                        this.getOwnerComponent()
+                            .getModel()
+                            .read("/AnomalyPhotosSet", {
+                                filters: aFilters,
+                                success: function (oData) {
+                                    oAnomalyModel.setProperty("/aAnomalyPhotoAttachments", []);
+                                    let aCurrentAnomalyPhotoAttachments = oAnomalyModel.getProperty(
+                                        "/aAnomalyPhotoAttachments"
+                                    );
+                                    if (oData.results.length >= 1) {
+                                        pictureCounter = pictureCounter + 1;
+                                        if (aCurrentAnomalyPhotoAttachments.length > 1) {
+                                            aCurrentAnomalyPhotoAttachments = aCurrentAnomalyPhotoAttachments.concat(oData.results);
+                                        } else {
+                                            oAnomalyModel.setProperty("/aAnomalyPhotoAttachments", oData.results);
+                                        }
+                                        let aAnomalyPhotoAttachmentIds = oAnomalyModel.getProperty(
+                                            "/aAnomalyPhotoAttachments"
+                                        );
+                                        aAnomalyPhotoAttachmentIds.forEach((attachmentId) => {
+                                            let sURL = `/sap/opu/odata/sap/ZSRC4_PEC_SRV/AnomalyPhotoSet('${attachmentId.AttachmentID}')/$value`;
+                                            URLListValidator.add("blob");
+                                            fetch(sURL)
+                                                .then(response => response.blob())
+                                                .then(data => {
+                                                    aTempURL = [];
+                                                    aTempURL.push({
+                                                        url: URL.createObjectURL(data),
+                                                    });
+                                                    let aCurrentURL = oAnomalyModel.getProperty("/aURL");
+                                                    if (aCurrentURL.length > 0) {
+                                                        aURL = aTempURL.concat(aCurrentURL);
+                                                        oAnomalyModel.setProperty("/aURL", aURL);
+                                                    } else {
+                                                        oAnomalyModel.setProperty("/aURL", aTempURL);
+                                                    }
+                                                    this.fnHideBusyIndicator();
+                                                })
+                                                .catch(oErr => {
+                                                    MessageBox.error(oErr);
+                                                    this.fnHideBusyIndicator();
+                                                });
+                                        });
+                                    } else {
+                                        if (pictureCounter == 0) {
+                                            this.onAnomalyPictureDialogCancel();
+                                            MessageBox.information("L'anomalie n'a pas de photo.");
+                                        }
+                                    }
+                                    this.fnHideBusyIndicator();
+                                }.bind(this),
+                                error: function (oError) {
+                                    this.fnHideBusyIndicator();
+                                    MessageBox.error(oError);
+                                }.bind(this),
+                            });
+                    });
+                }.bind(this),
+                error: function (oError) {
+                    MessageBox.error(oError);
+                    this.fnHideBusyIndicator();
+                }.bind(this),
+            });
         // create dialog lazily
         if (!this.byId("idAnomalyPicturesCarouselDialog")) {
-          // load asynchronous XML fragment
-          let oPromise = this._loadFragment("AnomalyPicturesCarousel");
-          oPromise.then(
-            function (oDialog) {
-              oDialog.open();
-              this.fnShowBusyIndicator(null, 0);
-            }.bind(this)
-          );
+            // load asynchronous XML fragment
+            let oPromise = this._loadFragment("AnomalyPicturesCarousel");
+            oPromise.then(
+                function (oDialog) {
+                    oDialog.open();
+                    this.fnShowBusyIndicator(null, 0);
+                }.bind(this)
+            );
         } else {
-          this.byId("idAnomalyPicturesCarouselDialog").open();
-          this.fnShowBusyIndicator(null, 0);
+            this.byId("idAnomalyPicturesCarouselDialog").open();
+            this.fnShowBusyIndicator(null, 0);
         }
-      },
+    },
       onAnomalyPictureDialogCancel: function () {
         this.byId("idAnomalyPicturesCarouselDialog").close();
       },

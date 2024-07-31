@@ -43,14 +43,15 @@ sap.ui.define([
 			sap.ui.core.BusyIndicator.show(iDelay);
 			if (iDuration && iDuration > 0) {
 				if (this._sTimeoutId) {
-					jQuery.sap.clearDelayedCall(this._sTimeoutId);
+					window.clearTimeout(this._sTimeoutId);
 					this._sTimeoutId = null;
 				}
-				this._sTimeoutId = jQuery.sap.delayedCall(iDuration, this, function () {
+				this._sTimeoutId = window.setTimeout(function () {
 					this.fnHideBusyIndicator();
-				});
+				}.bind(this), iDuration);
 			}
 		},
+
 		/*
 		 * Called to hide busy Indicator
 		 */

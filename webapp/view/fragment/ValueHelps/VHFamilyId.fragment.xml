@@ -1,0 +1,20 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <SelectDialog
+        id="FamilyIdDialog"
+        noDataText="{i18n>noDataFound}"
+        title="{i18n>family}"
+        search="onEquipFamilyValueHelpSearch"
+        confirm="onValueHelpConfirm"
+        cancel="onValueHelpClose"
+        items="{
+            path: 'EquipmentSiteModel>/VH_FamilySet',
+            templateShareable: true
+        }"
+        multiSelect="true"
+    >
+        <StandardListItem title="{EquipmentSiteModel>FamilyDescription}" />
+    </SelectDialog>
+</core:FragmentDefinition>

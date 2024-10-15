@@ -1,0 +1,255 @@
+{
+  "bSaveButtonEnabled": true,
+  "TableForm": [
+    {
+      "EquipmentInfo": "equipmentId",
+      "FieldProperty": "EquipmentId",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "equipmentName",
+      "FieldProperty": "EquipmentName",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "equipmentNameLong",
+      "FieldProperty": "EquipmentNameLong",
+      "Editable": true,
+      "InputType": "Text",
+      "ShowRoolbackButton": true
+    },
+    {
+      "EquipmentInfo": "brandId",
+      "FieldProperty": "BrandId",
+      "Editable": true,
+      "InputType": "Text",
+      "ShowRoolbackButton": true
+    },
+    {
+      "EquipmentInfo": "quantity",
+      "FieldProperty": "Quantity",
+      "Editable": true,
+      "InputType": "Text",
+      "ShowRoolbackButton": true
+    },
+    {
+      "EquipmentInfo": "locationName",
+      "FieldProperty": "LocationName",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "superiorEquipName",
+      "FieldProperty": "SuperiorEquiName",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "siteName",
+      "FieldProperty": "SiteName",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "zone1",
+      "FieldProperty": "Zone1",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "zone2",
+      "FieldProperty": "Zone2",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "qrCode",
+      "FieldProperty": "Qrcode",
+      "Editable": true,
+      "InputType": "Text",
+      "ShowRoolbackButton": true
+    },
+    {
+      "EquipmentInfo": "manuRef",
+      "FieldProperty": "Manufref",
+      "Editable": true,
+      "InputType": "Text",
+      "ShowRoolbackButton": true
+    },
+    {
+      "EquipmentInfo": "legalConstraint",
+      "FieldProperty": "LegalConstraint",
+      "Editable": false,
+      "InputType": "BoolSelect",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "installDate",
+      "FieldProperty": "InstallDate",
+      "Editable": true,
+      "InputType": "Date",
+      "DisplayFormat": "dd.MM.yyyy",
+      "Placeholder": "dd.mm.yyyy",
+      "ShowRoolbackButton": true
+    },
+    {
+      "EquipmentInfo": "serialNumber",
+      "FieldProperty": "SerialNumber",
+      "Editable": true,
+      "InputType": "Text",
+      "ShowRoolbackButton": true
+    },
+    {
+      "EquipmentInfo": "theoreticalLifeSpan",
+      "FieldProperty": "LifeDuration",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "amdecTechnicalComment",
+      "FieldProperty": "AmdecTechnicalScoreComment",
+      "Editable": true,
+      "InputType": "Text",
+      "ShowRoolbackButton": true
+    },
+    {
+      "EquipmentInfo": "amdecFunctionningId",
+      "FieldProperty": "AmdecFunctionningId",
+      "Editable": true,
+      "InputType": "ValueHelp",
+      "ValueHelpDialog": "VHAmdecFunctionning",
+      "ValueHelpDataProperty": "AmdecFunctionning",
+      "ShowRoolbackButton": true,
+      "DialogName": "_oAmdecFunctionningDialog"
+    },
+    {
+      "EquipmentInfo": "state",
+      "FieldProperty": "AmdecStateId",
+      "Editable": true,
+      "InputType": "ValueHelp",
+      "ValueHelpDialog": "VHAmdecState",
+      "ValueHelpDataProperty": "AmdecState",
+      "ShowRoolbackButton": true,
+      "DialogName": "_oAmdecStateDialog"
+    },
+    {
+      "EquipmentInfo": "amdecDisrepair",
+      "FieldProperty": "AmdecDisrepairId",
+      "Editable": true,
+      "InputType": "ValueHelp",
+      "ValueHelpDialog": "VHAmdecDisrepair",
+      "ValueHelpDataProperty": "AmdecDisrepair",
+      "ShowRoolbackButton": true,
+      "DialogName": "_oAmdecDisrepairDialog"
+    },
+    {
+      "EquipmentInfo": "amdecAccessbility",
+      "FieldProperty": "AmdecAccessibilityId",
+      "Editable": true,
+      "InputType": "ValueHelp",
+      "ValueHelpDialog": "VHAmdecAccessibility",
+      "ValueHelpDataProperty": "AmdecAccessibility",
+      "ShowRoolbackButton": true,
+      "DialogName": "_oAmdecAccessbilityDialog"
+    },
+    {
+      "EquipmentInfo": "amdecSeverityComment",
+      "FieldProperty": "AmdecSeverityScoreComment",
+      "Editable": true,
+      "InputType": "Text",
+      "ShowRoolbackButton": true
+    },
+    {
+      "EquipmentInfo": "reliability",
+      "FieldProperty": "AmdecReliabilityId",
+      "Editable": true,
+      "InputType": "ValueHelp",
+      "ValueHelpDialog": "VHAmdecReliability",
+      "ValueHelpDataProperty": "AmdecReliability",
+      "ShowRoolbackButton": true,
+      "DialogName": "_oAmdecReliabilityDialog"
+    },
+    {
+      "EquipmentInfo": "amdecCriticity",
+      "FieldProperty": "AmdecCriticityId",
+      "Editable": true,
+      "InputType": "ValueHelp",
+      "ValueHelpDialog": "VHAmdecCriticity",
+      "ValueHelpDataProperty": "AmdecCriticity",
+      "ShowRoolbackButton": true,
+      "DialogName": "_oAmdecCriticityDialog"
+    },
+    {
+      "EquipmentInfo": "detectability",
+      "FieldProperty": "AmdecDetectabilityId",
+      "Editable": true,
+      "InputType": "ValueHelp",
+      "ValueHelpDialog": "VHAmdecDetectability",
+      "ValueHelpDataProperty": "AmdecDetectability",
+      "ShowRoolbackButton": true,
+      "DialogName": "_oAmdecDetectabilityDialog"
+    },
+    {
+      "EquipmentInfo": "equipmentCriticity",
+      "FieldProperty": "Critical",
+      "Editable": false,
+      "InputType": "BoolSelect",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "contractId",
+      "FieldProperty": "ContractId",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "contractName",
+      "FieldProperty": "ContractName",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "domainDesc",
+      "FieldProperty": "DomainId",
+      "Editable": false,
+      "InputType": "InputDesc",
+      "ShowRoolbackButton": false,
+      "ValueHelpDataProperty": "Domain"
+    },
+    {
+      "EquipmentInfo": "functionDesc",
+      "FieldProperty": "FunctionId",
+      "Editable": false,
+      "InputType": "InputDesc",
+      "ShowRoolbackButton": false,
+      "ValueHelpDataProperty": "Function"
+    },
+    {
+      "EquipmentInfo": "familyDesc",
+      "FieldProperty": "FamilyId",
+      "Editable": false,
+      "InputType": "InputDesc",
+      "ShowRoolbackButton": false,
+      "ValueHelpDataProperty": "Family"
+    },
+    {
+      "EquipmentInfo": "comments",
+      "FieldProperty": "Comments",
+      "Editable": true,
+      "InputType": "Text",
+      "ShowRoolbackButton": true
+    }
+  ]
+}

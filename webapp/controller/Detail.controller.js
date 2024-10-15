@@ -20,7 +20,7 @@ sap.ui.define(
     "sap/m/ObjectStatus",
     "sap/ui/model/Sorter",
     "sap/ui/core/ValueState",
-    "sap/base/security/URLListValidator"
+    "sap/base/security/URLListValidator",
   ],
   function (
     BaseController,
@@ -71,6 +71,7 @@ sap.ui.define(
         this._initDefaultFilterMCB();
         //set models for Property and characteristics modified
         this._initGlobalModels();
+        this._fnLoadDdicValues();
         //Set icon tab bar density
         this.byId("SiteIconTabBar").setHeaderMode("Inline");
         this._fnInitMeasureModel();
@@ -105,6 +106,32 @@ sap.ui.define(
        */
       _initEquipmentStatusDesc: function () {
         this._initStatusDesc("LoomaEquipment");
+      },
+      _fnLoadDdicValues: function () {
+        const aDdicValues = [
+          "Usage",
+          "AmdecFunctionning",
+          "AmdecState",
+          "AmdecReliability",
+          "AmdecCriticity",
+          "AmdecDetectability",
+          "AmdecAccessibility",
+          "AmdecDisrepair",
+        ];
+        aDdicValues.forEach((value) => this._fnLoadDdicValue(value));
+      },
+      _fnLoadDdicValue: function (sObject) {
+        const oModel = this.getOwnerComponent().getModel("VH");
+        oModel.read("/DDICDomainValueListSet", {
+          filters: [new Filter("Object", FilterOperator.EQ, sObject)],
+          success: (oData) => {
+            this.fnGetModel("mVH").setProperty(`/${sObject}`, oData.results);
+          },
+          error: (oError) => {
+            const sError = this.fnExtractError(oError);
+            Log.error(this.fnGetResourceBundle("errorLoadingDdic", [sObject]), sError, APP_PATH);
+          },
+        });
       },
       /*
        * Called from method "onInit" to initialize models for global data
@@ -377,19 +404,14 @@ sap.ui.define(
           for (let i in aNodesIn) {
             let oNodeIn = aNodesIn[i],
               sTypeDesc =
-                oNodeIn.TypeId === ""
-                  ? ""
-                  : oLocationType[oNodeIn.LoomaTypeId][oNodeIn.TypeId].CharactValueDescription;
+                oNodeIn.TypeId === "" ? "" : oLocationType[oNodeIn.LoomaTypeId][oNodeIn.TypeId].CharactValueDescription;
             //Check and set Status for sending to FSM
             oLocationFSM[oNodeIn.LocationId] = {
               SuperiorLocationId: oNodeIn.SuperiorLocationId,
               StatusFSM: 0,
             };
             //Set FSM status
-            oLocationFSM[oNodeIn.LocationId].StatusFSM = this._setLocationStatusFSM(
-              oLocationFSM,
-              oNodeIn
-            );
+            oLocationFSM[oNodeIn.LocationId].StatusFSM = this._setLocationStatusFSM(oLocationFSM, oNodeIn);
             if (!sTypeDesc) {
               sTypeDesc = "";
             }
@@ -448,17 +470,13 @@ sap.ui.define(
        * 2 = Validate but not sent
        */
       _setLocationStatusFSM: function (oLocationFSM, oCurrentLocation) {
-        if (
-          oCurrentLocation.UserStatusId === "E0003" ||
-          oCurrentLocation.UserStatusId === "E0004"
-        ) {
+        if (oCurrentLocation.UserStatusId === "E0003" || oCurrentLocation.UserStatusId === "E0004") {
           // Current Location is validated or deleted
           if (oCurrentLocation.SuperiorLocationId === "") {
             // No superior location
             return 1; //Current Location validated and will be sent to FSM
           } else {
-            let SuperiorLocationStatusFSM =
-              oLocationFSM[oCurrentLocation.SuperiorLocationId].StatusFSM;
+            let SuperiorLocationStatusFSM = oLocationFSM[oCurrentLocation.SuperiorLocationId].StatusFSM;
             if (SuperiorLocationStatusFSM === 1) {
               //Superior Location will be sent to FSM
               return 1; //Current Location validated and will be sent to FSM
@@ -480,10 +498,7 @@ sap.ui.define(
        */
       _setEquipmentStatusFSM: function (oEquipment, oCurrentEquipment) {
         let iLocationStatusFSM = this._oLocationFSM[oCurrentEquipment.LocationId].StatusFSM;
-        if (
-          oCurrentEquipment.UserStatusId === "E0005" ||
-          oCurrentEquipment.UserStatusId === "E0006"
-        ) {
+        if (oCurrentEquipment.UserStatusId === "E0005" || oCurrentEquipment.UserStatusId === "E0006") {
           // Current Equipment is validated or deleted
           if (iLocationStatusFSM === 1) {
             return 1; //Current Equipment validated and will be sent to FSM
@@ -625,10 +640,7 @@ sap.ui.define(
         oBase.SiteHierPecCompleted = oNewHierarchy.SiteHierPecCompleted;
         oBase.SitePecInProgress = oNewHierarchy.SitePecInProgress;
         for (let idx in oBase.children) {
-          oBase.children[idx] = this._setUpdateFields(
-            oBase.children[idx],
-            oNewHierarchy.children[idx]
-          );
+          oBase.children[idx] = this._setUpdateFields(oBase.children[idx], oNewHierarchy.children[idx]);
         }
         return oBase;
       },
@@ -780,10 +792,7 @@ sap.ui.define(
       _buildEquipmentModel: async function (oData) {
         try {
           const aMeasuringPoints = await this._getMeasuringPoints();
-          this.fnGetModel("oEquipmentAnomalyModel").setProperty(
-            "/measuringPoints",
-            aMeasuringPoints
-          );
+          this.fnGetModel("oEquipmentAnomalyModel").setProperty("/measuringPoints", aMeasuringPoints);
           //Reset Selection
           let aBooleanField = ["PecDeepAnalysisNeeded", "PecQuote", "PecTrainingReq", "Critical"],
             aDateField = ["WarrantyEndDate"],
@@ -819,40 +828,28 @@ sap.ui.define(
             oLine.FamilyDesc = oLine.FamilyId === "" ? "" : oVH.Family[oLine.FamilyId].Desc;
             oLine.WarrantyEndDateText =
               oLine.WarrantyEndDate === null ? "" : this._oFormatDate.format(oLine.WarrantyEndDate);
-            oLine.UserStatusDesc = this.formatter.setStatusDescription.call(
-              this,
-              oLine.UserStatusId
-            );
+            oLine.UserStatusDesc = this.formatter.setStatusDescription.call(this, oLine.UserStatusId);
             oLine.AmdecAccessibilityDesc =
               oLine.AmdecAccessibilityId === ""
                 ? ""
                 : oDDICValue.AmdecAccessibilityId[oLine.AmdecAccessibilityId].ValueDesc;
             oLine.AmdecCriticityDesc =
-              oLine.AmdecCriticityId === ""
-                ? ""
-                : oDDICValue.AmdecCriticityId[oLine.AmdecCriticityId].ValueDesc;
+              oLine.AmdecCriticityId === "" ? "" : oDDICValue.AmdecCriticityId[oLine.AmdecCriticityId].ValueDesc;
             oLine.AmdecDetectabilityDesc =
               oLine.AmdecDetectabilityId === ""
                 ? ""
                 : oDDICValue.AmdecDetectabilityId[oLine.AmdecDetectabilityId].ValueDesc;
             oLine.AmdecDisrepairDesc =
-              oLine.AmdecDisrepairId === ""
-                ? ""
-                : oDDICValue.AmdecDisrepairId[oLine.AmdecDisrepairId].ValueDesc;
+              oLine.AmdecDisrepairId === "" ? "" : oDDICValue.AmdecDisrepairId[oLine.AmdecDisrepairId].ValueDesc;
             oLine.AmdecFunctionningDesc =
               oLine.AmdecFunctionningId === ""
                 ? ""
                 : oDDICValue.AmdecFunctionningId[oLine.AmdecFunctionningId].ValueDesc;
             oLine.AmdecReliabilityDesc =
-              oLine.AmdecReliabilityId === ""
-                ? ""
-                : oDDICValue.AmdecReliabilityId[oLine.AmdecReliabilityId].ValueDesc;
+              oLine.AmdecReliabilityId === "" ? "" : oDDICValue.AmdecReliabilityId[oLine.AmdecReliabilityId].ValueDesc;
             oLine.AmdecStateDesc =
-              oLine.AmdecStateId === ""
-                ? ""
-                : oDDICValue.AmdecStateId[oLine.AmdecStateId].ValueDesc;
-            oLine.UsageDesc =
-              oLine.UsageId === "" ? "" : oDDICValue.UsageId[oLine.UsageId].ValueDesc;
+              oLine.AmdecStateId === "" ? "" : oDDICValue.AmdecStateId[oLine.AmdecStateId].ValueDesc;
+            oLine.UsageDesc = oLine.UsageId === "" ? "" : oDDICValue.UsageId[oLine.UsageId].ValueDesc;
             oLine.Anomaly = oLine.Anomaly.length > 0 ? oLine.Anomaly : "";
             oLine.HasAnomaly = oLine.HasAnomaly === true ? true : false;
             let iLine = null;
@@ -887,7 +884,7 @@ sap.ui.define(
                     sSplitNew.splice(indexToDeleteNew, 1);
                   }
                 }
-                for (iOld in sToDeleteOld) {
+                for (let iOld in sToDeleteOld) {
                   let indexToDeleteOld = sSplitOld.indexOf(sToDeleteOld[iOld]);
                   sSplitOld.splice(indexToDeleteOld, 1);
                 }
@@ -906,10 +903,7 @@ sap.ui.define(
                   iLoop++;
                 }
               } else {
-                oLineMod.sDescription = this.formatter.setPropertyDescription.call(
-                  this,
-                  oLineMod.FieldI18n
-                );
+                oLineMod.sDescription = this.formatter.setPropertyDescription.call(this, oLineMod.FieldI18n);
                 oLine.ModifiedInfo.push(oLineMod);
               }
             }
@@ -953,23 +947,14 @@ sap.ui.define(
             }
             //Manage Family Characteristic
             oLine.FamilyCharacteristic = oLine.FamilyCharacteristic.results;
-            this._fnSetFamilyImportantCounter(
-              oLine,
-              oFamilyCharacteristic,
-              oVH.Family[oLine.FamilyId],
-              sYes,
-              sNo
-            ); // Set Family Characteristic Important counter and boolean
+            this._fnSetFamilyImportantCounter(oLine, oFamilyCharacteristic, oVH.Family[oLine.FamilyId], sYes, sNo); // Set Family Characteristic Important counter and boolean
             const aEquipMeasure = aMeasuringPoints.filter(
               (oMeasuringPoint) => oMeasuringPoint.EquipmentId === oLine.EquipmentId
             );
             oLine.bMeasuringVisible = aEquipMeasure.length > 0;
             oLine.HasMeasuringDocument =
               aEquipMeasure.find((oEquip) => oEquip.HasMeasuringDocument === true) !== undefined;
-            oLine.MeasuringPointsIds = this._fnCreateStringWithBreakLine(
-              aEquipMeasure,
-              "MeasuringPointId"
-            );
+            oLine.MeasuringPointsIds = this._fnCreateStringWithBreakLine(aEquipMeasure, "MeasuringPointId");
           }
           return oEquipment;
         } catch (oError) {
@@ -1006,13 +991,9 @@ sap.ui.define(
         if (oDDICValue[oLineMod.FieldI18n]) {
           //Manage only properties with value list (from DDIC)
           oLineMod.ValueOldDesc =
-            oLineMod.ValueOld === ""
-              ? ""
-              : oDDICValue[oLineMod.FieldI18n][oLineMod.ValueOld].ValueDesc;
+            oLineMod.ValueOld === "" ? "" : oDDICValue[oLineMod.FieldI18n][oLineMod.ValueOld].ValueDesc;
           oLineMod.ValueNewDesc =
-            oLineMod.ValueNew === ""
-              ? ""
-              : oDDICValue[oLineMod.FieldI18n][oLineMod.ValueNew].ValueDesc;
+            oLineMod.ValueNew === "" ? "" : oDDICValue[oLineMod.FieldI18n][oLineMod.ValueNew].ValueDesc;
         } else if (
           oLineMod.FieldI18n === "DomainId" ||
           oLineMod.FieldI18n === "FunctionId" ||
@@ -1020,20 +1001,16 @@ sap.ui.define(
         ) {
           // Manage description from VH (Family Function, Domain)
           let sLink = oLineMod.FieldI18n.split("Id").shift();
-          oLineMod.ValueOldDesc =
-            oLineMod.ValueOld === "" ? "" : oVH[sLink][oLineMod.ValueOld].Desc;
-          oLineMod.ValueNewDesc =
-            oLineMod.ValueNew === "" ? "" : oVH[sLink][oLineMod.ValueNew].Desc;
+          oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oVH[sLink][oLineMod.ValueOld].Desc;
+          oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oVH[sLink][oLineMod.ValueNew].Desc;
         } else if (aBooleanField.indexOf(oLineMod.FieldI18n) !== -1) {
           // Manage boolean field
           oLineMod.ValueOldDesc = oLineMod.ValueOld === "X" ? sYes : sNo;
           oLineMod.ValueNewDesc = oLineMod.ValueNew === "X" ? sYes : sNo;
         } else if (oLineMod.FieldI18n === "LocationId") {
           // Manage Location Description
-          oLineMod.ValueOldDesc =
-            oLineMod.ValueOld === "" ? "" : oLocationDescription[oLineMod.ValueOld].LocationName;
-          oLineMod.ValueNewDesc =
-            oLineMod.ValueNew === "" ? "" : oLocationDescription[oLineMod.ValueNew].LocationName;
+          oLineMod.ValueOldDesc = oLineMod.ValueOld === "" ? "" : oLocationDescription[oLineMod.ValueOld].LocationName;
+          oLineMod.ValueNewDesc = oLineMod.ValueNew === "" ? "" : oLocationDescription[oLineMod.ValueNew].LocationName;
         } else if (aDateField.indexOf(oLineMod.FieldI18n) !== -1) {
           //Manage date field
           oLineMod.ValueOldDesc = this._fnFormatDate(oLineMod.ValueOld);
@@ -1080,9 +1057,7 @@ sap.ui.define(
       },
       _fnFormatDate: function (sDate) {
         if (sDate === "00000000") return "";
-        return this._oFormatDate.format(
-          new Date(sDate.slice(0, 4), sDate.slice(4, 6) - 1, sDate.slice(6, 8))
-        );
+        return this._oFormatDate.format(new Date(sDate.slice(0, 4), sDate.slice(4, 6) - 1, sDate.slice(6, 8)));
       },
       /*
        * Set descriptions and characteristics descriptions for familyon equipement
@@ -1093,9 +1068,7 @@ sap.ui.define(
         switch (oCharact.CharactDataType) {
           case "CHAR":
             oCharact.ValueToDisplay =
-              oCharact.CharactValueDescription === ""
-                ? oCharact.CharactValueChar
-                : oCharact.CharactValueDescription;
+              oCharact.CharactValueDescription === "" ? oCharact.CharactValueChar : oCharact.CharactValueDescription;
             break;
           case "NUM":
             oCharact.ValueToDisplay = parseFloat(oCharact.CharactValueNumDecFrom).toFixed(
@@ -1114,9 +1087,7 @@ sap.ui.define(
             }
             break;
           case "DATE":
-            oCharact.ValueToDisplay = this._oFormatDate.format(
-              new Date(oCharact.CharactValueDateFrom)
-            );
+            oCharact.ValueToDisplay = this._oFormatDate.format(new Date(oCharact.CharactValueDateFrom));
             if (oCharacteristics[oCharact.CharactId].CharactInterval) {
               if (oCharact.CharactValueDateTo) {
                 valTo = this._oFormatDate.format(new Date(oCharact.CharactValueDateTo));
@@ -1134,14 +1105,14 @@ sap.ui.define(
        */
       _fnSetAmdecCounter: function (oLine, sYes, sNo) {
         let aAmdecProp = [
-          "AmdecStateId",
-          "AmdecDisrepairId",
-          "AmdecAccessibilityId",
-          "AmdecReliabilityId",
-          "AmdecCriticityId",
-          "AmdecDetectabilityId",
-          "AmdecFunctionningId",
-        ],
+            "AmdecStateId",
+            "AmdecDisrepairId",
+            "AmdecAccessibilityId",
+            "AmdecReliabilityId",
+            "AmdecCriticityId",
+            "AmdecDetectabilityId",
+            "AmdecFunctionningId",
+          ],
           iTot = 0,
           iCount = 0;
         for (let idx in aAmdecProp) {
@@ -1183,9 +1154,7 @@ sap.ui.define(
         }
         oLine.FamilyCharactImportantCounter = iCount + "/" + iTot;
         oLine.IsFamilyCharactImportantComplete = iTot === iCount;
-        oLine.IsFamilyCharactImportantCompleteDesc = oLine.IsFamilyCharactImportantComplete
-          ? sYes
-          : sNo;
+        oLine.IsFamilyCharactImportantCompleteDesc = oLine.IsFamilyCharactImportantComplete ? sYes : sNo;
         oLine.FamilyCharactImportantSorter = iTot === 0 ? 1 : iCount / iTot;
       },
 
@@ -1202,9 +1171,11 @@ sap.ui.define(
       _fnExtractInnerError: function (oError) {
         const { error } = oError;
         if (!error) return;
-        const { innererror: { errordetails } } = error;
+        const {
+          innererror: { errordetails },
+        } = error;
         if (!errordetails || errordetails.length === 0) return;
-        const oMessage = errordetails.find(error => error.code === "ZMC_C4_PEC/001");
+        const oMessage = errordetails.find((error) => error.code === "ZMC_C4_PEC/001");
         if (!oMessage) return;
         return oMessage.message;
       },
@@ -1226,12 +1197,7 @@ sap.ui.define(
           }.bind(this),
           error: function (oData, resp) {
             this.fnHideBusyIndicator();
-            this._fnHandleUpdateStatusError(
-              sEquipmentId !== "", 
-              sObjectName, 
-              "oError" + sObjectName + "Status",
-              oData
-            );
+            this._fnHandleUpdateStatusError(sEquipmentId !== "", sObjectName, "oError" + sObjectName + "Status", oData);
           }.bind(this),
         };
         let payload = {
@@ -1260,12 +1226,7 @@ sap.ui.define(
        * Method is called to update status for 1 equipment
        */
       _ApplyEquipmentStatus: function (oEvent, sNewStatus) {
-        let sEquipmentId = oEvent
-          .getSource()
-          .getParent()
-          .getParent()
-          .getRowBindingContext()
-          .getObject().EquipmentId;
+        let sEquipmentId = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject().EquipmentId;
         this._ApplyStatus(oEvent, sNewStatus, sEquipmentId, "", false);
       },
       _fnHandleUpdateStatusError: function (bIsEquipments, sObjectName, sDialogName, oError) {
@@ -1273,16 +1234,13 @@ sap.ui.define(
           this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
         }
         let sErrorMessage = this.fnGetResourceBundle("DialogErrorStatusChange");
-        if(oError.hasOwnProperty("error")) {
+        if (oError.hasOwnProperty("error")) {
           sErrorMessage = this._fnExtractInnerError(oError);
         } else {
           sErrorMessage = this._fnExtractErrorMessage(oError);
         }
-        
-        return this._MessageError(
-          sDialogName,
-          sErrorMessage
-        );
+
+        return this._MessageError(sDialogName, sErrorMessage);
       },
       /*
        * Method is called to update status for a list of Object
@@ -1309,11 +1267,11 @@ sap.ui.define(
             const { response: oResponse } = aBatchResponse[0];
             if (oResponse?.statusCode === "500") {
               return this._fnHandleUpdateStatusError(
-                bIsEquipments, 
-                sObjectName, 
-                "oErrorMass" + sObjectName, 
+                bIsEquipments,
+                sObjectName,
+                "oErrorMass" + sObjectName,
                 JSON.parse(oResponse.body)
-              )
+              );
             }
             if (bIsEquipments) {
               this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
@@ -1323,11 +1281,11 @@ sap.ui.define(
           error: function (oData, resp) {
             this.fnHideBusyIndicator();
             this._fnHandleUpdateStatusError(
-              bIsEquipments, 
-              sObjectName, 
-              "oErrorMass" + sObjectName, 
+              bIsEquipments,
+              sObjectName,
+              "oErrorMass" + sObjectName,
               JSON.parse(oResponse.body)
-            )
+            );
           }.bind(this),
         };
         // Set deferred group for mass call
@@ -1354,7 +1312,7 @@ sap.ui.define(
             EquipmentId: bIsEquipments ? oObjectSelected.EquipmentId : "",
             LocationId: bIsEquipments ? "" : oObjectSelected.LocationId,
             UserStatusId: sNewStatus,
-            MassProcess: true
+            MassProcess: true,
           };
           this.fnShowBusyIndicator(null, 0);
           oModel.create("/UserStatusSet", payload, oSingleParameters);
@@ -1410,9 +1368,9 @@ sap.ui.define(
        */
       _setExcelColumns: function (oExcel, aColSize, oColumnProperties) {
         let iHeaderStyle = oExcel.generateNewStyle({
-          font: "Calibri 12 B",
-          fill: "#F2F2F2",
-        }),
+            font: "Calibri 12 B",
+            fill: "#F2F2F2",
+          }),
           iSheetProperties = 0,
           iRow = 0;
         // Set first sheet with properties
@@ -1454,8 +1412,8 @@ sap.ui.define(
        */
       _setExcelRows: function (oExcel, aData, aColSize, oColumnProperties) {
         let iDefaultStyle = oExcel.generateNewStyle({
-          align: "L T W", //Left Top Wrap
-        }),
+            align: "L T W", //Left Top Wrap
+          }),
           iGreenStyle = oExcel.generateNewStyle({
             font: "Calibri 12 " + "#00B050" + " B",
             align: "L T W", //Left Top Wrap
@@ -1522,17 +1480,17 @@ sap.ui.define(
        */
       _otherProperties: function (oObject) {
         let aFieldToCheck = [
-          "BrandId",
-          "Critical",
-          "InstallYear",
-          "Manufref",
-          "PecDeepAnalysisNeededDesc",
-          "PecQuoteDesc",
-          "PecTrainingReqDesc",
-          "Qrcode",
-          "SerialNumber",
-          "WarrantyEndDateText",
-        ],
+            "BrandId",
+            "Critical",
+            "InstallYear",
+            "Manufref",
+            "PecDeepAnalysisNeededDesc",
+            "PecQuoteDesc",
+            "PecTrainingReqDesc",
+            "Qrcode",
+            "SerialNumber",
+            "WarrantyEndDateText",
+          ],
           aOtherProperties = [];
         for (let iProp in aFieldToCheck) {
           let sProp = aFieldToCheck[iProp];
@@ -1563,10 +1521,7 @@ sap.ui.define(
       onOpenAnomalyFragment: function (oEvent) {
         let idThisPopover = "AnomalyPopover",
           oObjectView = oEvent.getSource(),
-          oObject =
-            oObjectView === ""
-              ? {}
-              : oEvent.getSource().getParent().getRowBindingContext().getObject(),
+          oObject = oObjectView === "" ? {} : oEvent.getSource().getParent().getRowBindingContext().getObject(),
           oView = this.getView(),
           sFragmentName = "com.vesi.zfac4_valtoker.view.fragment.Detail.Anomaly",
           aFieldToCheck = [
@@ -1610,8 +1565,7 @@ sap.ui.define(
                     });
                     oToolbar = new OverflowToolbar();
                     let oTitle = new Title({
-                      text: `${this.fnGetResourceBundle("TitleAnomaly")} - ${aAnomalies[i].AnomalyId
-                        }`,
+                      text: `${this.fnGetResourceBundle("TitleAnomaly")} - ${aAnomalies[i].AnomalyId}`,
                     });
                     for (let iProp in aFieldToCheck) {
                       let sProp = aFieldToCheck[iProp];
@@ -1658,106 +1612,97 @@ sap.ui.define(
       },
       onAnomalyPhotoIconPress: function (oEvent) {
         let oObjectView = oEvent.getSource(),
-            oObject =
-                oObjectView === ""
-                    ? {}
-                    : oEvent.getSource().getParent().getRowBindingContext().getObject(),
-            aURL = [],
-            aTempURL = [],
-            pictureCounter = 0;
+          oObject = oObjectView === "" ? {} : oEvent.getSource().getParent().getRowBindingContext().getObject(),
+          aURL = [],
+          aTempURL = [],
+          pictureCounter = 0;
         const oAnomalyModel = this.getView().getModel("oEquipmentAnomalyModel");
         oAnomalyModel.setProperty("/aURL", aURL);
         this.getOwnerComponent()
-            .getModel()
-            .read(`/EquipmentSet('${oObject.EquipmentId}')`, {
-                urlParameters: {
-                    $expand: "Anomaly",
-                },
-                success: function (oAnomalyData, response) {
-                    let aAnomalies = oAnomalyData.Anomaly.results;
-                    aAnomalies.forEach((anomaly) => {
-                        let aFilters = [];
-                        aFilters.push(
-                            new Filter("ObjectId", FilterOperator.EQ, `0000${anomaly.AnomalyId}`)
-                        );
-                        this.getOwnerComponent()
-                            .getModel()
-                            .read("/AnomalyPhotosSet", {
-                                filters: aFilters,
-                                success: function (oData) {
-                                    oAnomalyModel.setProperty("/aAnomalyPhotoAttachments", []);
-                                    let aCurrentAnomalyPhotoAttachments = oAnomalyModel.getProperty(
-                                        "/aAnomalyPhotoAttachments"
-                                    );
-                                    if (oData.results.length >= 1) {
-                                        pictureCounter = pictureCounter + 1;
-                                        if (aCurrentAnomalyPhotoAttachments.length > 1) {
-                                            aCurrentAnomalyPhotoAttachments = aCurrentAnomalyPhotoAttachments.concat(oData.results);
-                                        } else {
-                                            oAnomalyModel.setProperty("/aAnomalyPhotoAttachments", oData.results);
-                                        }
-                                        let aAnomalyPhotoAttachmentIds = oAnomalyModel.getProperty(
-                                            "/aAnomalyPhotoAttachments"
-                                        );
-                                        aAnomalyPhotoAttachmentIds.forEach((attachmentId) => {
-                                            let sURL = `/sap/opu/odata/sap/ZSRC4_PEC_SRV/AnomalyPhotoSet('${attachmentId.AttachmentID}')/$value`;
-                                            URLListValidator.add("blob");
-                                            fetch(sURL)
-                                                .then(response => response.blob())
-                                                .then(data => {
-                                                    aTempURL = [];
-                                                    aTempURL.push({
-                                                        url: URL.createObjectURL(data),
-                                                    });
-                                                    let aCurrentURL = oAnomalyModel.getProperty("/aURL");
-                                                    if (aCurrentURL.length > 0) {
-                                                        aURL = aTempURL.concat(aCurrentURL);
-                                                        oAnomalyModel.setProperty("/aURL", aURL);
-                                                    } else {
-                                                        oAnomalyModel.setProperty("/aURL", aTempURL);
-                                                    }
-                                                    this.fnHideBusyIndicator();
-                                                })
-                                                .catch(oErr => {
-                                                    MessageBox.error(oErr);
-                                                    this.fnHideBusyIndicator();
-                                                });
-                                        });
-                                    } else {
-                                        if (pictureCounter == 0) {
-                                            this.onAnomalyPictureDialogCancel();
-                                            MessageBox.information("L'anomalie n'a pas de photo.");
-                                        }
-                                    }
-                                    this.fnHideBusyIndicator();
-                                }.bind(this),
-                                error: function (oError) {
-                                    this.fnHideBusyIndicator();
-                                    MessageBox.error(oError);
-                                }.bind(this),
+          .getModel()
+          .read(`/EquipmentSet('${oObject.EquipmentId}')`, {
+            urlParameters: {
+              $expand: "Anomaly",
+            },
+            success: function (oAnomalyData, response) {
+              let aAnomalies = oAnomalyData.Anomaly.results;
+              aAnomalies.forEach((anomaly) => {
+                let aFilters = [];
+                aFilters.push(new Filter("ObjectId", FilterOperator.EQ, `0000${anomaly.AnomalyId}`));
+                this.getOwnerComponent()
+                  .getModel()
+                  .read("/AnomalyPhotosSet", {
+                    filters: aFilters,
+                    success: function (oData) {
+                      oAnomalyModel.setProperty("/aAnomalyPhotoAttachments", []);
+                      let aCurrentAnomalyPhotoAttachments = oAnomalyModel.getProperty("/aAnomalyPhotoAttachments");
+                      if (oData.results.length >= 1) {
+                        pictureCounter = pictureCounter + 1;
+                        if (aCurrentAnomalyPhotoAttachments.length > 1) {
+                          aCurrentAnomalyPhotoAttachments = aCurrentAnomalyPhotoAttachments.concat(oData.results);
+                        } else {
+                          oAnomalyModel.setProperty("/aAnomalyPhotoAttachments", oData.results);
+                        }
+                        let aAnomalyPhotoAttachmentIds = oAnomalyModel.getProperty("/aAnomalyPhotoAttachments");
+                        aAnomalyPhotoAttachmentIds.forEach((attachmentId) => {
+                          let sURL = `/sap/opu/odata/sap/ZSRC4_PEC_SRV/AnomalyPhotoSet('${attachmentId.AttachmentID}')/$value`;
+                          URLListValidator.add("blob");
+                          fetch(sURL)
+                            .then((response) => response.blob())
+                            .then((data) => {
+                              aTempURL = [];
+                              aTempURL.push({
+                                url: URL.createObjectURL(data),
+                              });
+                              let aCurrentURL = oAnomalyModel.getProperty("/aURL");
+                              if (aCurrentURL.length > 0) {
+                                aURL = aTempURL.concat(aCurrentURL);
+                                oAnomalyModel.setProperty("/aURL", aURL);
+                              } else {
+                                oAnomalyModel.setProperty("/aURL", aTempURL);
+                              }
+                              this.fnHideBusyIndicator();
+                            })
+                            .catch((oErr) => {
+                              MessageBox.error(oErr);
+                              this.fnHideBusyIndicator();
                             });
-                    });
-                }.bind(this),
-                error: function (oError) {
-                    MessageBox.error(oError);
-                    this.fnHideBusyIndicator();
-                }.bind(this),
-            });
+                        });
+                      } else {
+                        if (pictureCounter == 0) {
+                          this.onAnomalyPictureDialogCancel();
+                          MessageBox.information("L'anomalie n'a pas de photo.");
+                        }
+                      }
+                      this.fnHideBusyIndicator();
+                    }.bind(this),
+                    error: function (oError) {
+                      this.fnHideBusyIndicator();
+                      MessageBox.error(oError);
+                    }.bind(this),
+                  });
+              });
+            }.bind(this),
+            error: function (oError) {
+              MessageBox.error(oError);
+              this.fnHideBusyIndicator();
+            }.bind(this),
+          });
         // create dialog lazily
         if (!this.byId("idAnomalyPicturesCarouselDialog")) {
-            // load asynchronous XML fragment
-            let oPromise = this._loadFragment("AnomalyPicturesCarousel");
-            oPromise.then(
-                function (oDialog) {
-                    oDialog.open();
-                    this.fnShowBusyIndicator(null, 0);
-                }.bind(this)
-            );
+          // load asynchronous XML fragment
+          let oPromise = this._loadFragment("AnomalyPicturesCarousel");
+          oPromise.then(
+            function (oDialog) {
+              oDialog.open();
+              this.fnShowBusyIndicator(null, 0);
+            }.bind(this)
+          );
         } else {
-            this.byId("idAnomalyPicturesCarouselDialog").open();
-            this.fnShowBusyIndicator(null, 0);
+          this.byId("idAnomalyPicturesCarouselDialog").open();
+          this.fnShowBusyIndicator(null, 0);
         }
-    },
+      },
       onAnomalyPictureDialogCancel: function () {
         this.byId("idAnomalyPicturesCarouselDialog").close();
       },
@@ -1789,10 +1734,7 @@ sap.ui.define(
             let oLocationDescription = this.fnGetModel("mLocationDescription").getData();
             for (let iLine in aResult) {
               let oLine = aResult[iLine];
-              oLine.UserStatusDesc = this.formatter.setStatusDescription.call(
-                this,
-                oLine.UserStatusId
-              );
+              oLine.UserStatusDesc = this.formatter.setStatusDescription.call(this, oLine.UserStatusId);
               oLine.CompleteLocationName = oLocationDescription[oLine.LocationId].LocationName;
             }
             let oModel = {
@@ -1822,8 +1764,7 @@ sap.ui.define(
         let sRequest;
         switch (bSubEquipment) {
           case true:
-            sRequest = "/EquipmentSet",
-              aFilters = [];
+            (sRequest = "/EquipmentSet"), (aFilters = []);
             aFilters.push(new Filter("SuperiorEquiId", FilterOperator.EQ, oEquipment.EquipmentId));
             oParam.filters = aFilters;
             break;
@@ -1876,12 +1817,7 @@ sap.ui.define(
       onDisplayModifiedInfoPopoverPress: function (oEvent) {
         let oIcon = oEvent.getSource(),
           oView = this.getView(),
-          sModifiedInfo = oEvent
-            .getSource()
-            .getParent()
-            .getParent()
-            .getRowBindingContext()
-            .getObject();
+          sModifiedInfo = oEvent.getSource().getParent().getParent().getRowBindingContext().getObject();
         this.fnSetJSONModel(sModifiedInfo, "mModifiedInfo");
         if (!this._ModPopover) {
           this._ModPopover = Fragment.load({
@@ -1937,9 +1873,7 @@ sap.ui.define(
               type: sap.m.DialogType.Message,
               title: this.fnGetResourceBundle("DialogMass" + sObjectName + "Title"),
               content: new sap.m.Text({
-                text: this.fnGetResourceBundle("DialogMass" + sObjectName + "Message", [
-                  sStatusText,
-                ]),
+                text: this.fnGetResourceBundle("DialogMass" + sObjectName + "Message", [sStatusText]),
               }),
               beginButton: new sap.m.Button({
                 type: sap.m.ButtonType.Emphasized,
@@ -1978,13 +1912,7 @@ sap.ui.define(
        */
       onApplyEquipmentMassStatus: function (oEvent) {
         let sUserStatusId = this._fnSetEquipmentUserStatusId(oEvent);
-        this.onApplyMassStatus(
-          oEvent,
-          "EquipmentTable",
-          "Equipment",
-          "_ApplyEquipmentMassStatus",
-          sUserStatusId
-        );
+        this.onApplyMassStatus(oEvent, "EquipmentTable", "Equipment", "_ApplyEquipmentMassStatus", sUserStatusId);
       },
       /*
        * Event on Search in filter bar
@@ -2035,9 +1963,7 @@ sap.ui.define(
        * Callback function called to get node sublocations
        */
       getSelectedLocationData: function (aSiteLocation) {
-        let aNestedLocations = this.fnGetModel("oSelectAllLocationsModel").getProperty(
-          "/aNestedLocations"
-        );
+        let aNestedLocations = this.fnGetModel("oSelectAllLocationsModel").getProperty("/aNestedLocations");
         aSiteLocation.forEach((location) => {
           if (location.children.length > 0 && location.children) {
             aNestedLocations.push(location.children);
@@ -2049,9 +1975,7 @@ sap.ui.define(
        * Function to add locations to sublocations array
        */
       getSelectedLocationAndSubLocationData: function (aSiteLocation) {
-        let aNestedLocations = this.fnGetModel("oSelectAllLocationsModel").getProperty(
-          "/aNestedLocations"
-        );
+        let aNestedLocations = this.fnGetModel("oSelectAllLocationsModel").getProperty("/aNestedLocations");
         aSiteLocation.forEach((location) => {
           aNestedLocations.push(location);
         });
@@ -2190,22 +2114,14 @@ sap.ui.define(
        */
       onDisplayDetailEquipment: function (oEvent) {
         let oAmdec = {
-          Amdec1: [
-            "AmdecStateId",
-            "AmdecDisrepairId",
-            "AmdecAccessibilityId",
-            "AmdecFunctionningId",
-          ],
-          Amdec2: ["AmdecCriticityId", "AmdecDetectabilityId", "AmdecReliabilityId"],
-        },
+            Amdec1: ["AmdecStateId", "AmdecDisrepairId", "AmdecAccessibilityId", "AmdecFunctionningId"],
+            Amdec2: ["AmdecCriticityId", "AmdecDetectabilityId", "AmdecReliabilityId"],
+          },
           oObjectView = oEvent.getSource(),
           idFrag = oObjectView.getId().split("Object").pop().split("-").shift(),
           idThisPopover = "_" + idFrag + "Popover",
           oView = this.getView(),
-          oObject =
-            oObjectView === ""
-              ? {}
-              : oEvent.getSource().getParent().getRowBindingContext().getObject(),
+          oObject = oObjectView === "" ? {} : oEvent.getSource().getParent().getRowBindingContext().getObject(),
           sFragmentName = "com.vesi.zfac4_valtoker.view.fragment.Detail." + idFrag,
           oModel = {
             Amdec1: [],
@@ -2270,13 +2186,13 @@ sap.ui.define(
           return;
         }
         let oExcel = new Excel("Calibri 12", [
-          {
-            name: "Tab",
-            bFreezePane: true,
-            iCol: 0,
-            iRow: 2,
-          },
-        ]),
+            {
+              name: "Tab",
+              bFreezePane: true,
+              iCol: 0,
+              iRow: 2,
+            },
+          ]),
           oData = this.fnGetModel("mEquipment").getData(),
           aColSize = {
             Sheet0: [], //Sheet 1
@@ -2286,11 +2202,7 @@ sap.ui.define(
         if (!oData.list || (oData.list && oData.list.length === 0)) {
           return;
         }
-        oColumnProperties.loadData(
-          sRootPath + "/model/Config/Detail/ExcelExportedProperties.json",
-          null,
-          false
-        ); // Config for properties
+        oColumnProperties.loadData(sRootPath + "/model/Config/Detail/ExcelExportedProperties.json", null, false); // Config for properties
         oColumnProperties = oColumnProperties.getData();
         this._setExcelColumns(oExcel, aColSize, oColumnProperties);
         this._setExcelRows(oExcel, oData.list, aColSize, oColumnProperties);
@@ -2336,9 +2248,7 @@ sap.ui.define(
                       SiteId: this._SiteId,
                     }, // function import parameters
                     success: function (oData, response) {
-                      sap.m.MessageToast.show(
-                        this.fnGetResourceBundle("ToastSuccessSynchronizeMessage")
-                      );
+                      sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessSynchronizeMessage"));
                     }.bind(this), // callback function for success
                   }
                 ); // callback function for error
@@ -2390,18 +2300,13 @@ sap.ui.define(
       },
       onPressAnomalyMeasuringDocuments: function (oEvent) {
         this._oButton = oEvent.getSource();
-        this._oSelectedEquipment = oEvent
-          .getSource()
-          .getParent()
-          .getRowBindingContext()
-          .getObject();
+        this._oSelectedEquipment = oEvent.getSource().getParent().getRowBindingContext().getObject();
         this._fnOpenMeasurePopover();
       },
       onAfterOpen: async function (oEvent) {
         try {
           const oEquipment = this._oSelectedEquipment;
-          const aMeasuringPoints =
-            this.fnGetModel("oEquipmentAnomalyModel").getProperty("/measuringPoints");
+          const aMeasuringPoints = this.fnGetModel("oEquipmentAnomalyModel").getProperty("/measuringPoints");
           const aMeasures = aMeasuringPoints.filter(
             (oMeasurePoint) => oMeasurePoint.EquipmentId === oEquipment.EquipmentId
           );
@@ -2413,8 +2318,7 @@ sap.ui.define(
           this.fnGetModel("oMeasure").setProperty("/measureDocuments", aMeasureDocuments);
           const oMeasuresDocs = {};
           aMeasureDocuments.forEach((oMeasureDocument) => {
-            oMeasuresDocs[Object.keys(oMeasureDocument)[0]] =
-              oMeasureDocument[Object.keys(oMeasureDocument)[0]];
+            oMeasuresDocs[Object.keys(oMeasureDocument)[0]] = oMeasureDocument[Object.keys(oMeasureDocument)[0]];
           });
           this._fnAddPage(oMeasuresDocs, aMeasures);
         } catch (e) {
@@ -2447,15 +2351,8 @@ sap.ui.define(
         return oTable;
       },
       _fnCreateHeader: function (oMeasurePoint) {
-        const {
-          MeasuringPointId,
-          MeasuringPointName,
-          MeasuringPointPosition,
-          ValueMin,
-          ValueTarget,
-          ValueMax,
-          Unit,
-        } = oMeasurePoint;
+        const { MeasuringPointId, MeasuringPointName, MeasuringPointPosition, ValueMin, ValueTarget, ValueMax, Unit } =
+          oMeasurePoint;
         return new sap.m.VBox({
           alignItems: "Center",
           items: [
@@ -2565,9 +2462,7 @@ sap.ui.define(
         });
       },
       onPressGeneratePecReport: function () {
-        const oCrossAppNavigator = new sap.ushell.Container.getService(
-          "CrossApplicationNavigation"
-        );
+        const oCrossAppNavigator = new sap.ushell.Container.getService("CrossApplicationNavigation");
         const mParams = {
           siteId: this._SiteId,
         };
@@ -2586,6 +2481,198 @@ sap.ui.define(
             shellHash: hash,
           },
         });
+      },
+      onPressEditEquipment: async function (oEvent) {
+        try {
+          this.fnOpenDialog("_oChangeEquipment", "Detail.EditEquipment", []);
+          const oSource = oEvent.getSource();
+          this._oSelectedEquipmentModel = oSource.getBindingContext("mEquipment");
+          const { EquipmentId } = this._oSelectedEquipmentModel.getObject();
+          const oEquipment = await this.getEquipmentById(EquipmentId);
+          const oEquipFormModel = this.fnGetModel("EquipmentForm");
+          let aTableForm = oEquipFormModel.getProperty("/TableForm");
+          const aFamilyCharact = this._fnGetFamilyCharacteristics(oEquipment);
+          aFamilyCharact?.forEach((oFamily) => {
+            aTableForm = aTableForm.filter((oForm) => oForm.FieldProperty !== oFamily.FieldProperty);
+          });
+          aTableForm.map((oForm) => {
+            const { FieldProperty, InputType, EquipmentInfo } = oForm;
+            const oModifiedInfo = oEquipment.ModifiedInfo?.find((oModified) => oModified.FieldI18n === FieldProperty);
+            oForm.CurrentValue = oEquipment[FieldProperty];
+            if (FieldProperty === "LifeDuration") {
+              oForm.CurrentValue = formatter.removeLeadingZeros(oForm.CurrentValue);
+            }
+            if (InputType === "BoolSelect") {
+              oForm.CurrentValueBool = oForm.CurrentValue;
+            }
+            if (FieldProperty === "FamilyCharacteristics") {
+              oForm.IsFamilyCharactImportantComplete = oEquipment.IsFamilyCharactImportantComplete;
+              oForm.FamilyCharactImportantCounter = oEquipment.FamilyCharactImportantCounter;
+            }
+            oForm.CurrentValueDesc = this._fnGetChangeEquipmentValueDesc(oEquipment[FieldProperty], oForm);
+            oForm.ShowRollbackButton = false;
+            oForm.ValueOld = "";
+            oForm.ValueOldDesc = "";
+            if (!oModifiedInfo) return oForm;
+            oForm.LastChangedBy = oModifiedInfo.LastChangedBy;
+            oForm.LastChangedOn = oModifiedInfo.LastChangedOn;
+            oForm.ValueOld = oModifiedInfo.ValueOld;
+            oForm.ValueOldDesc = oModifiedInfo.ValueOld;
+            if (oForm.ValueHelpDataProperty) {
+              oForm.ValueOldDesc = this._fnGetChangeEquipmentValueDesc(oModifiedInfo.ValueOld, oForm);
+            }
+            oForm.ShowRollbackButton = true;
+            return oForm;
+          });
+          if (aFamilyCharact && aFamilyCharact.length > 0) {
+            aTableForm.push(...aFamilyCharact);
+          }
+          oEquipFormModel.setProperty("/TableForm", aTableForm);
+          oEquipFormModel.setProperty("/OriginalData", JSON.parse(JSON.stringify(aTableForm)));
+          oEquipFormModel.setProperty("/SelectedEquipment", oEquipment);
+          // this.getModel("ViewModel").setProperty("/EquipmentChangesDialogBusy", false);
+        } catch (oError) {
+          console.error(oError);
+        }
+      },
+      getEquipmentById: function (sEquipmentId) {
+        return new Promise((resolve, reject) => {
+          const SCOPE = "EXPLTN";
+          this.getOwnerComponent()
+            .getModel()
+            .read(`/EquipmentSet(EquipmentId='${sEquipmentId}',Scope='${SCOPE}')`, {
+              urlParameters: {
+                $expand: "FamilyCharacteristic,ModifiedInfo,Anomaly",
+              },
+              success: async (oData) => {
+                const { list } = await this._buildEquipmentModel({ results: [oData] });
+                resolve(list[0]);
+              },
+              error: (oError) => {
+                reject(oError);
+              },
+            });
+        });
+      },
+      _fnGetFamilyCharacteristics: function (oEquipment) {
+        const { FamilyCharacteristic } = oEquipment;
+        const aTableForm = this.fnGetModel("EquipmentForm").getProperty("/TableForm");
+        if (!FamilyCharacteristic || FamilyCharacteristic.length === 0) return;
+        let aEquipForm = [];
+        const sCharacteristicText = this.fnGetResourceBundle("characteristic");
+        const fnFormatDecimal = (sValue, sCharactDataType, sCharactDecimal) => {
+          return sCharactDataType === "NUM" ? formatter.fnDecimalLimitingFormatter(sValue, sCharactDecimal) : sValue;
+        };
+        FamilyCharacteristic.map((oFamily) => {
+          let oEquipForm = {};
+          switch (oFamily.CharactDataType) {
+            case "NUM":
+              oEquipForm.CurrentValue = formatter.fnDecimalLimitingFormatter(
+                oFamily.CharactValueNumDecFrom,
+                oFamily.CharactDecimal
+              );
+              break;
+            case "CHAR":
+              oEquipForm.CurrentValue = oFamily.CharactValueChar;
+              oEquipForm.CurrentValueDesc = oFamily.CharactValueDescription;
+              break;
+            default:
+              oEquipForm.CurrentValue = oFamily.CharactValueChar;
+              oEquipForm.CurrentValueDesc = oFamily.CharactValueDescription;
+              break;
+          }
+          oEquipForm.InputType = this._fnSetFamilyInputType(oFamily.CharactDataType, oFamily.CharactListOfValue);
+          oEquipForm.Editable = true;
+          oEquipForm.ShowRoolbackButton = true;
+          oEquipForm.FieldProperty = oFamily.CharactId;
+          oEquipForm.EquipmentInfo = sCharacteristicText + " - " + oFamily.CharactName;
+          oEquipForm.DialogName = "_oEditFamilyCharacteristicsDialog";
+          oEquipForm.ValueHelpDialog = "VHCharacteristic";
+          oEquipForm.MaxLength = oFamily.CharactLength;
+          oEquipForm.Filters = [{ sFieldName: "IvCharactName", FilterOperator: "EQ", FieldValue: oFamily.CharactId }];
+          const oModifiedInfo = oEquipment.ModifiedInfo?.results.find(
+            (oModified) => oModified.FieldId === oFamily.CharactId
+          );
+          if (oModifiedInfo) {
+            oEquipForm.LastChangedBy = oModifiedInfo.LastChangedBy;
+            oEquipForm.LastChangedOn = oModifiedInfo.LastChangedOn;
+            oEquipForm.ValueOld = fnFormatDecimal(oModifiedInfo.ValueOld, oFamily.CharactDataType);
+            oEquipForm.ValueOldDesc = fnFormatDecimal(oModifiedInfo.ValueOld, oFamily.CharactDataType);
+          }
+          aEquipForm.push(oEquipForm);
+        });
+        return aEquipForm;
+      },
+      _fnSetFamilyInputType: function (sCharactDataType, bIsListOfValues) {
+        switch (sCharactDataType) {
+          case "CHAR":
+            return bIsListOfValues ? "ValueHelp" : "Text";
+          case "NUM":
+            return "Text";
+          case "DATE":
+            return "Date";
+          default:
+            return "Text";
+        }
+      },
+      _fnGetChangeEquipmentValueDesc: function (sAmdecId, oForm) {
+        const oVh = this.fnGetModel("mVH").getData();
+        const { CurrentValue, ValueHelpDataProperty } = oForm;
+        if (!ValueHelpDataProperty) return "";
+        let sValueDesc = "";
+        if (ValueHelpDataProperty.includes("Amdec")) {
+          sValueDesc = this._fnGetAmdecProperties(sAmdecId, oVh[ValueHelpDataProperty]);
+        } else {
+          sValueDesc = oVh[ValueHelpDataProperty][CurrentValue]?.Desc ?? "";
+        }
+        return sValueDesc;
+      },
+      _fnGetAmdecProperties: function (sAmdecId, oAmdec) {
+        if (!sAmdecId || !oAmdec) return "";
+        let oAmdecValue = oAmdec.find((i) => i.ValueId === sAmdecId);
+        return oAmdecValue.ValueDesc ?? "";
+      },
+      onEquipChangeValueHelpRequest: async function (oEvent) {
+        try {
+          const oBindingContext = oEvent.getSource().getBindingContext("EquipmentForm");
+          const oObject = oBindingContext.getObject();
+          if (!oObject.hasOwnProperty("ValueHelpDialog")) return;
+          const { ValueHelpDialog, DialogName, Filters, FieldProperty } = oObject;
+          const aFilters = Filters?.map((oFilter) => {
+            return new Filter(oFilter.sFieldName, oFilter.FilterOperator, oFilter.FieldValue);
+          });
+          this.fnOpenDialog(DialogName, `ValueHelps.${ValueHelpDialog}`, aFilters ?? []);
+          this._sFieldProperty = FieldProperty;
+        } catch (error) {
+          MessageBox.error(this.fnGetResourceBundle("msgBoxNoValueHelp"));
+        }
+      },
+      _fnCheckIfEquipmentChanged: function () {
+        const aTableForm = this.fnGetModel("EquipmentForm").getProperty("/TableForm");
+        const aOriginalData = this.fnGetModel("EquipmentForm").getProperty("/OriginalData");
+        let bChanged = false;
+        aTableForm.map((oForm, idx) => {
+          if (oForm.CurrentValue !== aOriginalData[idx].CurrentValue) {
+            bChanged = true;
+          }
+        });
+        return bChanged;
+      },
+      onCloseChangeEquipment: function () {
+        if (this._fnCheckIfEquipmentChanged()) {
+          this.byId("dialogChangeEquipment").setBusy(false);
+          MessageBox.warning(this.fnGetResourceBundle("msgBoxWarningLeavingWithoutSaving"), {
+            actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+            emphasizedAction: MessageBox.Action.NO,
+            onClose: (sAction) => {
+              if (sAction === MessageBox.Action.YES) {
+                this._oChangeEquipment.close();
+              }
+            },
+          });
+          return;
+        }
+        this._oChangeEquipment.close();
       },
     });
   }

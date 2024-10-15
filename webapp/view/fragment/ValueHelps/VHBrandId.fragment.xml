@@ -1,0 +1,19 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+>
+	<SelectDialog
+		id="BrandIdDialog"
+		noDataText="{i18n>noDataFound}"
+		title="{i18n>titleSelectDialogBrand}"
+		search="onSearchBrand"
+		confirm="onBrandValueHelpConfirm"
+		cancel="onValueHelpClose"
+		items="{
+			path: 'VH>/BrandSet',
+			templateShareable: true
+		}"
+	>
+		<StandardListItem title="{VH>BrandId}" />
+	</SelectDialog>
+</core:FragmentDefinition>

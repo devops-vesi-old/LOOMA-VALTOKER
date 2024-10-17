@@ -1,396 +1,534 @@
-<core:FragmentDefinition 
-	xmlns="sap.m" 
-	xmlns:core="sap.ui.core" 
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
 	xmlns:t="sap.ui.table"
-	xmlns:u="sap.ui.unified">
-	<t:Table 
-		id="EquipmentTable" 
+	xmlns:u="sap.ui.unified"
+>
+	<t:Table
+		id="EquipmentTable"
 		rows="{mEquipment>/list}"
 		rowSelectionChange="onSelectionChangeEquipmentTable"
-		selectionMode="MultiToggle" 
+		selectionMode="MultiToggle"
 		threshold="10"
-		visibleRowCountMode="Auto">
+		visibleRowCountMode="Auto"
+	>
 		<t:extension>
 			<Toolbar class="sapMTBHeader-CTX">
-				<Button 
+				<Button
 					icon="sap-icon://action-settings"
 					press="onEquipmentTablePersonalizationPress"
 					tooltip="{i18n>EquipmentTableButtonTooltipToolbarPersonalise}"
-					type="Transparent"/>				
-				<Title 
-					text="{i18n>EquipmentTableTitle} ({mEquipment>/count})" 
+					type="Transparent"
+				/>
+				<Title
+					text="{i18n>EquipmentTableTitle} ({mEquipment>/count})"
 					level="H2"
-					class="sapUiSmallMarginEnd"/>
-				<ToolbarSpacer/>
+					class="sapUiSmallMarginEnd"
+				/>
+				<ToolbarSpacer />
 				<Button
-					press="onExportXLS" 
-					icon="sap-icon://excel-attachment" 
+					press="onExportXLS"
+					icon="sap-icon://excel-attachment"
 					tooltip="{i18n>EquipmentTableButtonTooltipExportExcel}"
-					type="Transparent"/>
-				<Button 
+					type="Transparent"
+				/>
+				<Button
 					enabled="{= ${mDetailPage>/bEquipmentSelected}}"
 					icon="sap-icon://accept"
 					press="onApplyEquipmentMassStatus"
 					text="{i18n>EquipmentMassButtonTooltipValidate}"
 					tooltip="{i18n>EquipmentMassButtonTooltipValidate}"
-					type="Accept"/>
-				<Button 
+					type="Accept"
+				/>
+				<Button
 					enabled="{= ${mDetailPage>/bEquipmentSelectedDeletable}}"
 					icon="sap-icon://delete"
 					press="onApplyEquipmentMassStatus"
 					text="{i18n>EquipmentMassButtonTooltipReject}"
 					tooltip="{= ${mDetailPage>/bEquipmentSelectedDeletable} ? ${i18n>EquipmentMassButtonTooltipReject} : ${i18n>EquipmentMassButtonTooltipRejectDisable}}"
-					type="Reject"/>
-				<Button 
+					type="Reject"
+				/>
+				<Button
 					enabled="{= ${mDetailPage>/bEquipmentSelected}}"
 					icon="sap-icon://cause"
 					press="onApplyEquipmentMassStatus"
 					text="{i18n>EquipmentMassButtonTooltipReturnTakeover}"
 					tooltip="{i18n>EquipmentMassButtonTooltipReturnTakeover}"
-					type="Emphasized"/>
+					type="Emphasized"
+				/>
 			</Toolbar>
-		</t:extension>			
+		</t:extension>
 		<t:columns>
-			<t:Column 
+			<t:Column
 				id="EquipmentIdCol"
-				hAlign="Center" 
-				width="7%" 
-				filterProperty="EquipmentId" 
-				sortProperty="EquipmentId">
-				<Label text="{i18n>EquipmentTblColHdrEquipmentId}" wrapping="true"/>
+				hAlign="Center"
+				width="7%"
+				filterProperty="EquipmentId"
+				sortProperty="EquipmentId"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrEquipmentId}"
+					wrapping="true"
+				/>
 				<t:template>
-					<Text text="{mEquipment>EquipmentId}"/>
+					<Text text="{mEquipment>EquipmentId}" />
 				</t:template>
-			</t:Column>		
-			<t:Column 
+			</t:Column>
+			<t:Column
 				id="StautsFSMCol"
-				width="5%" 
-				autoResizable="true" 
-				hAlign="Center">
-				<Label text="{i18n>LocationHierarchyTblColHdrStatusFSM}" wrapping="true"/>
-				<t:template>
-					<core:Icon 
-						color="{path: 'mEquipment>StatusFSM', formatter:'.formatter.fnSetIconColorFSM'}"
-						src="{path: 'mEquipment>StatusFSM', formatter:'.formatter.fnSetIconFSM'}"
-						tooltip="{path: 'mEquipment>StatusFSM', formatter:'.formatter.fnSetIconTooltipFSM'}"/>
-				</t:template>
-			</t:Column>		
-			<t:Column 
-				id="FamilyCol"
-				hAlign="Left" 
-				width="10%" 
-				filterProperty="FamilyDesc" 
-				sortProperty="FamilyDesc">
-				<Label text="{i18n>EquipmentTblColHdrFamilyDesc}" wrapping="false"/>
-				<t:template>
-					<Text 
-						text="{mEquipment>FamilyDesc}" 
-						tooltip="{mEquipment>FamilyDesc}"
-						wrapping="false"/>
-				</t:template>
-			</t:Column>				
-			<t:Column 
-				id="EquipmentNameCol"
-				hAlign="Left" 
-				width="13%" 
-				filterProperty="EquipmentName" 
-				sortProperty="EquipmentName">
-				<Label text="{i18n>EquipmentTblColHdrEquipmentName}" wrapping="true"/>
-				<t:template>
-					<Text 
-						text="{mEquipment>EquipmentName}"
-						tooltip="{mEquipment>EquipmentName}"
-						wrapping="false"/>
-				</t:template>
-			</t:Column>
-			<t:Column 
-				id="CompleteLocationNameCol"
-				hAlign="Left" 
-				width="20%" 
-				sortProperty="CompleteLocationName">
-				<Label text="{i18n>EquipmentTblColHdrLocationName}" wrapping="true"/>
-				<t:template>
-					<Text 
-						text="{mEquipment>CompleteLocationName}" 
-						tooltip="{mEquipment>CompleteLocationName}" 
-						wrapping="false"/>
-				</t:template>
-			</t:Column>
-			<t:Column 
-				id="LinkedObjectCol"
-				hAlign="Center" 
 				width="5%"
-				visible="false">
-				<Label text="{i18n>EquipmentTblColHdrLinkedObject}" wrapping="true"/>
+				autoResizable="true"
+				hAlign="Center"
+			>
+				<Label
+					text="{i18n>LocationHierarchyTblColHdrStatusFSM}"
+					wrapping="true"
+				/>
 				<t:template>
-					<core:Icon 
-						src="{path: 'mEquipment>', formatter: '.formatter.fnSetLinkedObjectIcon'}"
-						tooltip="{path: 'mEquipment>', formatter: '.formatter.fnSetLinkedObjectTooltip'}"
-						color="Default"
-						press="onLinkedObject"
-						visible="{path: 'mEquipment>', formatter: '.formatter.fnSetLinkedObjectVisible'}"/>	
-				</t:template>
-			</t:Column>			
-			<t:Column 
-				id="PhotoIdCol"
-				hAlign="Center" 
-				width="5%">
-				<Label text="{i18n>EquipmentTblColHdrPhotoId}" wrapping="true"/>
-				<t:template>
-					<core:Icon 
-						src="{= ${mEquipment>PhotoId} === '' ? none : 'sap-icon://camera'}"
-						tooltip="{i18n>EquipmentTableIconTooltipPhotoId}"
-						color="Default"
-						press="onPhotoDownload"/>	
-				</t:template>
-			</t:Column>
-			<t:Column 
-				id="CommentCol"
-				hAlign="Center" 
-				width="7%">
-				<Label text="{i18n>EquipmentTblColHdrComment}" wrapping="true"/>
-				<t:template>
-					<core:Icon 
-						src="{= ${mEquipment>Comments} === '' ? none : 'sap-icon://notification-2'}"
-						tooltip="{i18n>EquipmentTableIconTooltipComment}"
-						color="Default"
-						press="onDisplayComment"/>	
-				</t:template>
-			</t:Column>				
-			<t:Column 
-				id="QuantityCol"
-				hAlign="Center" 
-				width="5%" 
-				filterProperty="Quantity" 
-				sortProperty="Quantity"
-				visible="false">
-				<Label text="{i18n>EquipmentTblColHdrQuantity}" wrapping="true"/>
-				<t:template>
-					<Text text="{mEquipment>Quantity}"/>
-				</t:template>
-			</t:Column>	
-			<t:Column 
-				id="UserStatusDescCol"
-				hAlign="Left"
-				width="10%" 
-				filterProperty="UserStatusDesc" 
-				sortProperty="UserStatusDesc">
-				<Label text="{i18n>EquipmentTblColHdrUserStatus}" wrapping="true"/>
-				<t:template>
-					<ObjectStatus 
-							text="{mEquipment>UserStatusDesc}"
-							tooltip="{mEquipment>UserStatusDesc}"
-							icon="{= ${mEquipment>UserStatusId} === 'E0005' ? 'sap-icon://accept' : ''}"
-							state="{= ${mEquipment>UserStatusId} === 'E0005' ? 'Success' : ${mEquipment>UserStatusId} === 'E0006' ? 'Warning' : 'None'}"/>					
-				</t:template>
-			</t:Column>
-			<t:Column 
-				id="AnomalyMeasuringPoints"
-				hAlign="Center" 
-				width="7%">
-				<Label text="{i18n>EquipmentTblColHdrAnomalyMeasuringDocuments}" wrapping="true"/>
-				<t:template>
-					<core:Icon id="AnomalyMeasuringDocButton"
-							src="sap-icon://end-user-experience-monitoring"
-							press="onPressAnomalyMeasuringDocuments"
-							color="{=${mEquipment>HasMeasuringDocument} ? '#107e3e' : '#e56e0c'}"
-							tooltip="{i18n>EquipmentTblColHdrAnomalyMeasuringDocuments}"
-							visible="{mEquipment>bMeasuringVisible}"
+					<core:Icon
+						color="{
+							path: 'mEquipment>StatusFSM',
+							formatter: '.formatter.fnSetIconColorFSM'
+						}"
+						src="{
+							path: 'mEquipment>StatusFSM',
+							formatter: '.formatter.fnSetIconFSM'
+						}"
+						tooltip="{
+							path: 'mEquipment>StatusFSM',
+							formatter: '.formatter.fnSetIconTooltipFSM'
+						}"
 					/>
 				</t:template>
 			</t:Column>
-			<t:Column 
+			<t:Column
+				id="FamilyCol"
+				hAlign="Left"
+				width="10%"
+				filterProperty="FamilyDesc"
+				sortProperty="FamilyDesc"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrFamilyDesc}"
+					wrapping="false"
+				/>
+				<t:template>
+					<Text
+						text="{mEquipment>FamilyDesc}"
+						tooltip="{mEquipment>FamilyDesc}"
+						wrapping="false"
+					/>
+				</t:template>
+			</t:Column>
+			<t:Column
+				id="EquipmentNameCol"
+				hAlign="Left"
+				width="13%"
+				filterProperty="EquipmentName"
+				sortProperty="EquipmentName"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrEquipmentName}"
+					wrapping="true"
+				/>
+				<t:template>
+					<Text
+						text="{mEquipment>EquipmentName}"
+						tooltip="{mEquipment>EquipmentName}"
+						wrapping="false"
+					/>
+				</t:template>
+			</t:Column>
+			<t:Column
+				id="CompleteLocationNameCol"
+				hAlign="Left"
+				width="20%"
+				sortProperty="CompleteLocationName"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrLocationName}"
+					wrapping="true"
+				/>
+				<t:template>
+					<Text
+						text="{mEquipment>CompleteLocationName}"
+						tooltip="{mEquipment>CompleteLocationName}"
+						wrapping="false"
+					/>
+				</t:template>
+			</t:Column>
+			<t:Column
+				id="LinkedObjectCol"
+				hAlign="Center"
+				width="5%"
+				visible="false"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrLinkedObject}"
+					wrapping="true"
+				/>
+				<t:template>
+					<core:Icon
+						src="{
+							path: 'mEquipment>',
+							formatter: '.formatter.fnSetLinkedObjectIcon'
+						}"
+						tooltip="{
+							path: 'mEquipment>',
+							formatter: '.formatter.fnSetLinkedObjectTooltip'
+						}"
+						color="Default"
+						press="onLinkedObject"
+						visible="{
+							path: 'mEquipment>',
+							formatter: '.formatter.fnSetLinkedObjectVisible'
+						}"
+					/>
+				</t:template>
+			</t:Column>
+			<t:Column
+				id="PhotoIdCol"
+				hAlign="Center"
+				width="5%"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrPhotoId}"
+					wrapping="true"
+				/>
+				<t:template>
+					<core:Icon
+						src="{= ${mEquipment>PhotoId} === '' ? none : 'sap-icon://camera'}"
+						tooltip="{i18n>EquipmentTableIconTooltipPhotoId}"
+						color="Default"
+						press="onPhotoDownload"
+					/>
+				</t:template>
+			</t:Column>
+			<t:Column
+				id="CommentCol"
+				hAlign="Center"
+				width="7%"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrComment}"
+					wrapping="true"
+				/>
+				<t:template>
+					<core:Icon
+						src="{= ${mEquipment>Comments} === '' ? none : 'sap-icon://notification-2'}"
+						tooltip="{i18n>EquipmentTableIconTooltipComment}"
+						color="Default"
+						press="onDisplayComment"
+					/>
+				</t:template>
+			</t:Column>
+			<t:Column
+				id="QuantityCol"
+				hAlign="Center"
+				width="5%"
+				filterProperty="Quantity"
+				sortProperty="Quantity"
+				visible="false"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrQuantity}"
+					wrapping="true"
+				/>
+				<t:template>
+					<Text text="{mEquipment>Quantity}" />
+				</t:template>
+			</t:Column>
+			<t:Column
+				id="UserStatusDescCol"
+				hAlign="Left"
+				width="10%"
+				filterProperty="UserStatusDesc"
+				sortProperty="UserStatusDesc"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrUserStatus}"
+					wrapping="true"
+				/>
+				<t:template>
+					<ObjectStatus
+						text="{mEquipment>UserStatusDesc}"
+						tooltip="{mEquipment>UserStatusDesc}"
+						icon="{= ${mEquipment>UserStatusId} === 'E0005' ? 'sap-icon://accept' : ''}"
+						state="{= ${mEquipment>UserStatusId} === 'E0005' ? 'Success' : ${mEquipment>UserStatusId} === 'E0006' ? 'Warning' : 'None'}"
+					/>
+				</t:template>
+			</t:Column>
+			<t:Column
+				id="AnomalyMeasuringPoints"
+				hAlign="Center"
+				width="7%"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrAnomalyMeasuringDocuments}"
+					wrapping="true"
+				/>
+				<t:template>
+					<core:Icon
+						id="AnomalyMeasuringDocButton"
+						src="sap-icon://end-user-experience-monitoring"
+						press="onPressAnomalyMeasuringDocuments"
+						color="{=${mEquipment>HasMeasuringDocument} ? '#107e3e' : '#e56e0c'}"
+						tooltip="{i18n>EquipmentTblColHdrAnomalyMeasuringDocuments}"
+						visible="{mEquipment>bMeasuringVisible}"
+					/>
+				</t:template>
+			</t:Column>
+			<t:Column
 				id="AmdecCounter"
 				hAlign="Center"
-				width="5%" 
-				sortProperty="AmdecSorter">
-				<Label text="{i18n>EquipmentTblColHdrAmdecCounter}" wrapping="true"/>
+				width="5%"
+				sortProperty="AmdecSorter"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrAmdecCounter}"
+					wrapping="true"
+				/>
 				<t:template>
-					<ObjectStatus 
+					<ObjectStatus
 						id="ObjectAmdec"
 						text="{= ${mEquipment>IsAmdecComplete} ? '' : ${mEquipment>AmdecCounter}}"
 						icon="{= ${mEquipment>IsAmdecComplete} ? 'sap-icon://accept' : 'sap-icon://alert'}"
 						active="true"
 						press="onDisplayDetailEquipment"
-						state="{= ${mEquipment>IsAmdecComplete} ? 'Success' : 'Warning'}"/>
+						state="{= ${mEquipment>IsAmdecComplete} ? 'Success' : 'Warning'}"
+					/>
 				</t:template>
-			</t:Column>	
-			<t:Column 
+			</t:Column>
+			<t:Column
 				id="FamilyImportantCounter"
 				hAlign="Center"
-				width="10%" 
-				sortProperty="FamilyCharactImportantSorter">
-				<Label text="{i18n>EquipmentTblColHdrFamilyImportantCounter}" wrapping="true"/>
+				width="10%"
+				sortProperty="FamilyCharactImportantSorter"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrFamilyImportantCounter}"
+					wrapping="true"
+				/>
 				<t:template>
-					<ObjectStatus 
+					<ObjectStatus
 						id="ObjectFamilyCharact"
 						text="{= ${mEquipment>IsFamilyCharactImportantComplete} ? '' : ${mEquipment>FamilyCharactImportantCounter}}"
 						icon="{= ${mEquipment>IsFamilyCharactImportantComplete} ? 'sap-icon://accept' : 'sap-icon://alert'}"
 						state="{= ${mEquipment>IsFamilyCharactImportantComplete} ? 'Success' : 'Warning'}"
 						active="true"
 						press="onDisplayDetailEquipment"
-						visible="{= ${mEquipment>FamilyCharactImportantCounter} === '-' ? false : true}"/>
+						visible="{= ${mEquipment>FamilyCharactImportantCounter} === '-' ? false : true}"
+					/>
 				</t:template>
-			</t:Column>	
-			<t:Column 
+			</t:Column>
+			<t:Column
 				id="OtherProperties"
 				hAlign="Center"
-				width="5%" >
-				<Label text="{i18n>EquipmentTblColHdrOtherProperties}" wrapping="true"/>
+				width="5%"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrOtherProperties}"
+					wrapping="true"
+				/>
 				<t:template>
-					<core:Icon 
+					<core:Icon
 						id="ObjectOtherProperties"
 						src="sap-icon://display-more"
 						color="Neutral"
-						press="onDisplayDetailEquipment"/>
+						press="onDisplayDetailEquipment"
+					/>
 				</t:template>
-			</t:Column>				
-			<t:Column 
+			</t:Column>
+			<t:Column
 				id="ModificationCol"
 				hAlign="Center"
-				width="6rem">
-				<Label text="{i18n>EquipmentTblColHdrModification}"/>
+				width="6rem"
+			>
+				<Label text="{i18n>EquipmentTblColHdrModification}" />
 				<t:template>
 					<Bar class="customNoBoxShadow">
 						<contentLeft>
-							<core:Icon 
+							<core:Icon
 								src="{= ${mEquipment>IsCreatedDuringPec} ? 'sap-icon://add-equipment' : none}"
 								tooltip="{i18n>EquipmentTableIconTooltipCreatedDuringPEC}"
-								color="Positive"/>	
+								color="Positive"
+							/>
 						</contentLeft>
-						<contentRight>								
-							<core:Icon 
+						<contentRight>
+							<core:Icon
 								src="sap-icon://activity-items"
 								tooltip="{i18n>EquipmentTableIconTooltipModification}"
 								color="Default"
 								press="onDisplayModifiedInfoPopoverPress"
-								visible="{path: 'mEquipment>ModifiedInfo', formatter: '.formatter.setVisibleModifiedInfoIcon'}"/>
+								visible="{
+									path: 'mEquipment>ModifiedInfo',
+									formatter: '.formatter.setVisibleModifiedInfoIcon'
+								}"
+							/>
 						</contentRight>
-					</Bar>								
+					</Bar>
 				</t:template>
 			</t:Column>
-			<t:Column 
+			<t:Column
 				id="LastChangedByIdCol"
-				hAlign="Center" 
-				width="5%" 
-				filterProperty="LastChangedById" 
+				hAlign="Center"
+				width="5%"
+				filterProperty="LastChangedById"
 				sortProperty="LastChangedById"
-				visible="false">
-				<Label text="{i18n>EquipmentTblColHdrLastChangedById}" wrapping="true"/>
+				visible="false"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrLastChangedById}"
+					wrapping="true"
+				/>
 				<t:template>
-					<Text text="{mEquipment>LastChangedById}"/>
+					<Text text="{mEquipment>LastChangedById}" />
 				</t:template>
-			</t:Column>	
-			<t:Column 
+			</t:Column>
+			<t:Column
 				id="LastChangedByNameCol"
-				hAlign="Center" 
-				width="5%" 
-				filterProperty="LastChangedByName" 
+				hAlign="Center"
+				width="5%"
+				filterProperty="LastChangedByName"
 				sortProperty="LastChangedByName"
-				visible="false">
-				<Label text="{i18n>EquipmentTblColHdrLastChangedByName}" wrapping="true"/>
+				visible="false"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrLastChangedByName}"
+					wrapping="true"
+				/>
 				<t:template>
-					<Text text="{mEquipment>LastChangedByName}"/>
+					<Text text="{mEquipment>LastChangedByName}" />
 				</t:template>
-			</t:Column>	
+			</t:Column>
 			<t:Column
 				id="LastChangedOnCol"
-				hAlign="Center" 
-				width="5%" 
+				hAlign="Center"
+				width="5%"
 				sortProperty="LastChangedOn"
-				visible="false">
-				<Label text="{i18n>EquipmentTblColHdrLastChangedOn}" wrapping="true"/>
+				visible="false"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrLastChangedOn}"
+					wrapping="true"
+				/>
 				<t:template>
 					<Text text="{
 						path: 'mEquipment>LastChangedOn',
 						type: 'sap.ui.model.type.Date',
 						formatOptions: {
 							style: 'short'
-						}}"/>
+						}
+					}" />
 				</t:template>
-			</t:Column>	
-			<t:Column 
+			</t:Column>
+			<t:Column
 				id="NameplateIdCol"
-				hAlign="Center" 
+				hAlign="Center"
 				width="7%"
-				visible="false">
-				<Label text="{i18n>EquipmentTblColHdrNameplateId}" wrapping="true"/>
+				visible="false"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrNameplateId}"
+					wrapping="true"
+				/>
 				<t:template>
-					<core:Icon 
+					<core:Icon
 						src="{= ${mEquipment>NameplateId} === '' ? none : 'sap-icon://tag'}"
 						tooltip="{i18n>EquipmentTableIconTooltipNameplateId}"
 						color="Default"
-						press="onNameplateDownload"/>	
+						press="onNameplateDownload"
+					/>
 				</t:template>
 			</t:Column>
-			<t:Column 
+			<t:Column
 				id="AnomalyCol"
-				hAlign="Center" 
-				width="7%">
-				<Label text="{i18n>EquipmentTblColHdrAnomaly}" wrapping="true"/>
+				hAlign="Center"
+				width="7%"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrAnomaly}"
+					wrapping="true"
+				/>
 				<t:template>
-					<ObjectStatus 
+					<ObjectStatus
 						id="ObjectAnomaly"
 						icon="sap-icon://quality-issue"
 						active="true"
 						press="onOpenAnomalyFragment"
 						state="Warning"
 						visible="{mEquipment>HasAnomaly}"
-						/>
+					/>
 				</t:template>
 			</t:Column>
-			<t:Column 
+			<t:Column
 				id="ActionCol"
-				hAlign="Center" 
-				width="9.5rem">
-				<Label text="{i18n>EquipmentTblColHdrAction}"/>
+				hAlign="Center"
+				width="9.5rem"
+			>
+				<Label text="{i18n>EquipmentTblColHdrAction}" />
 				<t:template>
 					<Bar class="customNoBoxShadow">
 						<contentLeft>
-							<Button 
+							<Button
 								icon="sap-icon://accept"
 								press="onApplyEquipmentStatus"
 								tooltip="{i18n>EquipmentTableButtonTooltipValidate}"
 								type="Accept"
-								visible="{= ${mEquipment>UserStatusId} !== 'E0005'}"/>
+								visible="{= ${mEquipment>UserStatusId} !== 'E0005'}"
+							/>
 						</contentLeft>
 						<contentMiddle>
-							<Button 
+							<Button
 								icon="sap-icon://delete"
 								press="onApplyEquipmentStatus"
 								tooltip="{= ${mEquipment>Deletable} ? ${i18n>EquipmentTableButtonTooltipReject} : ${i18n>EquipmentTableButtonTooltipRejectDisable}}"
 								type="Reject"
 								enabled="{mEquipment>Deletable}"
-								visible="{= ${mEquipment>UserStatusId} !== 'E0006'}"/>
+								visible="{= ${mEquipment>UserStatusId} !== 'E0006'}"
+							/>
 						</contentMiddle>
 						<contentRight>
-							<Button 
+							<Button
 								icon="sap-icon://cause"
 								press="onApplyEquipmentStatus"
 								tooltip="{i18n>EquipmentTableButtonTooltipReturnTakeover}"
 								type="Emphasized"
-								visible="{= ${mEquipment>UserStatusId} !== 'E0002'}"/>
+								visible="{= ${mEquipment>UserStatusId} !== 'E0002'}"
+							/>
+							<Button
+								icon="sap-icon://form"
+								tooltip="{i18n>tootipSeeEquipmentChanges}"
+								press="onPressEditEquipment"
+							/>
 						</contentRight>
 					</Bar>
 				</t:template>
 			</t:Column>
-			<t:Column 
+			<t:Column
 				id="AnomalyPictureCol"
-				hAlign="Center" 
+				hAlign="Center"
 				width="7%"
-				visible="false">
-				<Label text="{i18n>EquipmentTblColHdrAnomalyPicture}" wrapping="true"/>
+				visible="false"
+			>
+				<Label
+					text="{i18n>EquipmentTblColHdrAnomalyPicture}"
+					wrapping="true"
+				/>
 				<t:template>
-					<Button icon="sap-icon://camera"
-							press="onAnomalyPhotoIconPress"
-							visible="{mEquipment>HasAnomaly}"
+					<Button
+						icon="sap-icon://camera"
+						press="onAnomalyPhotoIconPress"
+						visible="{mEquipment>HasAnomaly}"
 					/>
 				</t:template>
 			</t:Column>
 		</t:columns>
 		<t:rowSettingsTemplate>
-			<t:RowSettings 
-				highlight="{path :'mEquipment>StatusFSM', formatter: '.formatter.fnSetHighlight'}"/>
-		</t:rowSettingsTemplate>		
+			<t:RowSettings highlight="{
+				path: 'mEquipment>StatusFSM',
+				formatter: '.formatter.fnSetHighlight'
+			}" />
+		</t:rowSettingsTemplate>
 	</t:Table>
 </core:FragmentDefinition>

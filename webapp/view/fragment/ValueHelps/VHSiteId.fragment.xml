@@ -1,0 +1,50 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+>
+	<TableSelectDialog
+		id="SiteIdDialog"
+		title="{i18n>TableSelectDialogTitleSite}"
+		noDataText="{i18n>noDataFound}"
+		multiSelect="true"
+		rememberSelections="true"
+		search="onValueHelpSearch"
+		confirm="onValueHelpConfirm"
+		cancel="onValueHelpClose"
+		items="{
+			path: 'VH>/SiteSet'
+		}"
+	>
+		<columns>
+			<Column width="3rem">
+				<header>
+					<Text text="{i18n>VHSiteDialogColumnHeaderSiteId}" />
+				</header>
+			</Column>
+			<Column width="8rem">
+				<header>
+					<Text text="{i18n>VHSiteDialogColumnHeaderSiteName}" />
+				</header>
+			</Column>
+			<Column width="3rem">
+				<header>
+					<Text text="{i18n>VHSiteDialogColumnHeaderSiteIsActive}" />
+				</header>
+			</Column>
+		</columns>
+		<ColumnListItem selected="{
+			parts: ['VH>SiteId', 'mTokens>/SiteId'],
+			formatter: '.formatter.setVHSelectedItem'
+		}">
+			<cells>
+				<Text text="{VH>SiteId}" />
+				<Text text="{VH>SiteName}" />
+				<core:Icon
+					src="{= ${VH>IsActive} ? 'sap-icon://accept' : 'sap-icon://decline' }"
+					color="{= ${VH>IsActive} ? 'Positive' : 'Negative' }"
+					tooltip="{= ${VH>IsActive} ? ${i18n>yes} : ${i18n>no} }"
+				/>
+			</cells>
+		</ColumnListItem>
+	</TableSelectDialog>
+</core:FragmentDefinition>

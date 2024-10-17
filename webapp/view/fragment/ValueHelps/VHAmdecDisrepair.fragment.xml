@@ -1,0 +1,18 @@
+<c:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:c="sap.ui.core"
+>
+    <SelectDialog
+        id="idEquipAmdecDisrepairDialog"
+        noDataText="{i18n>noDataFound}"
+        items="{
+            path: 'mVH>/AmdecDisrepair',
+            templateShareable: true
+        }"
+        search="onAmdecSelectDialogSearch"
+        confirm="onAmdecVhSelectDialogConfirm($event, 'AmdecDisrepairId')"
+        cancel="onValueHelpClose"
+    >
+        <StandardListItem title="{mVH>ValueId} - {mVH>ValueDesc}" />
+    </SelectDialog>
+</c:FragmentDefinition>

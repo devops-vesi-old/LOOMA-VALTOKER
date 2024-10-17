@@ -1,0 +1,88 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:t="sap.ui.table"
+	xmlns:core="sap.ui.core"
+>
+	<Dialog id="dialogVHContract">
+		<content>
+			<t:TreeTable
+				id="ContractIdTreeTable"
+				rows="{
+					path: 'oTreeTableModel>/contractData',
+					parameters: {
+						arrayNames: ['ChildContracts']
+					}
+				}"
+				selectionMode="None"
+				enableSelectAll="false"
+				ariaLabelledBy="title"
+				visibleRowCountMode="Auto"
+				minAutoRowCount="10"
+			>
+				<t:extension>
+					<OverflowToolbar style="Clear">
+						<SearchField
+							width="100%"
+							search="onSearchContractVh"
+						/>
+					</OverflowToolbar>
+				</t:extension>
+				<t:columns>
+					<t:Column width="15%">
+						<Label text="{i18n>VHContractDialogColumnHeaderContractId}" />
+						<t:template>
+							<Text
+								text="{oTreeTableModel>ContractId}"
+								wrapping="false"
+							/>
+						</t:template>
+					</t:Column>
+					<t:Column width="28%">
+						<Label text="{i18n>VHContractDialogColumnHeaderContractName}" />
+						<t:template>
+							<Text text="{oTreeTableModel>ContractName}" />
+						</t:template>
+					</t:Column>
+					<t:Column width="10%">
+						<Text text="{i18n>VHContractDialogColumnHeaderIsActive}" />
+						<t:template>
+							<core:Icon
+								src="{= ${oTreeTableModel>IsActive} ? 'sap-icon://accept' : 'sap-icon://decline' }"
+								color="{= ${oTreeTableModel>IsActive} ? 'Positive' : 'Negative' }"
+								tooltip="{= ${oTreeTableModel>IsActive} ? ${i18n>yes} : ${i18n>no} }"
+							/>
+						</t:template>
+					</t:Column>
+					<t:Column width="10%">
+						<CheckBox
+							selected="{oTreeTableModel>/selectAll}"
+							select="onContractValueHelpSelectAllCheckBox"
+							text="{i18n>contractSearchHelpCheckboxColumn}"
+						/>
+						<t:template>
+							<CheckBox
+								selected="{oTreeTableModel>selected}"
+								partiallySelected="{oTreeTableModel>partiallySelected}"
+								select="onContractSearchHelpCheckBoxSelect"
+							/>
+						</t:template>
+					</t:Column>
+				</t:columns>
+				<t:footer>
+					<OverflowToolbar style="Clear">
+						<ToolbarSpacer />
+						<Button
+							text="{i18n>brnConfirm}"
+							type="Emphasized"
+							press="onContractSearchHelpConfirm"
+						/>
+						<Button
+							text="{i18n>btnDialogClose}"
+							press="onContractSearchHelpClose"
+						/>
+					</OverflowToolbar>
+				</t:footer>
+			</t:TreeTable>
+		</content>
+	</Dialog>
+</core:FragmentDefinition>

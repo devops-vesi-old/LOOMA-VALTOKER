@@ -1,150 +1,171 @@
 {
-    "_version": "1.12.0",
-    "sap.app": {
-        "id": "com.vesi.zfac4_valtoker",
-        "type": "application",
-        "i18n": "i18n/i18n.properties",
-        "applicationVersion": {
-            "version": "1.0.0"
-        },
-        "title": "{{appTitle}}",
-        "description": "{{appDescription}}",
-        "sourceTemplate": {
-            "id": "ui5template.basicSAPUI5ApplicationProject",
-            "version": "1.38.11",
-            "toolsId": "f50dc886-f0e8-42a4-b88d-40f95ecffc7a"
-        },
-        "dataSources": {
-            "ZSRC4_PEC_SRV": {
-                "uri": "/sap/opu/odata/sap/ZSRC4_PEC_SRV/",
-                "type": "OData",
-                "settings": {
-                    "localUri": "localService/metadata.xml"
-                }
-            },
-            "ZSRC4_VH_SRV": {
-                "uri": "/sap/opu/odata/sap/ZSRC4_VH_SRV/",
-                "type": "OData",
-                "settings": {
-                    "localUri": "localServiceVH/metadata.xml"
-                }
-            }
-        }
+  "_version": "1.12.0",
+  "sap.app": {
+    "id": "com.vesi.zfac4_valtoker",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "1.0.0"
     },
-    "sap.ui": {
-        "fullWidth": true,
-        "technology": "UI5",
-        "icons": {
-            "icon": "",
-            "favIcon": "",
-            "phone": "",
-            "phone@2": "",
-            "tablet": "",
-            "tablet@2": ""
-        },
-        "deviceTypes": {
-            "desktop": true,
-            "tablet": true,
-            "phone": true
-        }
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "sourceTemplate": {
+      "id": "ui5template.basicSAPUI5ApplicationProject",
+      "version": "1.38.11",
+      "toolsId": "f50dc886-f0e8-42a4-b88d-40f95ecffc7a"
     },
-    "sap.ui5": {
-        "flexEnabled": false,
-        "rootView": {
-            "viewName": "com.vesi.zfac4_valtoker.view.App",
-            "type": "XML",
-            "async": true,
-            "id": "app"
-        },
-        "dependencies": {
-            "minUI5Version": "1.84.0",
-            "libs": {
-                "sap.ui.layout": {},
-                "sap.ui.core": {},
-                "sap.m": {},
-                "sap.ui.table": {},
-                "com.vesi.zaclib": {}
-            }
-        },
-        "contentDensities": {
-            "compact": true,
-            "cozy": true
-        },
-        "models": {
-            "i18n": {
-                "type": "sap.ui.model.resource.ResourceModel",
-                "settings": {
-                    "bundleName": "com.vesi.zfac4_valtoker.i18n.i18n"
-                }
-            },
-            "": {
-                "type": "sap.ui.model.odata.v2.ODataModel",
-                "settings": {
-                    "defaultOperationMode": "Server",
-                    "defaultBindingMode": "TwoWay",
-                    "defaultCountMode": "Inline",
-                    "defaultUpdateMethod": "PUT",
-                    "refreshAfterChange": true
-                },
-                "dataSource": "ZSRC4_PEC_SRV"
-            },
-            "VH": {
-                "type": "sap.ui.model.odata.v2.ODataModel",
-                "settings": {
-                    "defaultOperationMode": "Server",
-                    "defaultBindingMode": "TwoWay",
-                    "defaultCountMode": "Inline",
-                    "defaultUpdateMethod": "PUT",
-                    "refreshAfterChange": true
-                },
-                "dataSource": "ZSRC4_VH_SRV"
-            }
-        },
-        "resources": {
-            "css": [
-                {
-                    "uri": "css/style.css"
-                }
-            ]
-        },
-        "routing": {
-            "config": {
-                "routerClass": "sap.m.routing.Router",
-                "viewType": "XML",
-                "async": true,
-                "viewPath": "com.vesi.zfac4_valtoker.view",
-                "controlAggregation": "pages",
-                "controlId": "app",
-                "clearControlAggregation": false
-            },
-            "routes": [
-                {
-                    "name": "Home",
-                    "pattern": "",
-                    "target": [
-                        "Home"
-                    ]
-                },
-                {
-                    "name": "Detail",
-                    "pattern": "Detail/{SiteId}",
-                    "target": [
-                        "Detail"
-                    ]
-                }
-            ],
-            "targets": {
-                "Home": {
-                    "viewName": "Home"
-                },
-                "Detail": {
-                    "viewName": "Detail"
-                }
-            }
+    "dataSources": {
+      "ZSRC4_PEC_SRV": {
+        "uri": "/sap/opu/odata/sap/ZSRC4_PEC_SRV/",
+        "type": "OData",
+        "settings": {
+          "localUri": "localService/metadata.xml"
         }
-    },
-    "sap.platform.abap": {
-        "uri": "/sap/bc/ui5_ui5/sap/zfac4_valtoker/webapp",
-        "_version": "1.1.0"
+      },
+      "ZSRC4_VH_SRV": {
+        "uri": "/sap/opu/odata/sap/ZSRC4_VH_SRV/",
+        "type": "OData",
+        "settings": {
+          "localUri": "localServiceVH/metadata.xml"
+        }
+      },
+      "ZSRC4_EQUI_SITE_NEW_SRV": {
+        "uri": "/sap/opu/odata/sap/ZSRC4_EQUI_SITE_NEW_SRV/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/ZSRC4_EQUI_SITE_NEW_SRV/metadata.xml",
+          "odataVersion": "2.0"
+        }
+      }
     }
+  },
+  "sap.ui": {
+    "fullWidth": true,
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "rootView": {
+      "viewName": "com.vesi.zfac4_valtoker.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "app"
+    },
+    "dependencies": {
+      "minUI5Version": "1.84.0",
+      "libs": {
+        "sap.ui.layout": {},
+        "sap.ui.core": {},
+        "sap.m": {},
+        "sap.ui.table": {},
+        "com.vesi.zaclib": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "com.vesi.zfac4_valtoker.i18n.i18n"
+        }
+      },
+      "": {
+        "type": "sap.ui.model.odata.v2.ODataModel",
+        "settings": {
+          "defaultOperationMode": "Server",
+          "defaultBindingMode": "TwoWay",
+          "defaultCountMode": "Inline",
+          "defaultUpdateMethod": "PUT",
+          "refreshAfterChange": true
+        },
+        "dataSource": "ZSRC4_PEC_SRV"
+      },
+      "VH": {
+        "type": "sap.ui.model.odata.v2.ODataModel",
+        "settings": {
+          "defaultOperationMode": "Server",
+          "defaultBindingMode": "TwoWay",
+          "defaultCountMode": "Inline",
+          "defaultUpdateMethod": "PUT",
+          "refreshAfterChange": true
+        },
+        "dataSource": "ZSRC4_VH_SRV"
+      },
+      "EquipmentForm": {
+        "type": "sap.ui.model.json.JSONModel",
+        "uri": "model/Config/Detail/EquipmentForm.json"
+      },
+      "EquipmentSiteModel": {
+        "dataSource": "ZSRC4_EQUI_SITE_NEW_SRV",
+        "preload": true,
+        "settings": {
+          "defaultBindingMode": "TwoWay",
+          "defaultCountMode": "Inline",
+          "refreshAfterChange": false,
+          "metadataUrlParams": {
+            "sap-value-list": "none"
+          }
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "async": true,
+        "viewPath": "com.vesi.zfac4_valtoker.view",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "clearControlAggregation": false
+      },
+      "routes": [
+        {
+          "name": "Home",
+          "pattern": "",
+          "target": ["Home"]
+        },
+        {
+          "name": "Detail",
+          "pattern": "Detail/{SiteId}",
+          "target": ["Detail"]
+        }
+      ],
+      "targets": {
+        "Home": {
+          "viewName": "Home"
+        },
+        "Detail": {
+          "viewName": "Detail"
+        }
+      }
+    }
+  },
+  "sap.platform.abap": {
+    "uri": "/sap/bc/ui5_ui5/sap/zfac4_valtoker/webapp",
+    "_version": "1.1.0"
+  }
 }

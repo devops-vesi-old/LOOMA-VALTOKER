@@ -1,0 +1,140 @@
+<c:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:c="sap.ui.core"
+>
+    <Dialog
+        id="dialogChangeEquipment"
+        busy="{ViewModel>/EquipmentChangesDialogBusy}"
+    >
+        <customHeader>
+            <OverflowToolbar>
+                <ToolbarSpacer />
+                <Button
+                    text="{i18n>btnSave}"
+                    tooltip="{i18n>btnSave}"
+                    press="onPressSaveEquipmentChanges"
+                    type="Emphasized"
+                    enabled="{EquipmentForm>/bSaveButtonEnabled}"
+                />
+                <Button
+                    icon="sap-icon://decline"
+                    tooltip="{i18n>btnCancel}"
+                    press="onCloseChangeEquipment"
+                />
+            </OverflowToolbar>
+        </customHeader>
+        <content>
+            <Table items="{EquipmentForm>/TableForm}">
+                <columns>
+                    <Column />
+                    <Column>
+                        <Text text="{i18n>changeEquipmentTextOldValue}" />
+                    </Column>
+                    <Column class="sapUiSmallMargin">
+                        <Text text="{i18n>changeEquipmentColumnCurrentValue}" />
+                    </Column>
+                    <Column>
+                        <Text text="{i18n>changeEquipmentColumnRollback}" />
+                    </Column>
+                    <Column>
+                        <Text text="{i18n>changeEquipmentColumnChangedBy}" />
+                    </Column>
+                    <Column>
+                        <Text text="{i18n>changeEquipmentColumnChangedOn}" />
+                    </Column>
+                </columns>
+                <ColumnListItem>
+                    <cells>
+                        <Text text="{
+                            path: 'EquipmentForm>EquipmentInfo',
+                            formatter: '.fnGetResourceBundle'
+                        }" />
+                        <Text text="{EquipmentForm>ValueOldDesc}" />
+                        <VBox>
+                            <Input
+                                showValueHelp="true"
+                                valueHelpRequest="onEquipChangeValueHelpRequest"
+                                name="{EquipmentForm>Name}"
+                                value="{EquipmentForm>CurrentValueDesc}"
+                                enabled="{EquipmentForm>Editable}"
+                                visible="{= ${EquipmentForm>InputType} === 'ValueHelp'}"
+                            />
+                            <Input
+                                name="{EquipmentForm>Name}"
+                                value="{
+                                    path: 'EquipmentForm>CurrentValue'
+                                }"
+                                enabled="{EquipmentForm>Editable}"
+                                visible="{= ${EquipmentForm>InputType} === 'Text'}"
+                            />
+                            <Input
+                                name="{EquipmentForm>Name}"
+                                value="{
+                                    path: 'EquipmentForm>CurrentValueDesc'
+                                }"
+                                enabled="{EquipmentForm>Editable}"
+                                visible="{= ${EquipmentForm>InputType} === 'InputDesc'}"
+                                maxLength="{EquipmentForm>MaxLength}"
+                            />
+                            <DatePicker
+                                name="{EquipmentForm>Name}"
+                                value="{
+                                    path: 'EquipmentForm>CurrentValue',
+                                    type: 'sap.ui.model.type.Date',
+                                    formatOptions: {
+                                        pattern: 'dd.MM.yyyy',
+                                        strictParsing: true,
+                                        UTC: true
+                                    }
+                                }"
+                                enabled="{EquipmentForm>Editable}"
+                                visible="{= ${EquipmentForm>InputType} === 'Date'}"
+                                displayFormat="{EquipmentForm>DisplayFormat}"
+                                placeholder="{EquipmentForm>Placeholder}"
+                            />
+                            <ObjectStatus
+                                text="{= ${EquipmentForm>IsFamilyCharactImportantComplete} ? '' : ${EquipmentForm>FamilyCharactImportantCounter}}"
+                                icon="{= ${EquipmentForm>IsFamilyCharactImportantComplete} ? 'sap-icon://accept' : 'sap-icon://alert'}"
+                                state="{= ${EquipmentForm>IsFamilyCharactImportantComplete} ? 'Success' : 'Warning'}"
+                                active="true"
+                                press="onDisplaFamilyCharactDetailEquipmentChange"
+                                visible="{= ${EquipmentForm>FamilyCharactImportantCounter} !== '-' &amp;&amp; ${EquipmentForm>InputType} !== 'PopOver' ? false : true}"
+                            />
+                            <Select
+                                selectedKey="{EquipmentForm>CurrentValueBool}"
+                                visible="{= ${EquipmentForm>InputType} === 'BoolSelect'}"
+                                width="100%"
+                                enabled="{EquipmentForm>Editable}"
+                            >
+                                <items>
+                                    <c:Item
+                                        key="true"
+                                        text="{i18n>yes}"
+                                    />
+                                    <c:Item
+                                        key="false"
+                                        text="{i18n>no}"
+                                    />
+                                </items>
+                            </Select>
+                        </VBox>
+                        <Button
+                            icon="sap-icon://undo"
+                            type="Attention"
+                            press="onPressRollbackEquipmentChange"
+                            visible="{EquipmentForm>ShowRoolbackButton}"
+                        />
+                        <Text text="{EquipmentForm>LastChangedBy}" />
+                        <Text text="{
+                            path: 'EquipmentForm>LastChangedOn',
+                            type: 'sap.ui.model.type.Date',
+                            constraints: {
+                                displayFormat: 'Date'
+                            }
+                        }" />
+                    </cells>
+                </ColumnListItem>
+            </Table>
+        </content>
+    </Dialog>
+</c:FragmentDefinition>

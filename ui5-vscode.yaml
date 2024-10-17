@@ -1,0 +1,35 @@
+specVersion: "2.6"
+metadata:
+  name: com.vesi.zfac4_valtoker
+type: application
+server:
+  customMiddleware:
+    - name: fiori-tools-proxy
+      afterMiddleware: compression
+      configuration:
+        ignoreCertError: true
+        backend:
+          - path: /sap
+            url: http://vinapdvp0400.vinci-energies.net:8004
+            client: "750"
+          - path: /resources/com/vesi/zaclib
+            url: http://vinapdvp0400.vinci-energies.net:8004
+            client: "550"
+            pathPrefix: /sap/bc/ui5_ui5/sap/zaclib
+        ui5:
+          path:
+            - /resources
+            - /test-resources
+          url: https://ui5.sap.com
+          version: 1.108.20
+    - name: fiori-tools-appreload
+      afterMiddleware: compression
+      configuration:
+        port: 35729
+        path: webapp
+        delay: 300
+    - name: fiori-tools-preview
+      afterMiddleware: fiori-tools-appreload
+      configuration:
+        component: com.vesi.zfac4_equip_cockpit
+        ui5Theme: sap_fiori_horizon

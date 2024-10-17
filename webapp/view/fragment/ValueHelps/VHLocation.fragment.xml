@@ -1,0 +1,47 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+>
+	<Dialog
+		id="idEquipLocationDialog"
+		title="{i18n>dialogTitleLocation}"
+	>
+		<Tree
+			id="EquipLocationTreeId"
+			items="{
+				path: 'LocationTreeModel>/nodeRoot',
+				sorter: {
+					path: 'Description'
+				}
+			}"
+			mode="MultiSelect"
+			selectionChange="onEquipLocationSelectionChange"
+			rememberSelections="true"
+			busy="{ViewModel>/LocationTreeTableBusy}"
+		>
+			<StandardTreeItem
+				title="{LocationTreeModel>Description}"
+				type="Active"
+			>
+				<customData>
+					<core:CustomData
+						key="SelectState"
+						value="{LocationTreeModel>SelectState}"
+					/>
+				</customData>
+			</StandardTreeItem>
+		</Tree>
+		<buttons>
+			<Button
+				text="{i18n>btnSelect}"
+				tooltip="{i18n>btnSelect}"
+				press="onEquipLocationConfirmSelect"
+			/>
+			<Button
+				text="{i18n>btnDialogClose}"
+				tooltip="{i18n>btnDialogClose}"
+				press="onEquipLocationValueHelpClose"
+			/>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,20 @@
+<c:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:c="sap.ui.core"
+>
+    <SelectDialog
+        id="DomainIdDialog"
+        noDataText="{i18n>noDataFound}"
+        title="{i18n>dialogDomainTitle}"
+        search="onEquipDomainValueHelpSearch"
+        confirm="onValueHelpConfirm"
+        cancel="onValueHelpClose"
+        items="{
+            path: 'EquipmentSiteModel>/VH_DomainSet',
+            templateShareable: true
+        }"
+        multiSelect="true"
+    >
+        <StandardListItem title="{EquipmentSiteModel>DomainDescription}" />
+    </SelectDialog>
+</c:FragmentDefinition>

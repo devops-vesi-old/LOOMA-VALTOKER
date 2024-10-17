@@ -1,0 +1,20 @@
+<c:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:c="sap.ui.core"
+>
+    <SelectDialog
+        id="FunctionIdDialog"
+        noDataText="{i18n>noDataFound}"
+        title="{i18n>dialogFunctionTitle}"
+        search="onEquipFunctionValueHelpSearch"
+        confirm="onValueHelpConfirm"
+        cancel="onValueHelpClose"
+        items="{
+            path: 'EquipmentSiteModel>/VH_FunctionSet',
+            templateShareable: true
+        }"
+        multiSelect="true"
+    >
+        <StandardListItem title="{EquipmentSiteModel>FunctionDescription}" />
+    </SelectDialog>
+</c:FragmentDefinition>

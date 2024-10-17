@@ -47,6 +47,8 @@ sap.ui.define(
   ) {
     "use strict";
     const FRAGMENT_PATH = "com.vesi.zfac4_valtoker.view.fragment.Detail.";
+    const SCOPE = "EXPLTN";
+    const VALIDATETD_STATUS = "E0005";
     return BaseController.extend("com.vesi.zfac4_valtoker.controller.Detail", {
       formatter: formatter,
       _oFormatDate: sap.ui.core.format.DateFormat.getDateInstance({
@@ -87,6 +89,7 @@ sap.ui.define(
           measuringPoints: [],
         });
         this.getView().setModel(oAnomalyModel, "oEquipmentAnomalyModel");
+        this._initViewModel();
       },
       //--------------------------------------------
       // Internal functions
@@ -106,6 +109,12 @@ sap.ui.define(
        */
       _initEquipmentStatusDesc: function () {
         this._initStatusDesc("LoomaEquipment");
+      },
+      _initViewModel: function () {
+        const oViewModel = new JSONModel({
+          EquipmentChangesDialogBusy: false,
+        });
+        this.getView().setModel(oViewModel, "ViewModel");
       },
       _fnLoadDdicValues: function () {
         const aDdicValues = [
@@ -946,8 +955,11 @@ sap.ui.define(
               }
             }
             //Manage Family Characteristic
-            oLine.FamilyCharacteristic = oLine.FamilyCharacteristic.results;
+            oLine.FamilyCharacteristic = oLine.FamilyCharacteristic.results.map((oFamily) => {
+              return this._fnGetFamilyAdditionalProperties(oFamily);
+            });
             this._fnSetFamilyImportantCounter(oLine, oFamilyCharacteristic, oVH.Family[oLine.FamilyId], sYes, sNo); // Set Family Characteristic Important counter and boolean
+
             const aEquipMeasure = aMeasuringPoints.filter(
               (oMeasuringPoint) => oMeasuringPoint.EquipmentId === oLine.EquipmentId
             );
@@ -960,6 +972,14 @@ sap.ui.define(
         } catch (oError) {
           MessageBox.error(oError.message);
         }
+      },
+      _fnGetFamilyAdditionalProperties: function (oFamily) {
+        const { Characteristic } = this.fnGetModel("mFamilyCharacteristic").getData();
+        const oCharacteristictConfig = Characteristic[oFamily.CharactId];
+        return {
+          ...oCharacteristictConfig,
+          ...oFamily,
+        };
       },
       _fnCreateStringWithBreakLine: function (aData, sProp) {
         let sResult = "";
@@ -1034,6 +1054,7 @@ sap.ui.define(
           oLineMod.ValueNewDesc = oValueList[oLineMod.ValueNew]
             ? oValueList[oLineMod.ValueNew].CharactValueDescription
             : oLineMod.ValueNew;
+          oLineMod.CharactListOfValue = oFamilyCharacteristic.Characteristic[oLineMod.FieldId]?.CharactListOfValue;
         } else if (
           oFamilyCharacteristic.Characteristic[oLineMod.FieldId] &&
           oFamilyCharacteristic.Characteristic[oLineMod.FieldId].CharactDataType === "DATE"
@@ -2484,6 +2505,7 @@ sap.ui.define(
       },
       onPressEditEquipment: async function (oEvent) {
         try {
+          this.fnGetModel("ViewModel").setProperty("/EquipmentChangesDialogBusy", true);
           this.fnOpenDialog("_oChangeEquipment", "Detail.EditEquipment", []);
           const oSource = oEvent.getSource();
           this._oSelectedEquipmentModel = oSource.getBindingContext("mEquipment");
@@ -2530,8 +2552,9 @@ sap.ui.define(
           oEquipFormModel.setProperty("/TableForm", aTableForm);
           oEquipFormModel.setProperty("/OriginalData", JSON.parse(JSON.stringify(aTableForm)));
           oEquipFormModel.setProperty("/SelectedEquipment", oEquipment);
-          // this.getModel("ViewModel").setProperty("/EquipmentChangesDialogBusy", false);
+          this.fnGetModel("ViewModel").setProperty("/EquipmentChangesDialogBusy", false);
         } catch (oError) {
+          this.fnGetModel("ViewModel").setProperty("/EquipmentChangesDialogBusy", false);
           console.error(oError);
         }
       },
@@ -2590,9 +2613,7 @@ sap.ui.define(
           oEquipForm.ValueHelpDialog = "VHCharacteristic";
           oEquipForm.MaxLength = oFamily.CharactLength;
           oEquipForm.Filters = [{ sFieldName: "IvCharactName", FilterOperator: "EQ", FieldValue: oFamily.CharactId }];
-          const oModifiedInfo = oEquipment.ModifiedInfo?.results.find(
-            (oModified) => oModified.FieldId === oFamily.CharactId
-          );
+          const oModifiedInfo = oEquipment.ModifiedInfo?.find((oModified) => oModified.FieldId === oFamily.CharactId);
           if (oModifiedInfo) {
             oEquipForm.LastChangedBy = oModifiedInfo.LastChangedBy;
             oEquipForm.LastChangedOn = oModifiedInfo.LastChangedOn;
@@ -2673,6 +2694,260 @@ sap.ui.define(
           return;
         }
         this._oChangeEquipment.close();
+      },
+      onAmdecSelectDialogSearch: function (oEvent) {
+        const sSearchValue = oEvent.getParameter("value");
+        const oBinding = oEvent.getSource().getBinding("items");
+        const aFilters = new Filter(
+          [
+            new Filter("ValueId", FilterOperator.Contains, sSearchValue),
+            new Filter("ValueDesc", FilterOperator.Contains, sSearchValue),
+          ],
+          false
+        );
+        oBinding.filter(aFilters);
+      },
+      onAmdecVhSelectDialogConfirm: function (oEvent, sFieldProperty) {
+        const oContext = oEvent.getParameter("selectedItem").getBindingContext("mVH");
+        const aTableForm = this.fnGetModel("EquipmentForm").getProperty("/TableForm");
+        const oForm = aTableForm.find((oItem) => oItem.FieldProperty === sFieldProperty);
+        oForm.CurrentValue = oContext.getProperty("ValueId");
+        oForm.CurrentValueDesc = oContext.getProperty("ValueDesc");
+        this.fnGetModel("EquipmentForm").setProperty("/TableForm", aTableForm);
+      },
+      onValueHelpClose: function (oEvent) {
+        let oBinding = oEvent.getSource().getBinding("items");
+        oBinding.filter();
+        oBinding.filter([], "Application");
+      },
+      onCharacteristicValueHelpConfirm: function (oEvent) {
+        let oSelectedItem = oEvent.getParameter("selectedItem").getBindingContext("EquipmentSiteModel");
+        const sIdValue = oSelectedItem.getProperty("IdValue");
+        const sDescriptionValue = oSelectedItem.getProperty("DescriptionValue");
+        if (this._sFieldProperty) {
+          const aTableForm = this.fnGetModel("EquipmentForm").getProperty("/TableForm");
+          const oForm = aTableForm.find((oItem) => oItem.FieldProperty === this._sFieldProperty);
+          if (oForm) {
+            oForm.CurrentValue = sIdValue;
+            oForm.CurrentValueDesc = sDescriptionValue;
+          }
+          this.fnGetModel("EquipmentForm").refresh();
+        }
+      },
+      onPressRollbackEquipmentChange: function (oEvent) {
+        const oEquipFormModel = this.fnGetModel("EquipmentForm");
+        const oSelectedEquipment = oEvent.getSource().getBindingContext("EquipmentForm").getObject();
+        const aTableForm = oEquipFormModel.getProperty("/TableForm");
+        const oUserInfo = sap.ushell.Container.getService("UserInfo");
+        oSelectedEquipment.CurrentValue = oSelectedEquipment.ValueOld;
+        oSelectedEquipment.CurrentValueDesc = this._fnGetChangeEquipmentValueDesc(
+          oSelectedEquipment.ValueOld,
+          oSelectedEquipment
+        );
+        oSelectedEquipment.ValueOld = "";
+        oSelectedEquipment.ValueOldDesc = "";
+        oSelectedEquipment.LastChangedOn = new Date();
+        oSelectedEquipment.LastChangedBy = oUserInfo.getId();
+        oEquipFormModel.setProperty("/TableForm", aTableForm);
+        oEquipFormModel.setProperty("/bSaveButtonEnabled", true);
+      },
+      _fnGetChangeEquipmentValueDesc: function (sAmdecId, oForm) {
+        const oVh = this.fnGetModel("mVH").getData();
+        const { CurrentValue, ValueHelpDataProperty } = oForm;
+        if (!ValueHelpDataProperty) {
+          return CurrentValue;
+        }
+        let sValueDesc = "";
+        if (ValueHelpDataProperty.includes("Amdec")) {
+          sValueDesc = this._fnGetAmdecProperties(sAmdecId, oVh[ValueHelpDataProperty]);
+        } else {
+          sValueDesc = oVh[ValueHelpDataProperty][CurrentValue]?.Desc ?? "";
+        }
+        return sValueDesc;
+      },
+      onPressSaveEquipmentChanges: async function (oEvent) {
+        const sConfirmMessage = this.fnGetResourceBundle("msgBoxConfirmChangeEquipment");
+        MessageBox.confirm(sConfirmMessage, {
+          title: this.fnGetResourceBundle("msgBoxConfirmTitle"),
+          actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
+          emphasizedAction: MessageBox.Action.OK,
+          onClose: async (sAction) => {
+            if (sAction !== MessageBox.Action.OK) {
+              return;
+            }
+            await this._fnSaveEquipmentChanges(oEvent);
+          },
+        });
+      },
+      _fnSaveEquipmentChanges: async function (oEvent) {
+        try {
+          this.byId("dialogChangeEquipment").setBusy(true);
+          const oChangeEquipModel = this.fnGetModel("EquipmentForm");
+          const aTableForm = oChangeEquipModel.getProperty("/TableForm");
+          const aOriginalData = oChangeEquipModel.getProperty("/OriginalData");
+          const oSelectedEquipment = oChangeEquipModel.getProperty("/SelectedEquipment");
+          const aFamilies = oSelectedEquipment.FamilyCharacteristic;
+          aFamilies.forEach((oFamily) => {
+            const oForm = aTableForm.find((oItem) => oItem.FieldProperty === oFamily.CharactId);
+            if (!oForm) return;
+            switch (oFamily.CharactDataType) {
+              case "NUM":
+                oFamily.CharactValueNumDecFrom = this._fnGetValueFrom(oForm.CurrentValue);
+                break;
+              case "CHAR":
+                oFamily.CharactValueChar = oForm.CurrentValue;
+                oFamily.CharactValueDescription = oForm.CurrentValueDesc;
+                break;
+              default:
+                oFamily.CharactValueChar = oForm.CurrentValue;
+                oFamily.CharactValueDescription = oForm.CurrentValueDesc;
+                break;
+            }
+          });
+          if (!this._fnCheckIfEquipmentChanged()) {
+            this.byId("dialogChangeEquipment").setBusy(false);
+            MessageBox.warning(this.fnGetResourceBundle("msgBoxNoChanges"));
+            return;
+          }
+          aTableForm.map((oForm) => {
+            let { FieldProperty, CurrentValue, InputType } = oForm;
+            if (!oSelectedEquipment.hasOwnProperty(FieldProperty)) return;
+            if (InputType === "Date" && CurrentValue) {
+              CurrentValue = new Date(CurrentValue);
+            }
+            oSelectedEquipment[FieldProperty] = CurrentValue;
+          });
+          oSelectedEquipment.Scope = SCOPE;
+          oSelectedEquipment.FamilyCharacteristic = this._fnMapFamilyCharact(aFamilies);
+          await this._fnUpdateEquipment(oSelectedEquipment, "equipmentTable");
+          this._ApplyStatus(oEvent, VALIDATETD_STATUS, oSelectedEquipment.EquipmentId, "", false);
+          this.byId("dialogChangeEquipment").setBusy(false);
+          oChangeEquipModel.setProperty("/TableForm", aOriginalData);
+          this.onCloseChangeEquipment();
+        } catch (oError) {
+          this.byId("dialogChangeEquipment").setBusy(false);
+          this._fnHandleError(oError, "equipmentTable");
+        }
+      },
+      _fnHandleError: function (oError, sComponent) {
+        sap.ui.require(["sap/base/Log"], (Log) => {
+          this.byId(sComponent)?.setBusy(false);
+          const sError = this.fnExtractError(oError);
+          Log.error(sError);
+          MessageBox.error(sError);
+        });
+      },
+      _fnGetValueFrom(sValue) {
+        if (sValue.includes("-")) {
+          sValue = sValue.split("-")[0].trim();
+        }
+        return sValue;
+      },
+      _fnMapFamilyCharact: function (aFamily) {
+        return aFamily.map((oCharacteristicData) => ({
+          ClassId: oCharacteristicData.ClassId,
+          CharactId: oCharacteristicData.CharactId,
+          CharactName: oCharacteristicData.CharactName,
+          CharactUnit: oCharacteristicData.CharactUnit,
+          CharactValueChar: oCharacteristicData.CharactValueChar,
+          CharactValueDescription: oCharacteristicData.CharactValueDescription,
+          CharactValueDateFrom: oCharacteristicData.CharactValueDateFrom,
+          CharactValueNumDecFrom: oCharacteristicData.CharactValueNumDecFrom ?? oCharacteristicData.CharactValueNumFrom,
+          CharactValueDateTo: oCharacteristicData.CharactValueDateTo,
+          CharactValueNumDecTo: oCharacteristicData.CharactValueNumDecTo ?? oCharacteristicData.CharactValueNumTo,
+          CharactDataType: oCharacteristicData.CharactDataType,
+        }));
+      },
+      _fnUpdateEquipment: function (oPayload, sTableId = "equipmentTable") {
+        return new Promise((resolve, reject) => {
+          const oModel = this.getOwnerComponent().getModel();
+          oPayload = this._fnCreateUpdatePayload(oPayload);
+          oPayload.LastChangedOn = formatter.fnFormatStringToDate(oPayload.LastChangedOn);
+          oPayload.WarrantyEndDate = formatter.fnFormatStringToDate(oPayload.WarrantyEndDate);
+          oPayload.InstallDate = formatter.fnFormatStringToDate(oPayload.InstallDate);
+          oModel.create("/EquipmentSet", oPayload, {
+            success: (oData) => {
+              resolve(oData);
+            },
+            error: (oError) => {
+              reject(oError);
+            },
+          });
+        });
+      },
+      _fnCreateUpdatePayload: function (oEquipment) {
+        const sYes = this.fnGetResourceBundle("yes");
+        return {
+          AmdecAccessibilityId: oEquipment.AmdecAccessibilityId,
+          AmdecSeverityScoreComment: oEquipment.AmdecSeverityScoreComment,
+          AmdecStateComment: oEquipment.AmdecStateComment,
+          NameplateId: oEquipment.NameplateId,
+          AmdecCriticityId: oEquipment.AmdecCriticityId,
+          AmdecDisrepairComment: oEquipment.AmdecDisrepairComment,
+          AmdecTechnicalScoreComment: oEquipment.AmdecTechnicalScoreComment,
+          AmdecAccessibilityComment: oEquipment.AmdecAccessibilityComment,
+          AmdecDetectabilityId: oEquipment.AmdecDetectabilityId,
+          AmdecDisrepairId: oEquipment.AmdecDisrepairId,
+          AmdecReliabilityComment: oEquipment.AmdecReliabilityComment,
+          AmdecCriticityComment: oEquipment.AmdecCriticityComment,
+          AmdecFlag: oEquipment.AmdecFlag,
+          AmdecDetectabilityComment: oEquipment.AmdecDetectabilityComment,
+          AmdecFunctionningId: oEquipment.AmdecFunctionningId,
+          AmdecFunctionningComment: oEquipment.AmdecFunctionningComment,
+          AmdecReliabilityId: oEquipment.AmdecReliabilityId,
+          AmdecStateId: oEquipment.AmdecStateId,
+          BrandId: oEquipment.BrandId,
+          EnterpriseId: oEquipment.EnterpriseId,
+          BuildingId: oEquipment.BuildingId,
+          BuildingName: oEquipment.BuildingName,
+          Comments: oEquipment.Comments,
+          Critical: oEquipment.Critical === sYes,
+          Deletable: oEquipment.Deletable,
+          DomainId: oEquipment.DomainId,
+          EquipmentId: oEquipment.EquipmentId,
+          EquipmentName: oEquipment.EquipmentName,
+          EquipmentNameLong: oEquipment.EquipmentNameLong,
+          FamilyId: oEquipment.FamilyId,
+          FloorId: oEquipment.FloorId,
+          FloorName: oEquipment.FloorName,
+          FunctionId: oEquipment.FunctionId,
+          HasSubEquipment: oEquipment.HasSubEquipment,
+          InstallYear: oEquipment.InstallYear,
+          IsActive: oEquipment.IsActive,
+          IsCreatedDuringPec: oEquipment.IsCreatedDuringPec,
+          LastChangedById: oEquipment.LastChangedById,
+          LastChangedByName: oEquipment.LastChangedByName,
+          LastChangedOn: oEquipment.LastChangedOn,
+          LocationId: oEquipment.LocationId,
+          LocationName: oEquipment.LocationName,
+          Manufref: oEquipment.Manufref,
+          PecDeepAnalysisNeeded: oEquipment.PecDeepAnalysisNeeded,
+          PecQuote: oEquipment.PecQuote,
+          PecTrainingReq: oEquipment.PecTrainingReq,
+          PhotoId: oEquipment.PhotoId,
+          Qrcode: oEquipment.Qrcode,
+          Quantity: oEquipment.Quantity,
+          RoomId: oEquipment.RoomId,
+          RoomName: oEquipment.RoomName,
+          Scope: oEquipment.Scope,
+          SerialNumber: oEquipment.SerialNumber,
+          SiteId: oEquipment.SiteId,
+          SiteName: oEquipment.SiteName,
+          SuperiorEquiId: oEquipment.SuperiorEquiId,
+          SuperiorEquiName: oEquipment.SuperiorEquiName,
+          UsageId: oEquipment.UsageId,
+          UserStatusId: oEquipment.UserStatusId,
+          WarrantyEndDate: oEquipment.WarrantyEndDate,
+          HasAnomaly: oEquipment.HasAnomaly,
+          InstallDate: oEquipment.InstallDate,
+          ContractId: oEquipment.ContractId,
+          ContractName: oEquipment.ContractName,
+          Zone1: oEquipment.Zone1,
+          Zone2: oEquipment.Zone2,
+          LegalConstraint: oEquipment.LegalConstraint,
+          LifeDuration: oEquipment.LifeDuration,
+          FamilyCharacteristic: oEquipment.FamilyCharacteristic,
+        };
       },
     });
   }

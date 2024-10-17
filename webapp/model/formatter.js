@@ -371,5 +371,13 @@ sap.ui.define([], function () {
       }
       return result;
     },
+    fnFormatStringToDate: function (vDate) {
+      if (!vDate) return null;
+      if (vDate instanceof Date) return vDate;
+      const iYear = parseInt(vDate.substring(0, 4), 10);
+      const iMonth = parseInt(vDate.substring(4, 6), 10) - 1;
+      const iDay = parseInt(vDate.substring(6, 8), 10);
+      return new Date(iYear, iMonth, iDay);
+    },
   };
 });

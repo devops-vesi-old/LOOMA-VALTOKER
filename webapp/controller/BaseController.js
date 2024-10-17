@@ -386,6 +386,22 @@ sap.ui.define(
         }
         this[sDialog].open();
       },
+      fnExtractError: function (oError) {
+        let sMsg = "";
+        if (oError.responseText) {
+          let oInnerError = JSON.parse(oError.responseText).error.innererror;
+          if (oInnerError && oInnerError.errordetails && oInnerError.errordetails.length > 0) {
+            sMsg = oInnerError.errordetails[0].message;
+          } else {
+            sMsg = JSON.parse(oError.responseText).error.message.value;
+          }
+        } else if (oError.response) {
+          sMsg = JSON.parse(oError.response.body).error.message.value;
+        } else if (oError.message) {
+          sMsg = oError.message;
+        }
+        return sMsg;
+      },
     });
   }
 );

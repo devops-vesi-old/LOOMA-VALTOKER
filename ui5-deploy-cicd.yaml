@@ -15,19 +15,19 @@ builder:
       configuration:
         ignoreCertError: false
         target:
-            url: https://vinapdvp0400.vinci-energies.net
-            client: "550"
+          url: https://vinapdvp0400.vinci-energies.net
+          client: "550"
         credentials:
           username: env:S4HANA_USER
           password: env:S4HANA_PWD
         app:
           name: ZFAC4_VALTOKER
-          description: ZDEV_C4 CAST actions
+          description: SME_C4_W:BS-211-[P16c] Front end - Pop up modification - 01
           package: ZDEV_C4_FIORI_TAKEOVER
-          transport: DVPK9A8B4T
+          transport: DVPK9A8LHH
         exclude:
           - /test/
-              # Ajoutez cette tâche "ui5" avec le paramètre "loglevel"
+            # Ajoutez cette tâche "ui5" avec le paramètre "loglevel"
     - name: ui5
       afterTask: deploy-to-abap
       configuration:

@@ -28,6 +28,15 @@
         "settings": {
           "localUri": "localServiceVH/metadata.xml"
         }
+      },
+      "ZSRC4_EQUI_SITE_NEW_SRV": {
+        "uri": "/sap/opu/odata/sap/ZSRC4_EQUI_SITE_NEW_SRV/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/ZSRC4_EQUI_SITE_NEW_SRV/metadata.xml",
+          "odataVersion": "2.0"
+        }
       }
     }
   },
@@ -102,6 +111,18 @@
       "EquipmentForm": {
         "type": "sap.ui.model.json.JSONModel",
         "uri": "model/Config/Detail/EquipmentForm.json"
+      },
+      "EquipmentSiteModel": {
+        "dataSource": "ZSRC4_EQUI_SITE_NEW_SRV",
+        "preload": true,
+        "settings": {
+          "defaultBindingMode": "TwoWay",
+          "defaultCountMode": "Inline",
+          "refreshAfterChange": false,
+          "metadataUrlParams": {
+            "sap-value-list": "none"
+          }
+        }
       }
     },
     "resources": {

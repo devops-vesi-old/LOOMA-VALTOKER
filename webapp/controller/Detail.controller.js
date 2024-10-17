@@ -2781,18 +2781,10 @@ sap.ui.define(
           aFamilies.forEach((oFamily) => {
             const oForm = aTableForm.find((oItem) => oItem.FieldProperty === oFamily.CharactId);
             if (!oForm) return;
-            switch (oFamily.CharactDataType) {
-              case "NUM":
-                oFamily.CharactValueNumDecFrom = this._fnGetValueFrom(oForm.CurrentValue);
-                break;
-              case "CHAR":
-                oFamily.CharactValueChar = oForm.CurrentValue;
-                oFamily.CharactValueDescription = oForm.CurrentValueDesc;
-                break;
-              default:
-                oFamily.CharactValueChar = oForm.CurrentValue;
-                oFamily.CharactValueDescription = oForm.CurrentValueDesc;
-                break;
+            oFamily.CharactValueChar = oForm.CurrentValue;
+            oFamily.CharactValueDescription = oForm.CurrentValueDesc;
+            if (oFamily.CharactDataType === "NUM") {
+              oFamily.CharactValueNumDecFrom = this._fnGetValueFrom(oForm.CurrentValue);
             }
           });
           if (!this._fnCheckIfEquipmentChanged()) {

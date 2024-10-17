@@ -2587,17 +2587,13 @@ sap.ui.define(
         };
         FamilyCharacteristic.map((oFamily) => {
           let oEquipForm = {};
-          switch (oFamily.CharactDataType) {
-            case "NUM":
-              oEquipForm.CurrentValue = formatter.fnDecimalLimitingFormatter(
-                oFamily.CharactValueNumDecFrom,
-                oFamily.CharactDecimal
-              );
-              break;
-            default:
-              oEquipForm.CurrentValue = oFamily.CharactValueChar;
-              oEquipForm.CurrentValueDesc = oFamily.CharactValueDescription;
-              break;
+          oEquipForm.CurrentValue = oFamily.CharactValueChar;
+          oEquipForm.CurrentValueDesc = oFamily.CharactValueDescription;
+          if (oFamily.CharactDataType === "NUM") {
+            oEquipForm.CurrentValue = formatter.fnDecimalLimitingFormatter(
+              oFamily.CharactValueNumDecFrom,
+              oFamily.CharactDecimal
+            );
           }
           oEquipForm.InputType = this._fnSetFamilyInputType(oFamily.CharactDataType, oFamily.CharactListOfValue);
           oEquipForm.Editable = true;

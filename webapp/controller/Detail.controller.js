@@ -2627,18 +2627,6 @@ sap.ui.define(
             return "Text";
         }
       },
-      _fnGetChangeEquipmentValueDesc: function (sAmdecId, oForm) {
-        const oVh = this.fnGetModel("mVH").getData();
-        const { CurrentValue, ValueHelpDataProperty } = oForm;
-        if (!ValueHelpDataProperty) return "";
-        let sValueDesc = "";
-        if (ValueHelpDataProperty.includes("Amdec")) {
-          sValueDesc = this._fnGetAmdecProperties(sAmdecId, oVh[ValueHelpDataProperty]);
-        } else {
-          sValueDesc = oVh[ValueHelpDataProperty][CurrentValue]?.Desc ?? "";
-        }
-        return sValueDesc;
-      },
       _fnGetAmdecProperties: function (sAmdecId, oAmdec) {
         if (!sAmdecId || !oAmdec) return "";
         let oAmdecValue = oAmdec.find((i) => i.ValueId === sAmdecId);

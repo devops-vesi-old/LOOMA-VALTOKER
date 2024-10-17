@@ -2518,7 +2518,7 @@ sap.ui.define(
             aTableForm = aTableForm.filter((oForm) => oForm.FieldProperty !== oFamily.FieldProperty);
           });
           aTableForm.map((oForm) => {
-            const { FieldProperty, InputType, EquipmentInfo } = oForm;
+            const { FieldProperty, InputType } = oForm;
             const oModifiedInfo = oEquipment.ModifiedInfo?.find((oModified) => oModified.FieldI18n === FieldProperty);
             oForm.CurrentValue = oEquipment[FieldProperty];
             if (FieldProperty === "LifeDuration") {
@@ -2579,7 +2579,6 @@ sap.ui.define(
       },
       _fnGetFamilyCharacteristics: function (oEquipment) {
         const { FamilyCharacteristic } = oEquipment;
-        const aTableForm = this.fnGetModel("EquipmentForm").getProperty("/TableForm");
         if (!FamilyCharacteristic || FamilyCharacteristic.length === 0) return;
         let aEquipForm = [];
         const sCharacteristicText = this.fnGetResourceBundle("characteristic");
@@ -2594,10 +2593,6 @@ sap.ui.define(
                 oFamily.CharactValueNumDecFrom,
                 oFamily.CharactDecimal
               );
-              break;
-            case "CHAR":
-              oEquipForm.CurrentValue = oFamily.CharactValueChar;
-              oEquipForm.CurrentValueDesc = oFamily.CharactValueDescription;
               break;
             default:
               oEquipForm.CurrentValue = oFamily.CharactValueChar;

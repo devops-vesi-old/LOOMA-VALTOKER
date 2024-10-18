@@ -2791,7 +2791,6 @@ sap.ui.define(
           oSelectedEquipment.Scope = SCOPE;
           oSelectedEquipment.FamilyCharacteristic = this._fnMapFamilyCharact(aFamilies);
           await this._fnUpdateEquipment(oSelectedEquipment, "equipmentTable");
-          this._ApplyStatus(oEvent, VALIDATETD_STATUS, oSelectedEquipment.EquipmentId, "", false);
           this.byId("dialogChangeEquipment").setBusy(false);
           oChangeEquipModel.setProperty("/TableForm", aOriginalData);
           this.onCloseChangeEquipment();

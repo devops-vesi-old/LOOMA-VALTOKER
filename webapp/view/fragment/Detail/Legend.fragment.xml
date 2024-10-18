@@ -1,277 +1,384 @@
-<core:FragmentDefinition 
-	xmlns="sap.m" 
-	xmlns:core="sap.ui.core">
-	<Popover 
-		id="LegendPopover" 
-		placement="Bottom" 
-		showHeader="false">
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+>
+	<Popover
+		id="LegendPopover"
+		placement="Bottom"
+		showHeader="false"
+	>
 		<Panel width="100%">
 			<headerToolbar>
 				<OverflowToolbar>
-					<Title text="{i18n>LegendTooltip}"/>
+					<Title text="{i18n>LegendTooltip}" />
 				</OverflowToolbar>
 			</headerToolbar>
 			<content>
 				<VBox class="customItemPaddingTop0_25Rem">
 					<!--Legend Approval Button-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<Button
 								icon="sap-icon://accept"
-								type="Accept"/>
+								type="Accept"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
-							<Text 
+							<Text
 								class="customPaddingTop0_25Rem"
-								text="{i18n>LegendButtonApproval}"/>
+								text="{i18n>LegendButtonApproval}"
+							/>
 						</HBox>
 					</HBox>
 					<!--Legend Delete Button-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<Button
 								icon="sap-icon://delete"
-								type="Reject"/>
+								type="Reject"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
-							<Text 
+							<Text
 								class="customPaddingTop0_25Rem"
-								text="{i18n>LegendButtonDelete}"/>
+								text="{i18n>LegendButtonDelete}"
+							/>
 						</HBox>
-					</HBox>	
+					</HBox>
 					<!--Legend Back to takeover Button-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<Button
 								icon="sap-icon://cause"
-								type="Emphasized"/>
+								type="Emphasized"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
-							<Text 
+							<Text
 								class="customPaddingTop0_25Rem"
-								text="{i18n>LegendButtonBackToTakeover}"/>
+								text="{i18n>LegendButtonBackToTakeover}"
+							/>
 						</HBox>
-					</HBox>	
+					</HBox>
+					<HBox alignItems="Start">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
+							<Button
+								icon="sap-icon://form"
+								type="Critical"
+							/>
+						</HBox>
+						<HBox class="customWidthLegendRight">
+							<Text
+								class="customPaddingTop0_25Rem"
+								text="{i18n>LegendIconEquipmentChanges}"
+							/>
+						</HBox>
+					</HBox>
 					<!--Legend Created during takover Icon-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<core:Icon
 								class="customfontSize1_5Rem"
 								color="Positive"
-								src="sap-icon://add-equipment"/>
+								src="sap-icon://add-equipment"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
-							<Text 
+							<Text
 								class="customPaddingTop0_25Rem"
-								text="{i18n>LegendIconCreatedDuringTakover}"/>
+								text="{i18n>LegendIconCreatedDuringTakover}"
+							/>
 						</HBox>
 					</HBox>
 					<!--Legend Not sendable to FSM Icon-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<core:Icon
 								class="customfontSize1_5Rem"
 								color="Critical"
-								src="sap-icon://disconnected"/>
+								src="sap-icon://disconnected"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
-							<Text 
+							<Text
 								class="customPaddingTop0_25Rem"
-								text="{i18n>LegendIconNotSendableToFSM}"/>
+								text="{i18n>LegendIconNotSendableToFSM}"
+							/>
 						</HBox>
 					</HBox>
 					<!--Legend Sendable to FSM Icon-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<core:Icon
 								class="customfontSize1_5Rem"
 								color="Positive"
-								src="sap-icon://connected"/>
+								src="sap-icon://connected"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
-							<Text 
+							<Text
 								class="customPaddingTop0_25Rem"
-								text="{i18n>LegendIconSendableToFSM}"/>
+								text="{i18n>LegendIconSendableToFSM}"
+							/>
 						</HBox>
 					</HBox>
 					<!--Legend Missing info Icon-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<ObjectStatus
 								active="true"
 								class="customLineHeight2Rem"
 								icon="sap-icon://alert"
 								state="Warning"
-								text="1/4"/>
+								text="1/4"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
 							<VBox>
-								<Text 
+								<Text
 									class="customPaddingTop0_25Rem"
-									text="{i18n>LegendIconMissingInfo}"/>
-								<Text 
+									text="{i18n>LegendIconMissingInfo}"
+								/>
+								<Text
 									class="customFontBold"
-									text="{i18n>LegendClickable}"/>
+									text="{i18n>LegendClickable}"
+								/>
 							</VBox>
 						</HBox>
-					</HBox>	
+					</HBox>
 					<!--Legend Other properties Icon-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<core:Icon
 								class="customfontSize1_5Rem"
 								color="Neutral"
-								src="sap-icon://display-more"/>
+								src="sap-icon://display-more"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
 							<VBox>
-								<Text 
+								<Text
 									class="customPaddingTop0_25Rem"
-									text="{i18n>LegendIconOtherProperties}"/>
-								<Text 
+									text="{i18n>LegendIconOtherProperties}"
+								/>
+								<Text
 									class="customFontBold"
-									text="{i18n>LegendClickable}"/>
+									text="{i18n>LegendClickable}"
+								/>
 							</VBox>
 						</HBox>
 					</HBox>
 					<!--Legend Direct assignment Switch-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<VBox alignItems="Center">
-								<Text 
+								<Text
 									class="customTextAlignCenter"
-									text="{i18n>filterGroupItemFilterLabelDirect}"/>
+									text="{i18n>filterGroupItemFilterLabelDirect}"
+								/>
 								<Switch
 									state="false"
 									customTextOn="{i18n>yes}"
-									customTextOff="{i18n>no}"/>
+									customTextOff="{i18n>no}"
+								/>
 							</VBox>
 						</HBox>
 						<HBox class="customWidthLegendRight">
-							<Text 
+							<Text
 								class="customPaddingTop0_25Rem"
-								text="{i18n>LegendSwitchDirectAssignment}"/>
+								text="{i18n>LegendSwitchDirectAssignment}"
+							/>
 						</HBox>
-					</HBox>		
+					</HBox>
 					<!--Legend Close takeover Button-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<Button
 								icon="sap-icon://complete"
-								type="Emphasized"/>
+								type="Emphasized"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
-							<Text 
+							<Text
 								class="customPaddingTop0_25Rem"
-								text="{i18n>LegendButtonCloseTakeover}"/>
+								text="{i18n>LegendButtonCloseTakeover}"
+							/>
 						</HBox>
-					</HBox>	
+					</HBox>
 					<!--Legend Other properties Icon-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<core:Icon
 								class="customfontSize1_5Rem"
 								color="Default"
-								src="sap-icon://activity-items"/>
+								src="sap-icon://activity-items"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
 							<VBox>
-								<Text 
+								<Text
 									class="customPaddingTop0_25Rem"
-									text="{i18n>LegendIconModifiedInfo}"/>
-								<Text 
+									text="{i18n>LegendIconModifiedInfo}"
+								/>
+								<Text
 									class="customFontBold"
-									text="{i18n>LegendClickable}"/>
+									text="{i18n>LegendClickable}"
+								/>
 							</VBox>
 						</HBox>
 					</HBox>
 					<!--Legend Synchronize to FSM Button-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<Button
 								icon="sap-icon://share"
 								text="{i18n>LocationSynchroniseWithFSM}"
-								type="Default"/>
+								type="Default"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
-							<Text 
+							<Text
 								class="customPaddingTop0_25Rem"
-								text="{i18n>LegendButtonSynchronizeToFSM}"/>
+								text="{i18n>LegendButtonSynchronizeToFSM}"
+							/>
 						</HBox>
-					</HBox>	
+					</HBox>
 					<!--Legend Superior equipment Icon-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<core:Icon
 								class="customfontSize1_5Rem"
 								color="Default"
-								src="sap-icon://arrow-top"/>
+								src="sap-icon://arrow-top"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
 							<VBox>
-								<Text 
+								<Text
 									class="customPaddingTop0_25Rem"
-									text="{i18n>LegendIconSuperiorEquipment}"/>
-								<Text 
+									text="{i18n>LegendIconSuperiorEquipment}"
+								/>
+								<Text
 									class="customFontBold"
-									text="{i18n>LegendClickable}"/>
+									text="{i18n>LegendClickable}"
+								/>
 							</VBox>
 						</HBox>
 					</HBox>
 					<!--Legend Sub equipment Icon-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<core:Icon
 								class="customfontSize1_5Rem"
 								color="Default"
-								src="sap-icon://org-chart"/>
+								src="sap-icon://org-chart"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
 							<VBox>
-								<Text 
+								<Text
 									class="customPaddingTop0_25Rem"
-									text="{i18n>LegendIconSubEquipment}"/>
-								<Text 
+									text="{i18n>LegendIconSubEquipment}"
+								/>
+								<Text
 									class="customFontBold"
-									text="{i18n>LegendClickable}"/>
+									text="{i18n>LegendClickable}"
+								/>
 							</VBox>
 						</HBox>
 					</HBox>
 					<!--Legend Anomaly Icon-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<core:Icon
 								class="customfontSize1_5Rem"
 								color="Default"
-								src="sap-icon://quality-issue"/>
+								src="sap-icon://quality-issue"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
 							<VBox>
-								<Text 
+								<Text
 									class="customPaddingTop0_25Rem"
-									text="{i18n>LegendAnomalyButton}"/>
-								<Text 
+									text="{i18n>LegendAnomalyButton}"
+								/>
+								<Text
 									class="customFontBold"
-									text="{i18n>LegendClickable}"/>
+									text="{i18n>LegendClickable}"
+								/>
 							</VBox>
 						</HBox>
 					</HBox>
 					<!--Legend Measure Icon-->
 					<HBox alignItems="Start">
-						<HBox class="customWidthLegendLeft" justifyContent="Center">
+						<HBox
+							class="customWidthLegendLeft"
+							justifyContent="Center"
+						>
 							<core:Icon
 								class="customfontSize1_5Rem"
 								color="Default"
-								src="sap-icon://end-user-experience-monitoring"/>
+								src="sap-icon://end-user-experience-monitoring"
+							/>
 						</HBox>
 						<HBox class="customWidthLegendRight">
 							<VBox>
-								<Text 
+								<Text
 									class="customPaddingTop0_25Rem"
-									text="{i18n>LegendMeasuringButton}"/>
-								<Text 
+									text="{i18n>LegendMeasuringButton}"
+								/>
+								<Text
 									class="customFontBold"
-									text="{i18n>LegendClickable}"/>
+									text="{i18n>LegendClickable}"
+								/>
 							</VBox>
 						</HBox>
 					</HBox>

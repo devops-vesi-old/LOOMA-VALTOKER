@@ -498,6 +498,7 @@
 							/>
 							<Button
 								icon="sap-icon://form"
+								type="Critical"
 								tooltip="{i18n>tootipSeeEquipmentChanges}"
 								press="onPressEditEquipment"
 							/>

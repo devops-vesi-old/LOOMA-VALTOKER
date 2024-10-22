@@ -22,9 +22,9 @@ builder:
           password: env:S4HANA_PWD
         app:
           name: ZFAC4_VALTOKER
-          description: SME_C4_W:BS-211-[P16c] Front end - Pop up modification - 01
+          description: SME_C4_W:BS-388/MTHEOBAL/Equipment managamement cockpit - 01
           package: ZDEV_C4_FIORI_TAKEOVER
-          transport: DVPK9A8LHH
+          transport: DVPK9A8M2V
         exclude:
           - /test/
             # Ajoutez cette tâche "ui5" avec le paramètre "loglevel"

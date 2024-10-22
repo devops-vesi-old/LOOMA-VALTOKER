@@ -23,6 +23,20 @@
       "ShowRoolbackButton": true
     },
     {
+      "EquipmentInfo": "contractId",
+      "FieldProperty": "ContractId",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "contractName",
+      "FieldProperty": "ContractName",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
       "EquipmentInfo": "brandId",
       "FieldProperty": "BrandId",
       "Editable": true,
@@ -30,32 +44,35 @@
       "ShowRoolbackButton": true
     },
     {
-      "EquipmentInfo": "quantity",
-      "FieldProperty": "Quantity",
+      "EquipmentInfo": "manuRef",
+      "FieldProperty": "Manufref",
       "Editable": true,
       "InputType": "Text",
       "ShowRoolbackButton": true
     },
     {
-      "EquipmentInfo": "locationName",
-      "FieldProperty": "LocationName",
+      "EquipmentInfo": "domainDesc",
+      "FieldProperty": "DomainId",
       "Editable": false,
-      "InputType": "Text",
-      "ShowRoolbackButton": false
+      "InputType": "InputDesc",
+      "ShowRoolbackButton": false,
+      "ValueHelpDataProperty": "Domain"
     },
     {
-      "EquipmentInfo": "superiorEquipName",
-      "FieldProperty": "SuperiorEquiName",
+      "EquipmentInfo": "functionDesc",
+      "FieldProperty": "FunctionId",
       "Editable": false,
-      "InputType": "Text",
-      "ShowRoolbackButton": false
+      "InputType": "InputDesc",
+      "ShowRoolbackButton": false,
+      "ValueHelpDataProperty": "Function"
     },
     {
-      "EquipmentInfo": "siteName",
-      "FieldProperty": "SiteName",
+      "EquipmentInfo": "familyDesc",
+      "FieldProperty": "FamilyId",
       "Editable": false,
-      "InputType": "Text",
-      "ShowRoolbackButton": false
+      "InputType": "InputDesc",
+      "ShowRoolbackButton": false,
+      "ValueHelpDataProperty": "Family"
     },
     {
       "EquipmentInfo": "zone1",
@@ -72,18 +89,11 @@
       "ShowRoolbackButton": false
     },
     {
-      "EquipmentInfo": "qrCode",
-      "FieldProperty": "Qrcode",
-      "Editable": true,
+      "EquipmentInfo": "theoreticalLifeSpan",
+      "FieldProperty": "LifeDuration",
+      "Editable": false,
       "InputType": "Text",
-      "ShowRoolbackButton": true
-    },
-    {
-      "EquipmentInfo": "manuRef",
-      "FieldProperty": "Manufref",
-      "Editable": true,
-      "InputType": "Text",
-      "ShowRoolbackButton": true
+      "ShowRoolbackButton": false
     },
     {
       "EquipmentInfo": "legalConstraint",
@@ -91,6 +101,55 @@
       "Editable": false,
       "InputType": "BoolSelect",
       "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "equipmentCriticity",
+      "FieldProperty": "Critical",
+      "Editable": false,
+      "InputType": "BoolSelect",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "siteName",
+      "FieldProperty": "SiteName",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "locationName",
+      "FieldProperty": "LocationName",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "superiorEquipName",
+      "FieldProperty": "SuperiorEquiName",
+      "Editable": false,
+      "InputType": "Text",
+      "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "qrCode",
+      "FieldProperty": "Qrcode",
+      "Editable": true,
+      "InputType": "Text",
+      "ShowRoolbackButton": true
+    },
+    {
+      "EquipmentInfo": "quantity",
+      "FieldProperty": "Quantity",
+      "Editable": true,
+      "InputType": "Text",
+      "ShowRoolbackButton": true
+    },
+    {
+      "EquipmentInfo": "serialNumber",
+      "FieldProperty": "SerialNumber",
+      "Editable": true,
+      "InputType": "Text",
+      "ShowRoolbackButton": true
     },
     {
       "EquipmentInfo": "installDate",
@@ -102,18 +161,11 @@
       "ShowRoolbackButton": true
     },
     {
-      "EquipmentInfo": "serialNumber",
-      "FieldProperty": "SerialNumber",
+      "EquipmentInfo": "comments",
+      "FieldProperty": "Comments",
       "Editable": true,
       "InputType": "Text",
       "ShowRoolbackButton": true
-    },
-    {
-      "EquipmentInfo": "theoreticalLifeSpan",
-      "FieldProperty": "LifeDuration",
-      "Editable": false,
-      "InputType": "Text",
-      "ShowRoolbackButton": false
     },
     {
       "EquipmentInfo": "amdecTechnicalComment",
@@ -198,58 +250,6 @@
       "ValueHelpDataProperty": "AmdecDetectability",
       "ShowRoolbackButton": true,
       "DialogName": "_oAmdecDetectabilityDialog"
-    },
-    {
-      "EquipmentInfo": "equipmentCriticity",
-      "FieldProperty": "Critical",
-      "Editable": false,
-      "InputType": "BoolSelect",
-      "ShowRoolbackButton": false
-    },
-    {
-      "EquipmentInfo": "contractId",
-      "FieldProperty": "ContractId",
-      "Editable": false,
-      "InputType": "Text",
-      "ShowRoolbackButton": false
-    },
-    {
-      "EquipmentInfo": "contractName",
-      "FieldProperty": "ContractName",
-      "Editable": false,
-      "InputType": "Text",
-      "ShowRoolbackButton": false
-    },
-    {
-      "EquipmentInfo": "domainDesc",
-      "FieldProperty": "DomainId",
-      "Editable": false,
-      "InputType": "InputDesc",
-      "ShowRoolbackButton": false,
-      "ValueHelpDataProperty": "Domain"
-    },
-    {
-      "EquipmentInfo": "functionDesc",
-      "FieldProperty": "FunctionId",
-      "Editable": false,
-      "InputType": "InputDesc",
-      "ShowRoolbackButton": false,
-      "ValueHelpDataProperty": "Function"
-    },
-    {
-      "EquipmentInfo": "familyDesc",
-      "FieldProperty": "FamilyId",
-      "Editable": false,
-      "InputType": "InputDesc",
-      "ShowRoolbackButton": false,
-      "ValueHelpDataProperty": "Family"
-    },
-    {
-      "EquipmentInfo": "comments",
-      "FieldProperty": "Comments",
-      "Editable": true,
-      "InputType": "Text",
-      "ShowRoolbackButton": true
     }
   ]
 }

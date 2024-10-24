@@ -2514,6 +2514,9 @@ sap.ui.define(
           const oEquipFormModel = this.fnGetModel("EquipmentForm");
           let aTableForm = oEquipFormModel.getProperty("/TableForm");
           const aFamilyCharact = this._fnGetFamilyCharacteristics(oEquipment);
+          aFamilyCharact?.sort((a, b) => {
+            return a.EquipmentInfo.localeCompare(b.EquipmentInfo);
+          });
           aFamilyCharact?.forEach((oFamily) => {
             aTableForm = aTableForm.filter((oForm) => oForm.FieldProperty !== oFamily.FieldProperty);
           });
@@ -2595,6 +2598,7 @@ sap.ui.define(
               oFamily.CharactDecimal
             );
           }
+          oEquipForm.CharactImportant = oFamily.CharactImportant;
           oEquipForm.InputType = this._fnSetFamilyInputType(oFamily.CharactDataType, oFamily.CharactListOfValue);
           oEquipForm.Editable = true;
           oEquipForm.ShowRoolbackButton = true;

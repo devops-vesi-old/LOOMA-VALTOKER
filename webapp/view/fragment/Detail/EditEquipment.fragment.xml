@@ -45,10 +45,17 @@
                 </columns>
                 <ColumnListItem>
                     <cells>
-                        <Text text="{
-                            path: 'EquipmentForm>EquipmentInfo',
-                            formatter: '.fnGetResourceBundle'
-                        }" />
+                        <HBox alignItems="Center">
+                            <ObjectStatus
+                                icon="{= ${EquipmentForm>CharactImportant} ? 'sap-icon://warning' : ''}"
+                                state="{= ${EquipmentForm>CharactImportant} ? 'Warning': 'None'}"
+                                visible="{=${EquipmentForm>CharactImportant}}"
+                            />
+                            <Text text="{
+                                path: 'EquipmentForm>EquipmentInfo',
+                                formatter: '.fnGetResourceBundle'
+                            }" />
+                        </HBox>
                         <Text text="{EquipmentForm>ValueOldDesc}" />
                         <VBox>
                             <Input

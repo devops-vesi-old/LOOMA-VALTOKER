@@ -11,9 +11,9 @@
     {
       "EquipmentInfo": "equipmentName",
       "FieldProperty": "EquipmentName",
-      "Editable": false,
+      "Editable": true,
       "InputType": "Text",
-      "ShowRoolbackButton": false
+      "ShowRoolbackButton": true
     },
     {
       "EquipmentInfo": "equipmentNameLong",
@@ -91,23 +91,23 @@
     {
       "EquipmentInfo": "theoreticalLifeSpan",
       "FieldProperty": "LifeDuration",
-      "Editable": false,
+      "Editable": true,
       "InputType": "Text",
-      "ShowRoolbackButton": false
+      "ShowRoolbackButton": true
     },
     {
       "EquipmentInfo": "legalConstraint",
       "FieldProperty": "LegalConstraint",
-      "Editable": false,
+      "Editable": true,
       "InputType": "BoolSelect",
-      "ShowRoolbackButton": false
+      "ShowRoolbackButton": true
     },
     {
       "EquipmentInfo": "equipmentCriticity",
       "FieldProperty": "Critical",
-      "Editable": false,
+      "Editable": true,
       "InputType": "BoolSelect",
-      "ShowRoolbackButton": false
+      "ShowRoolbackButton": true
     },
     {
       "EquipmentInfo": "siteName",
@@ -129,6 +129,17 @@
       "Editable": false,
       "InputType": "Text",
       "ShowRoolbackButton": false
+    },
+    {
+      "EquipmentInfo": "usage",
+      "FieldProperty": "UsageId",
+      "Editable": true,
+      "InputType": "ValueHelp",
+      "ShowRoolbackButton": true,
+      "ValueHelpDialog": "VHUsage",
+      "ValueHelpDataProperty": "Usage",
+      "IsAmdec": true,
+      "DialogName": "_oUsageDialog"
     },
     {
       "EquipmentInfo": "qrCode",

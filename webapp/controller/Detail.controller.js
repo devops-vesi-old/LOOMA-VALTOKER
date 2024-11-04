@@ -2515,7 +2515,15 @@ sap.ui.define(
           let aTableForm = oEquipFormModel.getProperty("/TableForm");
           const aFamilyCharact = this._fnGetFamilyCharacteristics(oEquipment);
           aFamilyCharact?.sort((a, b) => {
-            return a.EquipmentInfo.localeCompare(b.EquipmentInfo);
+            if (a.CharactImportant && b.CharactImportant) {
+              return a.EquipmentInfo.localeCompare(b.EquipmentInfo);
+            } else if (a.CharactImportant) {
+              return -1;
+            } else if (b.CharactImportant) {
+              return 1;
+            } else {
+              return a.EquipmentInfo.localeCompare(b.EquipmentInfo);
+            }
           });
           aFamilyCharact?.forEach((oFamily) => {
             aTableForm = aTableForm.filter((oForm) => oForm.FieldProperty !== oFamily.FieldProperty);
@@ -2545,6 +2553,14 @@ sap.ui.define(
             oForm.ValueOldDesc = oModifiedInfo.ValueOld;
             if (oForm.ValueHelpDataProperty) {
               oForm.ValueOldDesc = this._fnGetChangeEquipmentValueDesc(oModifiedInfo.ValueOld, oForm);
+            }
+            if (FieldProperty === "LifeDuration") {
+              oForm.ValueOld = formatter.removeLeadingZeros(oModifiedInfo.ValueOld);
+              oForm.ValueOldDesc = formatter.removeLeadingZeros(oModifiedInfo.ValueOld);
+            }
+            if (InputType === "BoolSelect") {
+              oForm.ValueOld = oModifiedInfo.ValueOld === "X";
+              oForm.ValueOldDesc = oModifiedInfo.ValueOld === "X" ? sYes : sNo;
             }
             oForm.ShowRollbackButton = true;
             return oForm;
@@ -2656,7 +2672,9 @@ sap.ui.define(
         const aOriginalData = this.fnGetModel("EquipmentForm").getProperty("/OriginalData");
         let bChanged = false;
         aTableForm.map((oForm, idx) => {
-          if (oForm.CurrentValue !== aOriginalData[idx].CurrentValue) {
+          const bIsDifferent = oForm.CurrentValue !== aOriginalData[idx].CurrentValue;
+          const bBoolValueIsDif = oForm.CurrentValueBool !== aOriginalData[idx].CurrentValueBool;
+          if (bIsDifferent || bBoolValueIsDif) {
             bChanged = true;
           }
         });
@@ -2736,12 +2754,10 @@ sap.ui.define(
       },
       _fnGetChangeEquipmentValueDesc: function (sAmdecId, oForm) {
         const oVh = this.fnGetModel("mVH").getData();
-        const { CurrentValue, ValueHelpDataProperty } = oForm;
-        if (!ValueHelpDataProperty) {
-          return CurrentValue;
-        }
+        const { CurrentValue, ValueHelpDataProperty, IsAmdec } = oForm;
+        if (!ValueHelpDataProperty) return "";
         let sValueDesc = "";
-        if (ValueHelpDataProperty.includes("Amdec")) {
+        if (ValueHelpDataProperty.includes("Amdec") || IsAmdec) {
           sValueDesc = this._fnGetAmdecProperties(sAmdecId, oVh[ValueHelpDataProperty]);
         } else {
           sValueDesc = oVh[ValueHelpDataProperty][CurrentValue]?.Desc ?? "";

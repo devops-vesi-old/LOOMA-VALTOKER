@@ -1,0 +1,19 @@
+<c:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:c="sap.ui.core"
+>
+    <SelectDialog
+        id="UsageIdDialog"
+        noDataText="{i18n>noDataFound}"
+        title="{i18n>usage}"
+        search="onEquipUsageValueHelpSearch"
+        confirm="onAmdecVhSelectDialogConfirm($event, 'UsageId')"
+        cancel="onValueHelpClose"
+        items="{
+            path: 'mVH>/Usage',
+            templateShareable: true
+        }"
+    >
+        <StandardListItem title="{mVH>ValueDesc}" />
+    </SelectDialog>
+</c:FragmentDefinition>

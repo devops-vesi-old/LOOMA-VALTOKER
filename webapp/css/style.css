@@ -53,3 +53,9 @@
 .noDataTextMeasurepoint>.sapUiSizeCompact .sapMListTblCell.sapMListTblCellNoData {
     color: #e56e0c !important;
 }
+
+/*Important Icon in Select*/
+.CustomImportant .sapUiIcon,
+[data-iconCustom="IconImportant"] .sapUiIcon {
+	color: #FF0000;
+}

@@ -1,0 +1,87 @@
+<c:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:c="sap.ui.core"
+>
+    <Dialog id="dialogEditFamily">
+        <customHeader>
+            <Toolbar>
+                <Title text="{i18n>dialogTitleEditFamily}" />
+                <ToolbarSpacer />
+                <Button
+                    icon="sap-icon://add"
+                    tooltip="{i18n>tooltipAccept}"
+                    press="onPressAddFamilyCharact"
+                />
+                <Button
+                    icon="sap-icon://delete"
+                    type="Reject"
+                    press="onDeleteFamilyCharactButtonPress"
+                />
+            </Toolbar>
+        </customHeader>
+        <content>
+            <Table
+                id="idTableEditFamily"
+                items="{CharacteristicModel>/EditFamily}"
+                mode="MultiSelect"
+            >
+                <columns>
+                    <Column hAlign="Center">
+                        <Text text="{i18n>columnImportanceIndicator}" />
+                    </Column>
+                    <Column hAlign="Center">
+                        <Text text="{i18n>columnCharactName}" />
+                    </Column>
+                    <Column hAlign="Center">
+                        <Text text="{i18n>columnOldValue}" />
+                    </Column>
+                    <Column hAlign="Center">
+                        <Text text="{i18n>columnCurrentValue}" />
+                    </Column>
+                    <Column hAlign="Center">
+                        <Text text="{i18n>columnUnitMeasure}" />
+                    </Column>
+                    <Column hAlign="Center">
+                        <Text text="{i18n>columnLastchangeDate}" />
+                    </Column>
+                    <Column hAlign="Center">
+                        <Text text="{i18n>columnLastchangeBy}" />
+                    </Column>
+                </columns>
+                <ColumnListItem>
+                    <cells>
+                        <ObjectStatus
+                            icon="{= ${CharacteristicModel>CharactImportant} ? 'sap-icon://warning' : ''}"
+                            state="{= ${CharacteristicModel>CharactImportant} ? 'Warning': 'None'}"
+                        />
+                        <Text text="{CharacteristicModel>CharactName}" />
+                        <Text text="{CharacteristicModel>ValueOld}" />
+                        <c:Fragment
+                            fragmentName="com.vesi.zfac4_valtoker.view.fragment.Detail.EditFamilyInputs"
+                            type="XML"
+                        />
+                        <Text text="{CharacteristicModel>CharactUnit}" />
+                        <Text text="{
+                            path: 'CharacteristicModel>LastChangedOn',
+                            formatter: '.formatter.formatDate'
+                        }" />
+                        <Text text="{CharacteristicModel>LastChangedBy}" />
+                    </cells>
+                </ColumnListItem>
+            </Table>
+        </content>
+        <beginButton>
+            <Button
+                text="{i18n>btnSave}"
+                type="Accept"
+                press="onPressSaveEditFamily"
+            />
+        </beginButton>
+        <endButton>
+            <Button
+                text="{i18n>btnCancel}"
+                press="onPressCancelEditFamily"
+            />
+        </endButton>
+    </Dialog>
+</c:FragmentDefinition>

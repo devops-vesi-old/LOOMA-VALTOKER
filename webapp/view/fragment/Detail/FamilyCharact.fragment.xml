@@ -1,64 +1,81 @@
-<core:FragmentDefinition 
-	xmlns="sap.m" 
-	xmlns:core="sap.ui.core">
-	<Popover 
-		id="FamilyCharactPopover" 
-		placement="Horizontal" 
-		showHeader="false">
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+>
+	<Popover
+		id="FamilyCharactPopover"
+		placement="Horizontal"
+		showHeader="false"
+	>
 		<VBox>
 			<Panel width="100%">
 				<headerToolbar>
 					<OverflowToolbar>
-						<Title text="{i18n>TitleFamilyCharact}"/>
+						<Title text="{i18n>TitleFamilyCharact}" />
+						<ToolbarSpacer />
+						<Button
+							icon="sap-icon://edit"
+							press="onPressEditFamilyCharact"
+							tooltip="{i18n>tooltipEdit}"
+							visible="{CharacteristicModel>/FamilyCharactEditable}"
+						/>
 					</OverflowToolbar>
 				</headerToolbar>
 				<content>
-					<VBox  items="{mDisplayPopover>/FamilyCharact}">
+					<VBox items="{mDisplayPopover>/FamilyCharact}">
 						<HBox alignItems="Start">
 							<HBox width="0.5rem">
-								<core:Icon 
+								<core:Icon
 									src="sap-icon://warning"
 									color="Negative"
-									visible="{mDisplayPopover>CharactImportant}"/>
+									visible="{mDisplayPopover>CharactImportant}"
+								/>
 							</HBox>
 							<HBox width="13rem">
-								<ObjectStatus 
+								<ObjectStatus
 									text="{mDisplayPopover>CharactName}"
-									state="Success"/>
+									state="Success"
+								/>
 							</HBox>
-							<Text 
-								text=":" 
-								width="0.5rem"/>
-							<Text text="{mDisplayPopover>ValueToDisplay}"/>
+							<Text
+								text=":"
+								width="0.5rem"
+							/>
+							<Text text="{mDisplayPopover>ValueToDisplay}" />
 						</HBox>
 					</VBox>
 				</content>
 			</Panel>
-			<Panel width="100%" visible="{mDisplayPopover>/DisplayMissingCharact}">
+			<Panel
+				width="100%"
+				visible="{mDisplayPopover>/DisplayMissingCharact}"
+			>
 				<headerToolbar>
 					<OverflowToolbar>
-						<Title text="{i18n>TitleFamilyCharactMissing}"/>
+						<Title text="{i18n>TitleFamilyCharactMissing}" />
 					</OverflowToolbar>
 				</headerToolbar>
 				<content>
-					<VBox  items="{mDisplayPopover>/MissingImportantCharact}">
+					<VBox items="{mDisplayPopover>/MissingImportantCharact}">
 						<HBox alignItems="Start">
 							<HBox width="0.5rem">
-								<core:Icon 
+								<core:Icon
 									src="sap-icon://warning"
 									color="Negative"
 									tooltip="{i18n>TooltipImportantIcon}"
-									visible="{mDisplayPopover>CharactImportant}"/>
+									visible="{mDisplayPopover>CharactImportant}"
+								/>
 							</HBox>
 							<HBox width="13rem">
-								<ObjectStatus 
+								<ObjectStatus
 									text="{mDisplayPopover>CharactName}"
-									state="Warning"/>
+									state="Warning"
+								/>
 							</HBox>
 						</HBox>
 					</VBox>
 				</content>
-			</Panel>			
+			</Panel>
 		</VBox>
 	</Popover>
 </core:FragmentDefinition>

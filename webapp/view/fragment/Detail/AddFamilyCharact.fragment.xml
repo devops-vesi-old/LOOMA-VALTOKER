@@ -1,0 +1,164 @@
+<c:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:c="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+>
+    <Dialog
+        id="idCharacterisitcsDialog"
+        contentWidth="60%"
+        busy="{localModel>/busy}"
+    >
+        <VBox class="sapUiSmallMargin">
+            <f:SimpleForm
+                editable="true"
+                layout="ResponsiveGridLayout"
+                labelSpanXL="3"
+                labelSpanL="3"
+                labelSpanM="3"
+                labelSpanS="12"
+                adjustLabelSpan="false"
+                emptySpanXL="0"
+                emptySpanL="0"
+                emptySpanM="0"
+                emptySpanS="0"
+                columnsXL="1"
+                columnsL="1"
+                columnsM="1"
+            >
+                <f:content>
+                    <Label text="{i18n>charactColumnHeaderCharactName}" />
+                    <Select
+                        id="idCharacteristicName"
+                        class="CustomImportant"
+                        items="{VHCharacteristicModel>/}"
+                        valueStateText="{localModel>/valueStateMsgCharName}"
+                        valueState="{localModel>/valueStateCharName}"
+                        change="onCharNameSelected"
+                        width="100%"
+                        forceSelection="false"
+                    >
+                        <c:ListItem
+                            key="{VHCharacteristicModel>CharactId}"
+                            text="{VHCharacteristicModel>CharactName}"
+                            icon="{= ${VHCharacteristicModel>CharactImportant} ? 'sap-icon://warning' : null}"
+                        >
+                            <c:customData>
+                                <c:CustomData
+                                    key="iconCustom"
+                                    value="IconImportant"
+                                    writeToDom="true"
+                                />
+                            </c:customData>
+                        </c:ListItem>
+                    </Select>
+                    <Label text="{i18n>createCharacteristicsFormLblValue}" />
+                    <Input
+                        value="{CharacteristicModel>/SelectedCharData/CharactValueChar}"
+                        maxLength="{CharacteristicModel>/CharactLength}"
+                        width="60%"
+                        visible="{=${CharacteristicModel>CharactDataType} === 'CHAR' &amp;&amp; !${CharacteristicModel>CharactListOfValue}}"
+                    />
+                    <Label text="{i18n>createCharacteristicsFormLblValue}" />
+                    <Input
+                        showValueHelp="true"
+                        width="60%"
+                        maxLength="{CharacteristicModel>/SelectedCharData/CharactLength}"
+                        fieldGroupIds="validateCharAdd"
+                        valueHelpRequest="onCharacteristicValueHelpRequest"
+                        value="{CharacteristicModel>/SelectedCharData/CharactValueChar}"
+                        valueStateText="{localModel>/valueStateMsgCharVH}"
+                        valueState="{localModel>/valueStateCharVH}"
+                        showSuggestion="true"
+                        showTableSuggestionValueHelp="false"
+                        startSuggestion="3"
+                        suggestionItems="{
+                            path: 'EquipmentSiteModel>/VH_CharacteristicSet',
+                            templateShareable: true
+                        }"
+                        suggestionItemSelected="onVHCharacteristicsuggestionItemSelected"
+                        suggest="onVHCharacteristicSuggest"
+                        change="onInputVHValidationsCharact"
+                        visible="{=${CharacteristicModel>/SelectedCharData/CharactDataType} === 'CHAR' &amp;&amp; ${CharacteristicModel>/SelectedCharData/CharactListOfValue}}"
+                    >
+                        <suggestionItems>
+                            <c:Item
+                                key="{EquipmentSiteModel>IdValue}"
+                                text="{EquipmentSiteModel>DescriptionValue}"
+                            />
+                        </suggestionItems>
+                    </Input>
+                    <Label text="{i18n>createCharacteristicsFormLblValue}" />
+                    <Input
+                        value="{CharacteristicModel>/SelectedCharData/CharactValueNumDecFrom}"
+                        fieldWidth="70%"
+                        maxLength="{CharacteristicModel>/SelectedCharData/CharactLength}"
+                        description="{CharacteristicModel>/SelectedCharData/CharactUnit}"
+                        visible="{=${CharacteristicModel>/SelectedCharData/CharactDataType} === 'NUM' &amp;&amp; !${CharacteristicModel>/SelectedCharData/CharactInterval}}"
+                        liveChange="onLiveChangeCharactNum"
+                    />
+                    <Input
+                        value="{CharacteristicModel>/SelectedCharData/CharactValueNumDecTo}"
+                        maxLength="{CharacteristicModel>/SelectedCharData/CharactLength}"
+                        visible="{=${CharacteristicModel>/SelectedCharData/CharactDataType} === 'NUM' &amp;&amp; ${CharacteristicModel>/SelectedCharData/CharactInterval}}"
+                        liveChange="onLiveChangeCharactNum"
+                    />
+                    <Text
+                        text="{CharacteristicModel>/SelectedCharData/CharactUnit}"
+                        visible="{=${CharacteristicModel>/SelectedCharData/CharactDataType} === 'NUM' &amp;&amp; ${CharacteristicModel>/SelectedCharData/CharactInterval}}"
+                    />
+                    <Label text="{i18n>createCharacteristicsFormLblValue}" />
+                    <DatePicker
+                        value="{
+                            path: 'CharacteristicModel>/SelectedCharData/CharactValueDateFrom',
+                            type: 'sap.ui.model.type.Date',
+                            formatOptions: {
+                                pattern: 'dd.MM.yyyy',
+                                strictParsing: true,
+                                UTC: true
+                            }
+                        }"
+                        valueState="{localModel>/charFromDateValueState}"
+                        valueStateText="{localModel>/charFromEndDateValueStateText}"
+                        displayFormat="dd.MM.yyyy"
+                        valueFormat="yyyy-MM-ddTHH:mm:ss"
+                        change="onCharToEndDateSelection"
+                        visible="{=${CharacteristicModel>/SelectedCharData/CharactDataType} === 'DATE'}"
+                    />
+                    <DatePicker
+                        value="{
+                            path: 'CharacteristicModel>/SelectedCharData/CharactValueDateTo',
+                            type: 'sap.ui.model.type.Date',
+                            formatOptions: {
+                                pattern: 'dd.MM.yyyy',
+                                strictParsing: true,
+                                UTC: true
+                            }
+                        }"
+                        valueState="{localModel>/charToDateValueState}"
+                        valueStateText="{localModel>/charToEndDateValueStateText}"
+                        displayFormat="dd.MM.yyyy"
+                        valueFormat="yyyy-MM-ddTHH:mm:ss"
+                        change="onCharToEndDateSelection"
+                        visible="{=${CharacteristicModel>/SelectedCharData/CharactDataType} === 'DATE'}"
+                    />
+                </f:content>
+            </f:SimpleForm>
+        </VBox>
+        <buttons>
+            <Button
+                id="idAddFamilyCharButton"
+                text="{i18n>btntooltipadd}"
+                press="onAddCharacteristicsDialog"
+                type="Emphasized"
+                visible="{= !${localModel>/CharacteristicUpdate} }"
+                tooltip="{i18n>btntooltipadd}"
+                enabled="{CharacteristicModel>/SubmitButtonEnabled}"
+            />
+            <Button
+                text="{i18n>btnDialogClose}"
+                tooltip="{i18n>btnDialogClose}"
+                press="onCloseCreateCharacteristicsDialog"
+            />
+        </buttons>
+    </Dialog>
+</c:FragmentDefinition>

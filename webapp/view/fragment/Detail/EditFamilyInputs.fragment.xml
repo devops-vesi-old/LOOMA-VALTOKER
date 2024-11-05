@@ -1,0 +1,90 @@
+<c:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:c="sap.ui.core"
+>
+    <VBox>
+        <Input
+            showValueHelp="true"
+            width="60%"
+            maxLength="{CharacteristicModel>CharactLength}"
+            fieldGroupIds="validateCharAdd"
+            valueHelpRequest="onCharacteristicValueHelpRequest"
+            value="{CharacteristicModel>CharactValueChar}"
+            valueStateText="{localModel>/valueStateMsgCharVH}"
+            valueState="{localModel>/valueStateCharVH}"
+            showSuggestion="true"
+            showTableSuggestionValueHelp="false"
+            startSuggestion="3"
+            suggestionItems="{
+                path: 'EquipmentSiteModel>/VH_CharacteristicSet',
+                templateShareable: true
+            }"
+            suggestionItemSelected="onVHCharacteristicSuggestionItemSelected"
+            suggest="onVHCharacteristicSuggest"
+            change="onInputVHValidationsCharact"
+            visible="{=${CharacteristicModel>CharactDataType} === 'CHAR' &amp;&amp; ${CharacteristicModel>CharactListOfValue}}"
+        >
+            <suggestionItems>
+                <c:Item
+                    key="{EquipmentSiteModel>IdValue}"
+                    text="{EquipmentSiteModel>DescriptionValue}"
+                />
+            </suggestionItems>
+        </Input>
+        <Input
+            width="60%"
+            value="{CharacteristicModel>CharactValueChar}"
+            visible="{=${CharacteristicModel>CharactDataType} === 'CHAR' &amp;&amp; !${CharacteristicModel>CharactListOfValue}}"
+            maxLength="{CharacteristicModel>CharactLength}"
+            liveChange="onLiveChangeCharactChar"
+        />
+        <Input
+            width="60%"
+            value="{CharacteristicModel>CharactValueNumDecFrom}"
+            maxLength="{CharacteristicModel>CharactLength}"
+            visible="{=${CharacteristicModel>CharactDataType} === 'NUM' &amp;&amp; !${CharacteristicModel>CharactInterval}}"
+            liveChange="onLiveChangeCharactNum"
+        />
+        <Input
+            width="60%"
+            value="{CharacteristicModel>CharactValueNumDecTo}"
+            maxLength="{CharacteristicModel>CharactLength}"
+            visible="{=${CharacteristicModel>CharactDataType} === 'NUM' &amp;&amp; ${CharacteristicModel>CharactInterval}}"
+            liveChange="onLiveChangeCharactNum"
+        />
+        <DatePicker
+            value="{
+                path: 'CharacteristicModel>CharactValueDateFrom',
+                type: 'sap.ui.model.type.Date',
+                formatOptions: {
+                    pattern: 'dd.MM.yyyy',
+                    strictParsing: true,
+                    UTC: true
+                }
+            }"
+            valueState="{localModel>/charFromDateValueState}"
+            valueStateText="{localModel>/charFromEndDateValueStateText}"
+            displayFormat="dd.MM.yyyy"
+            valueFormat="yyyy-MM-ddTHH:mm:ss"
+            change="onCharToEndDateSelection"
+            visible="{=${CharacteristicModel>CharactDataType} === 'DATE'}"
+        />
+        <DatePicker
+            value="{
+                path: 'CharacteristicModel>CharactValueDateTo',
+                type: 'sap.ui.model.type.Date',
+                formatOptions: {
+                    pattern: 'dd.MM.yyyy',
+                    strictParsing: true,
+                    UTC: true
+                }
+            }"
+            valueState="{localModel>/charToDateValueState}"
+            valueStateText="{localModel>/charToEndDateValueStateText}"
+            displayFormat="dd.MM.yyyy"
+            valueFormat="yyyy-MM-ddTHH:mm:ss"
+            change="onCharToEndDateSelection"
+            visible="{=${CharacteristicModel>CharactDataType} === 'DATE'}"
+        />
+    </VBox>
+</c:FragmentDefinition>

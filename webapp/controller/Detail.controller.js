@@ -90,6 +90,8 @@ sap.ui.define(
         });
         this.getView().setModel(oAnomalyModel, "oEquipmentAnomalyModel");
         this._initViewModel();
+        this._initCharactModel();
+        this._oSelectedEquipment = null;
       },
       //--------------------------------------------
       // Internal functions
@@ -103,6 +105,29 @@ sap.ui.define(
         this._SiteId = decodeURIComponent(sObjectId);
         this._bindSiteData();
         this._bindTreeTable();
+      },
+      _initCharactModel: function () {
+        let oCharacteristicModel = new JSONModel(this._CreateCharacteristicModelJSONConfig());
+        this.fnSetModel(oCharacteristicModel, "CharacteristicModel");
+      },
+      _CreateCharacteristicModelJSONConfig: function () {
+        let oCharacteristicModelJSON = {
+          sValueChar: "",
+          sValueVHChar: "",
+          fValueNumfrom: "",
+          fValueNumTo: "",
+          characteristicLength: 0,
+          characteristicUnit: "",
+          bCharValueVisible: false,
+          bNumValueVisible: false,
+          bCharValueHelpVisible: false,
+          bDateValueVisible: false,
+          bNumToValueVisible: false,
+          SubmitButtonEnabled: false,
+          EditFamily: [],
+          FamilyCharact: [],
+        };
+        return oCharacteristicModelJSON;
       },
       /*
        * Called from method "onInit" to initialize Equipment User Status Description model
@@ -2181,6 +2206,9 @@ sap.ui.define(
           if (oModel.MissingImportantCharact.length > 0) {
             oModel.DisplayMissingCharact = true;
           }
+          this._oSelectedEquipment = oObject;
+          this._fnSetFamilyCharacteristics(oModel.FamilyCharact, oObject.ModifiedInfo);
+          this._fnLoadCharacteristicsValues(oObject.EquipmentId);
         } else if (idFrag === "OtherProperties") {
           oModel.OtherProperties = this._otherProperties(oObject);
         }
@@ -2723,8 +2751,18 @@ sap.ui.define(
       },
       onCharacteristicValueHelpConfirm: function (oEvent) {
         let oSelectedItem = oEvent.getParameter("selectedItem").getBindingContext("EquipmentSiteModel");
+        const oCharacteristicModel = this.fnGetModel("CharacteristicModel");
         const sIdValue = oSelectedItem.getProperty("IdValue");
         const sDescriptionValue = oSelectedItem.getProperty("DescriptionValue");
+        if (this._oSelectedFamilyModel) {
+          if (this._oSelectedFamilyModel.CharactValueChar !== sIdValue) {
+            this._oSelectedFamilyModel.LastChangedBy = sap.ushell.Container.getService("UserInfo").getId();
+            this._oSelectedFamilyModel.LastChangedOn = new Date();
+            this._oSelectedFamilyModel.ValueOld = this._oSelectedFamilyModel.CharactValueChar;
+          }
+          this._oSelectedFamilyModel.CharactValueChar = sIdValue;
+          this._oSelectedFamilyModel.CharactValueDescription = sDescriptionValue;
+        }
         if (this._sFieldProperty) {
           const aTableForm = this.fnGetModel("EquipmentForm").getProperty("/TableForm");
           const oForm = aTableForm.find((oItem) => oItem.FieldProperty === this._sFieldProperty);
@@ -2734,6 +2772,7 @@ sap.ui.define(
           }
           this.fnGetModel("EquipmentForm").refresh();
         }
+        oCharacteristicModel.refresh(true);
       },
       onPressRollbackEquipmentChange: function (oEvent) {
         const oEquipFormModel = this.fnGetModel("EquipmentForm");
@@ -2848,8 +2887,9 @@ sap.ui.define(
           CharactDataType: oCharacteristicData.CharactDataType,
         }));
       },
-      _fnUpdateEquipment: function (oPayload, sTableId = "equipmentTable") {
+      _fnUpdateEquipment: function (oPayload, sTableId) {
         return new Promise((resolve, reject) => {
+          this.byId(sTableId)?.setBusy(true);
           const oModel = this.getOwnerComponent().getModel();
           oPayload = this._fnCreateUpdatePayload(oPayload);
           oPayload.LastChangedOn = formatter.fnFormatStringToDate(oPayload.LastChangedOn);
@@ -2857,9 +2897,11 @@ sap.ui.define(
           oPayload.InstallDate = formatter.fnFormatStringToDate(oPayload.InstallDate);
           oModel.create("/EquipmentSet", oPayload, {
             success: (oData) => {
+              this.byId(sTableId)?.setBusy(false);
               resolve(oData);
             },
             error: (oError) => {
+              this.byId(sTableId)?.setBusy(false);
               reject(oError);
             },
           });
@@ -2938,6 +2980,146 @@ sap.ui.define(
           LifeDuration: oEquipment.LifeDuration,
           FamilyCharacteristic: oEquipment.FamilyCharacteristic,
         };
+      },
+      _fnSetFamilyCharacteristics: function (aFamilyCharacteristic, oModifiedInfo) {
+        this._aSelectedFamily = aFamilyCharacteristic.map((oFamily) => {
+          const oModifiedItem = oModifiedInfo?.find((oModified) => oModified.FieldId === oFamily.CharactId);
+          if (!oModifiedItem) return oFamily;
+          oFamily.LastChangedOn = oModifiedItem.LastChangedOn;
+          oFamily.LastChangedBy = oModifiedItem.LastChangedBy;
+          if (oFamily.CharactDataType === "NUM" && oModifiedItem.ValueOld.includes("-")) {
+            let aValues = oModifiedItem.ValueOld.split("-")?.map((value) =>
+              formatter.fnDecimalLimitingFormatter(value, oFamily.CharactDecimal)
+            );
+            oModifiedItem.ValueOld = aValues.join(" - ");
+          }
+          oFamily.ValueOld = oModifiedItem.ValueOld;
+          return oFamily;
+        });
+      },
+      onPressEditFamilyCharact: async function (oEvent) {
+        this.fnGetModel("CharacteristicModel").setProperty("/EditFamily", this._aSelectedFamily);
+        this.fnOpenDialog("_oEditFamilyDialog", "Detail.EditFamilyCharact", []);
+      },
+      onPressCancelEditFamily: function () {
+        this._oEditFamilyDialog.close();
+      },
+      onCharacteristicValueHelpRequest: function (oEvent) {
+        const oBindingContext = oEvent.getSource().getBindingContext("CharacteristicModel");
+        this._oSelectedFamilyModel =
+          oBindingContext?.getObject() ?? this.fnGetModel("CharacteristicModel").getProperty("/SelectedCharData");
+        let sCharName = this._oSelectedFamilyModel?.CharactId;
+        let aFilters = [];
+        if (sCharName) {
+          aFilters.push(new Filter("IvCharactName", FilterOperator.EQ, sCharName));
+        }
+        this._fnOpenCharacteristicValueHelpDialog(aFilters);
+      },
+      _fnOpenCharacteristicValueHelpDialog: async function (aFilters) {
+        this.fnOpenDialog("_oCharacteristicDialog", "ValueHelps.VHCharacteristic", aFilters);
+      },
+      onPressSaveEditFamily: async function () {
+        try {
+          const aFamilyCharactToSend = this._fnCreateFamilyPayload();
+          this._oSelectedEquipment.FamilyCharacteristic = aFamilyCharactToSend;
+          this._oSelectedEquipment.Scope = "PEC";
+          await this._fnUpdateEquipment(this._oSelectedEquipment, "idTableEditFamily");
+          this.fnGetModel("CharacteristicModel").setProperty("/SelectedCharData", {});
+          this._oEditFamilyDialog.close();
+          this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
+        } catch (oError) {
+          this._fnHandleError(oError, "idTableEditFamily");
+        }
+      },
+      _fnCreateFamilyPayload: function () {
+        const aFamilyCharact = this.fnGetModel("CharacteristicModel").getProperty("/EditFamily");
+        const aFamilyMap = this._fnMapFamilyCharact(aFamilyCharact);
+        return aFamilyMap;
+      },
+      onPressAddFamilyCharact: async function (oEvent) {
+        this.fnOpenDialog("_oAddFamilyDialog", "Detail.AddFamilyCharact", []);
+      },
+      onCharNameSelected: function (oEvent) {
+        let sVal = oEvent.getParameter("selectedItem").getKey();
+        if (!sVal) return;
+        this._fnSetFamilyData(sVal);
+        this.byId("idAddFamilyCharButton").setEnabled(true);
+      },
+      _fnSetFamilyData: function (sCharactId) {
+        const oModelData = this.fnGetModel("VHCharacteristicModel").getData();
+        const oSelectedFamily = oModelData.find((oFamily) => oFamily.CharactId === sCharactId);
+        oSelectedFamily.CharactValueNumDecFrom = formatter.fnDecimalLimitingFormatter(
+          oSelectedFamily.CharactValueNumFrom,
+          oSelectedFamily.CharactDecimal
+        );
+        oSelectedFamily.CharactValueNumDecTo = formatter.fnDecimalLimitingFormatter(
+          oSelectedFamily.CharactValueNumTo,
+          oSelectedFamily.CharactDecimal
+        );
+        oSelectedFamily.CharactValueChar = "";
+        oSelectedFamily.CharactValueDescription = "";
+        this.fnGetModel("CharacteristicModel").setProperty("/SelectedCharData", oSelectedFamily);
+      },
+      _fnLoadCharacteristicsValues: function (sEquipmentId) {
+        let sUrl = this.getOwnerComponent().getModel("EquipmentSiteModel").createKey("/EquipmentSet", {
+          IdEqui: sEquipmentId,
+        });
+        this.getOwnerComponent()
+          .getModel("EquipmentSiteModel")
+          .read(sUrl + "/FamilyCharactAvailable", {
+            success: function (oData) {
+              if (oData) {
+                let oVHCharacteristicModel = new JSONModel();
+                for (let oCharact of oData.results) {
+                  oCharact.DefaultLength = oCharact.CharactLength;
+                }
+                oVHCharacteristicModel.setData(oData.results);
+                this.fnSetModel(oVHCharacteristicModel, "VHCharacteristicModel");
+              }
+            }.bind(this),
+            error: function (oError) {
+              this._fnHandleError(oError, "equipmentTable");
+            },
+          });
+      },
+      onAddCharacteristicsDialog: function () {
+        const oCharacteristic = this.fnGetModel("CharacteristicModel").getProperty("/SelectedCharData");
+        this.fnGetModel("CharacteristicModel").getProperty("/EditFamily").push(oCharacteristic);
+        this.fnGetModel("CharacteristicModel").refresh(true);
+        this.byId("idAddFamilyCharButton").setEnabled(false);
+        this._oAddFamilyDialog.close();
+      },
+      onCloseCreateCharacteristicsDialog: function () {
+        this._oAddFamilyDialog.close();
+      },
+      onDeleteFamilyCharactButtonPress: function () {
+        const oTable = this.byId("idTableEditFamily");
+        const aSelectedItems = oTable.getSelectedItems();
+        if (aSelectedItems.length === 0) {
+          return MessageBox.error(this.fnGetResourceBundle("deleteTableErrorMessage"));
+        }
+        MessageBox.confirm(this.fnGetResourceBundle("deleteFamilyCharactConfirmation"), {
+          title: this.fnGetResourceBundle("deleteFamilyCharactTitle"),
+          actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+          emphasizedAction: MessageBox.Action.NO,
+          onClose: (sAction) => {
+            if (sAction === MessageBox.Action.YES) {
+              this._fnDeleteFamilyCharact(oTable, aSelectedItems);
+            }
+          },
+        });
+      },
+      _fnDeleteFamilyCharact: function (oTable, aSelectedItems) {
+        aSelectedItems = aSelectedItems.map((item) => item.getBindingContext("CharacteristicModel").getObject());
+        const aFamilyCharact = this.fnGetModel("CharacteristicModel").getProperty("/EditFamily");
+        let aFamiliesFiltered = aFamilyCharact.flatMap((oItem) => {
+          const oFamily = aSelectedItems.find((oFamily) => oFamily.CharactId === oItem.CharactId);
+          if (oFamily) return;
+          return oItem;
+        });
+        aFamiliesFiltered = aFamiliesFiltered.filter((oFamily) => oFamily);
+        oTable.removeSelections();
+        this.fnGetModel("CharacteristicModel").setProperty("/EditFamily", aFamiliesFiltered);
       },
     });
   }

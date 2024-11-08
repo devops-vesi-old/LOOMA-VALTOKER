@@ -1322,6 +1322,7 @@ sap.ui.define(
             if (bIsEquipments) {
               this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
             }
+            this._fnSynchronizaFsmWithoutSiteId();
             sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
           }.bind(this),
           error: function (oData, resp) {
@@ -2318,6 +2319,20 @@ sap.ui.define(
        */
       onSelectionFinishedMCBVH: function () {
         this.fnGetModel("mVH").refresh(true);
+      },
+      _fnSynchronizaFsmWithoutSiteId: function () {
+        this.fnGetModel().callFunction(
+          "/SynchronizeWithFSMFull", // function import name
+          {
+            method: "POST", // http method
+            urlParameters: {
+              SiteId: "",
+            }, // function import parameters
+            success: function (oData, response) {
+              // sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessSynchronizeMessage"));
+            }.bind(this), // callback function for success
+          }
+        ); // callback function for error
       },
       /*
        * Event fire when press on icon for object linked

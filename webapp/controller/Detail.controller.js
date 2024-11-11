@@ -1667,7 +1667,7 @@ sap.ui.define(
         oAnomalyModel.setProperty("/aURL", aURL);
         this.getOwnerComponent()
           .getModel()
-          .read(`/EquipmentSet('${oObject.EquipmentId}')`, {
+          .read(`/EquipmentSet(EquipmentId='${oObject.EquipmentId}',Scope='PEC')`, {
             urlParameters: {
               $expand: "Anomaly",
             },

@@ -1667,7 +1667,7 @@ sap.ui.define(
         oAnomalyModel.setProperty("/aURL", aURL);
         this.getOwnerComponent()
           .getModel()
-          .read(`/EquipmentSet('${oObject.EquipmentId}')`, {
+          .read(`/EquipmentSet(EquipmentId='${oObject.EquipmentId}',Scope='PEC')`, {
             urlParameters: {
               $expand: "Anomaly",
             },
@@ -2327,12 +2327,13 @@ sap.ui.define(
             method: "POST", // http method
             urlParameters: {
               SiteId: "",
-            }, // function import parameters
-            success: function (oData, response) {
-              // sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessSynchronizeMessage"));
-            }.bind(this), // callback function for success
+            },
+            success: function (oData, response) {}.bind(this),
+            error: function (oError) {
+              this._fnHandleError(oError, "SynchronizeWithFSMFull");
+            }.bind(this),
           }
-        ); // callback function for error
+        );
       },
       /*
        * Event fire when press on icon for object linked

@@ -1240,6 +1240,7 @@ sap.ui.define(
               this._bindEquipmentTable(this._sSelectedLocationId, this._sSelectedLocationType);
             }
             sap.m.MessageToast.show(this.fnGetResourceBundle("ToastSuccessStatusChange"));
+            this._fnSynchronizaFsmWithoutSiteId();
           }.bind(this),
           error: function (oData, resp) {
             this.fnHideBusyIndicator();

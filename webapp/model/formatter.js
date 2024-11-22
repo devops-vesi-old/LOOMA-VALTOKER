@@ -184,7 +184,9 @@ sap.ui.define([], function () {
      */
     fnImageUrlFormatter: function (sPhotoId, sEntitySet) {
       let src = "";
-      if (sPhotoId) {
+      if (sPhotoId && sEntitySet === "PhotoSet") {
+        src = "/sap/opu/odata/sap/ZSRC4_PEC_SRV/" + sEntitySet + "(ObjectId='" + encodeURIComponent(sPhotoId) + "',Object='EQUI')/$value";
+      } else if (sPhotoId && sEntitySet === "NameplateSet") {
         src = "/sap/opu/odata/sap/ZSRC4_PEC_SRV/" + sEntitySet + "('" + encodeURIComponent(sPhotoId) + "')/$value";
       }
       return src;

@@ -18,8 +18,8 @@ builder:
           url: http://dvp:443
         app:
           name: ZFAC4_VALTOKER
-          description: SME_C4_W:15329/MHAMEL/Cockpit PEC Validation  - 01
+          description: SME_C4_W:BS562/MT/Photo not displayed
           package: ZDEV_C4_FIORI_TAKEOVER
-          transport: DVPK9A877A
+          transport: DVPK9A8QBM
         exclude:
           - /test/

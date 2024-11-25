@@ -9,7 +9,7 @@
 				tooltip="{i18n>EquipmentTableIconTooltipPhotoId}" 
 				src="{ parts: ['mPhoto>/PhotoId', 'mPhoto>/EntitySet'] , formatter: '.formatter.fnImageUrlFormatter' }"
                 width="500px"
-				height="600px"/>
+			/>
 		</content>
 		<endButton>
 			<Button 

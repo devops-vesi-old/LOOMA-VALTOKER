@@ -7,7 +7,9 @@
 		<content>
 			<Image 
 				tooltip="{i18n>EquipmentTableIconTooltipPhotoId}" 
-				src="{ parts: ['mPhoto>/PhotoId', 'mPhoto>/EntitySet'] , formatter: '.formatter.fnImageUrlFormatter' }"/>
+				src="{ parts: ['mPhoto>/PhotoId', 'mPhoto>/EntitySet'] , formatter: '.formatter.fnImageUrlFormatter' }"
+                width="500px"
+			/>
 		</content>
 		<endButton>
 			<Button 
